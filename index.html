@@ -1,0 +1,189 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Geography Bee Nationals — 31-Day Tracker</title>
+<style>
+@import url('https://fonts.googleapis.com/css2?family=DM+Serif+Display&family=DM+Sans:wght@400;500;600&display=swap');
+*,*::before,*::after{box-sizing:border-box;margin:0;padding:0}
+:root{--k:#185FA5;--k-bg:#E6F1FB;--k-txt:#0C447C;--b:#3B6D11;--b-bg:#EAF3DE;--b-txt:#27500A;--s:#854F0B;--s-bg:#FAEEDA;--s-txt:#633806;--gray:#F1EFE8;--gray2:#D3D1C7;--gray3:#888780;--text:#2C2C2A;--text2:#5F5E5A;--text3:#888780;--bg:#FAFAF8;--card:#FFFFFF;--border:rgba(0,0,0,0.1);--radius:10px}
+body{font-family:'DM Sans',sans-serif;background:var(--bg);color:var(--text);min-height:100vh}
+header{background:var(--text);color:white;padding:28px 32px 24px}
+header h1{font-family:'DM Serif Display',serif;font-size:26px;font-weight:400;margin-bottom:4px}
+header p{font-size:14px;opacity:0.6}
+.stats-bar{background:white;border-bottom:1px solid var(--border);padding:16px 32px;display:flex;gap:32px;flex-wrap:wrap;align-items:center}
+.stat{text-align:center}.stat-num{font-size:22px;font-weight:600}.stat-label{font-size:11px;color:var(--text3);text-transform:uppercase;letter-spacing:.06em;margin-top:1px}
+.stat-div{width:1px;height:32px;background:var(--border)}
+.progress-bar-wrap{flex:1;min-width:160px}.progress-label{font-size:11px;color:var(--text3);margin-bottom:5px;text-transform:uppercase;letter-spacing:.06em}
+.progress-track{background:var(--gray);border-radius:99px;height:8px;overflow:hidden}
+.progress-fill{height:100%;border-radius:99px;background:var(--text);transition:width .4s}
+main{padding:28px 32px;max-width:1100px}
+.week-block{margin-bottom:28px}
+.week-title{font-size:11px;font-weight:600;color:var(--text3);text-transform:uppercase;letter-spacing:.08em;margin-bottom:10px}
+.week-grid{display:grid;grid-template-columns:repeat(7,minmax(0,1fr));gap:8px}
+.day-card{background:var(--card);border:1px solid var(--border);border-radius:var(--radius);padding:10px;cursor:pointer;transition:border-color .15s,box-shadow .15s;min-height:110px;display:flex;flex-direction:column}
+.day-card:hover{border-color:rgba(0,0,0,0.25);box-shadow:0 2px 8px rgba(0,0,0,.06)}
+.day-card.rest{background:var(--gray);cursor:default}.day-card.rest:hover{border-color:var(--border);box-shadow:none}
+.day-card.completed{background:#F0F9F4;border-color:#A8D5B5}
+.day-top{display:flex;justify-content:space-between;align-items:flex-start;margin-bottom:6px}
+.day-num{font-size:11px;color:var(--text3)}
+.check-btn{width:18px;height:18px;border-radius:50%;border:1.5px solid var(--gray2);background:white;cursor:pointer;display:flex;align-items:center;justify-content:center;font-size:10px;color:transparent;flex-shrink:0;transition:all .15s}
+.check-btn.done{background:#2D7A47;border-color:#2D7A47;color:white}.day-card.rest .check-btn{display:none}
+.pills{display:flex;gap:3px;flex-wrap:wrap;margin-bottom:5px}
+.pill{font-size:9px;font-weight:600;letter-spacing:.04em;border-radius:4px;padding:2px 5px}
+.pill-k{background:var(--k-bg);color:var(--k-txt)}.pill-b{background:var(--b-bg);color:var(--b-txt)}.pill-s{background:var(--s-bg);color:var(--s-txt)}
+.day-title{font-size:11px;font-weight:500;color:var(--text);line-height:1.4;flex:1}
+.day-rest-label{font-size:11px;color:var(--text3);font-style:italic;flex:1;padding-top:8px}
+.score-row{display:flex;align-items:center;gap:6px;margin-top:6px}
+.score-label{font-size:9px;color:var(--text3)}
+.detail-overlay{display:none;position:fixed;inset:0;background:rgba(0,0,0,0.4);z-index:100;align-items:center;justify-content:center;padding:20px}
+.detail-overlay.open{display:flex}
+.detail-panel{background:white;border-radius:16px;padding:28px;max-width:560px;width:100%;max-height:90vh;overflow-y:auto;position:relative}
+.detail-close{position:absolute;top:20px;right:20px;width:28px;height:28px;border-radius:50%;border:1px solid var(--border);background:var(--bg);cursor:pointer;display:flex;align-items:center;justify-content:center;font-size:14px;color:var(--text2)}
+.detail-close:hover{background:var(--gray)}
+.detail-day-num{font-size:12px;color:var(--text3);margin-bottom:4px}
+.detail-title{font-family:'DM Serif Display',serif;font-size:22px;font-weight:400;margin-bottom:20px}
+.detail-section{margin-bottom:16px}
+.detail-section-label{font-size:11px;font-weight:600;letter-spacing:.06em;text-transform:uppercase;margin-bottom:6px}
+.detail-section-body{font-size:14px;color:var(--text2);line-height:1.6}
+.prompt-box{background:var(--gray);border-radius:8px;padding:12px 14px;font-size:13px;color:var(--text);line-height:1.5;border-left:3px solid var(--text3)}
+.copy-btn{display:inline-flex;align-items:center;gap:5px;margin-top:8px;padding:5px 12px;border:1px solid var(--border);border-radius:6px;font-size:12px;font-family:inherit;cursor:pointer;background:white;color:var(--text2);transition:all .15s}
+.copy-btn:hover{background:var(--gray)}
+.done-toggle{display:flex;align-items:center;gap:10px;padding:12px 16px;border-radius:10px;border:1px solid var(--border);cursor:pointer;margin-top:20px;transition:all .15s;font-size:14px;font-weight:500}
+.done-toggle:hover{background:var(--gray)}.done-toggle.marked{background:#F0F9F4;border-color:#A8D5B5;color:#2D7A47}
+.legend-bar{display:flex;gap:16px;flex-wrap:wrap;padding:14px 32px;background:white;border-bottom:1px solid var(--border);font-size:12px;color:var(--text2)}
+.leg{display:flex;align-items:center;gap:6px}.leg-dot{width:10px;height:10px;border-radius:50%}
+.score-input{width:80px;height:32px;border:1px solid var(--gray2);border-radius:5px;font-size:14px;font-family:inherit;text-align:center;color:var(--text);background:transparent;padding:0 4px}
+.score-input:focus{outline:none;border-color:var(--text)}
+@media(max-width:700px){header,.stats-bar,.legend-bar,main{padding-left:16px;padding-right:16px}.week-grid{grid-template-columns:repeat(4,1fr)}.day-card{min-height:90px}}
+</style>
+</head>
+<body>
+<header>
+  <h1>Geography Bee Nationals — 31-Day Tracker</h1>
+  <p>Orlando Nationals &nbsp;·&nbsp; Mixed Phase: Knowledge + Buzzer + Simulation every day &nbsp;·&nbsp; ~55 min/day</p>
+</header>
+<div class="legend-bar">
+  <div class="leg"><div class="leg-dot" style="background:#185FA5"></div>Knowledge (20 min)</div>
+  <div class="leg"><div class="leg-dot" style="background:#3B6D11"></div>Buzzer drill (15 min)</div>
+  <div class="leg"><div class="leg-dot" style="background:#854F0B"></div>Simulation (20 min)</div>
+  <div class="leg" style="margin-left:auto;color:#888780;font-size:11px">Tap any day for full details · scores auto-save in browser</div>
+</div>
+<div class="stats-bar">
+  <div class="stat"><div class="stat-num" id="stat-done">0</div><div class="stat-label">Days done</div></div>
+  <div class="stat-div"></div>
+  <div class="stat"><div class="stat-num" id="stat-left">27</div><div class="stat-label">Days left</div></div>
+  <div class="stat-div"></div>
+  <div class="stat"><div class="stat-num" id="stat-streak">0</div><div class="stat-label">Streak</div></div>
+  <div class="stat-div"></div>
+  <div class="stat"><div class="stat-num" id="stat-avg">—</div><div class="stat-label">Avg sim score</div></div>
+  <div class="stat-div"></div>
+  <div class="progress-bar-wrap">
+    <div class="progress-label">Overall progress</div>
+    <div class="progress-track"><div class="progress-fill" id="progress-fill" style="width:0%"></div></div>
+  </div>
+</div>
+<main id="main"></main>
+<div class="detail-overlay" id="overlay" onclick="maybeClose(event)">
+  <div class="detail-panel" id="detail-panel">
+    <button class="detail-close" onclick="closeDetail()">✕</button>
+    <div id="detail-content"></div>
+  </div>
+</div>
+<script>
+const DAYS=[
+{d:1,title:"Diagnostic + continents",k:"Work through GeographyBeeCourse.docx beginner section. Flag every topic where you feel shaky — this becomes your master weak-spot list.",buzz:"Read 5 questions aloud from any round, pausing after each clue. Practice saying the answer as soon as you know it.",sim:"Score yourself on 2019 EMS Finals Q1-5. Record which topics you got right and wrong.",prompt:"Quiz me on continent and ocean geography at IAC nationals level — pyramidal format. Start with the hardest clue. After each answer, tell me what the earliest power clue was."},
+{d:2,title:"Physical features",k:"GeographyBeeCourse.docx physical features section. Focus on types: mountains, rivers, deserts, plateaus, capes, gulfs.",buzz:"Interrupt drill with a parent: they read mid-sentence, you buzz when you know. Don't wait for the easy clue.",sim:"Review 2022 MS Round 1 Q1-5. Note the power clues — what was the first word that should have triggered each answer?",prompt:"Give me 5 pyramidal questions on rivers and mountain ranges. After each answer tell me what the earliest power clue was and one extra fact to remember."},
+{d:3,title:"Africa + buzzer basics",k:"2021 Round 1: Study Kalahari, Gabon, Ho Chi Minh question structures. What clues appear early vs late?",buzz:"Track your early vs late buzz rate on 10 questions. Count: how many did you get on clue 1? Clue 2? The giveaway?",sim:"Full timed run of 2020 MS Nationals Round 1.",prompt:"Quiz me on African geography — countries, rivers, deserts, capitals — 8 pyramidal questions at nationals difficulty."},
+{d:4,title:"Southeast Asia",k:"2022 Round 6: Luzon, Niger Delta, Lapland clues. Build an association: what single word clue ties to each answer?",buzz:"Interrupt practice with parent reading — no pausing allowed. You must buzz mid-sentence.",sim:"Score 2021 Round 1 Q6-10. Tally hits/misses by region.",prompt:"Give me 8 pyramidal questions on Southeast Asian island nations and capitals. Start each with the most obscure geographic clue."},
+{d:5,title:"Americas + South America",k:"2022 Round 6: Manaus/Amazon clues. 2019 Finals Q3 (Salinas). Study river systems in South America.",buzz:"Buzz-out simulation: race to 8 correct in a 30-question round. Track how many bonus points you earn.",sim:"Full timed 2021 MS Nationals Round 2.",prompt:"Quiz me on South American geography — rivers, countries, capitals, physical features — 8 pyramidal questions."},
+{d:6,title:"Europe deep dive",k:"2021 Round 2: Norway, St Lawrence River, Adriatic Sea clues. Focus on Scandinavian and Balkan geography.",buzz:"Use 2022 Round 1 questions. Aim to buzz on clue 1 for at least 3 questions.",sim:"2022 Round 2 timed. Score using real competition bonus point system.",prompt:"Give me 8 pyramidal tossups on European geography — rivers, mountains, seas, countries."},
+{d:7,rest:true},
+{d:8,title:"Middle East + Central Asia",k:"2022 Round 6 Q4 (Herat, Afghanistan). 2020 Round 1 Q4 (Kurds). Build a mental map of the region.",buzz:"Clue-by-clue analysis: for each question, identify which specific word should trigger the answer.",sim:"2022 Round 3 timed. Note which topics appear for the second time.",prompt:"Give me 8 pyramidal questions on Middle Eastern and Central Asian geography."},
+{d:9,title:"Oceans + bodies of water",k:"2021 Round 1: Bering Sea. 2021 Round 3: Aegean Sea, Kalahari. Study straits, gulfs, bays, and seas worldwide.",buzz:"Interrupt 10 questions from 2021 Round 3 — parent reads, no pausing.",sim:"Score 2022 Round 4. Classify every miss by region and add to your weak-spot list.",prompt:"Quiz me on seas, bays, straits, and oceanic geography — 8 pyramidal questions."},
+{d:10,title:"Himalaya + South Asia",k:"2021 Round 2: Sri Lanka, Bhutan. 2022 Round 4 Q10 (Kangchenjunga). Learn the major Himalayan peaks.",buzz:"Buzz-out race: 8 correct, track bonus points. Aim for 13+ total.",sim:"2021 Round 1 full timed run.",prompt:"Give me 8 pyramidal tossups on Himalayan peaks, South Asian countries, and their geography."},
+{d:11,title:"US geography",k:"GeographyBeeCourse.docx + 2022 Round 1 Q4 (Pensacola). US geography always appears — rivers, mountain ranges, state capitals.",buzz:"Interrupt drill on US questions — aim for clue 2 buzz consistently.",sim:"2022 Round 5 timed. Note which topics repeat from previous rounds.",prompt:"Quiz me on US geography — rivers, mountain ranges, state capitals, physical features — 8 pyramidal questions."},
+{d:12,title:"Current events geography",k:"Read The Economist or BBC World for 20 min. Flag 5 stories with geographic significance. Write down the country, region, and why it matters.",buzz:"Turn 3 of today's news stories into your own pyramidal questions. Drill them with a parent.",sim:"2019 EMS Round 2 timed.",prompt:"Summarize 5 recent geopolitical events with geographic significance. For each, write a pyramidal tossup I could be asked at nationals."},
+{d:13,title:"Islands + archipelagos",k:"2019 Finals: Aleutians, Basque, Gotland. 2021 Round 2: Macau. Build a list of major archipelagos and the countries they belong to.",buzz:"For each question, rank clues 1, 2, 3 by what knowledge they require. Practice identifying the trigger word.",sim:"2022 Round 6 timed. Track how many questions you buzzed early vs late.",prompt:"Give me 8 pyramidal questions on island nations, archipelagos, and island geography worldwide."},
+{d:14,rest:true},
+{d:15,title:"Deserts + arid regions",k:"2021 Round 3: Gobi, Kalahari. 2020 Round 1: Kalahari again. Study desert borders — what countries does each desert touch?",buzz:"10-question interrupt drill. Parent reads with no pausing. Count early buzzes.",sim:"2021 Round 2 full timed.",prompt:"Give me 8 pyramidal questions on world deserts — locations, borders, notable features, bordering countries."},
+{d:16,title:"African Great Lakes + rivers",k:"2021 Round 3: Lake Malawi. 2023-24 EMS Bowl Finals (Geo bee 1.pdf): Pearl River, Kara Sea. Study the African Great Lakes system.",buzz:"Buzz-out race with real bonus scoring. Aim for 13+ total points.",sim:"2022 Finals timed. Track exactly which clue you buzz on for each question.",prompt:"Quiz me on African lakes, rivers, and their countries — 8 pyramidal tossups."},
+{d:17,title:"Capitals deep drill",k:"IAC Study Guide: National + Regional Capitals. Focus on capitals in Africa, Oceania, and Central Asia — the hardest ones.",buzz:"Rapid-fire: parent says country, you say capital. Then reverse. Time it.",sim:"2019 EMS Round 1 timed.",prompt:"Give me 10 rapid-fire capital questions embedded in pyramidal tossups — the capital itself is the answer."},
+{d:18,title:"East + Southeast Asia",k:"2022 Round 4 Q2 (Narita Airport). 2021 Round 1: Ho Chi Minh clues. Study East Asian capitals, rivers, and mountain ranges.",buzz:"Interrupt 15 questions. Count how many you get on clue 1.",sim:"2020 Round 1 full timed.",prompt:"Give me 8 pyramidal questions on East and Southeast Asian geography — rivers, islands, mountain ranges, cities."},
+{d:19,title:"Geopolitical + current events",k:"Read one long-form piece on an ongoing border dispute (Kashmir, South China Sea, Western Sahara, etc.).",buzz:"Turn 3 current events into pyramidal questions and drill them together.",sim:"2022 Round 1 timed. Aim for personal best on bonus points.",prompt:"Create 8 pyramidal questions about geography tied to current geopolitical situations — borders, conflicts, resource geography."},
+{d:20,title:"Landlocked countries + borders",k:"Build a reference list of all landlocked countries with their neighbors. Learn the double-landlocked ones (Liechtenstein, Uzbekistan).",buzz:"Country border chain drill: name all neighbors of a given country in 10 seconds.",sim:"2021 Round 3 full timed.",prompt:"Quiz me on landlocked countries and their bordering nations — 8 pyramidal questions."},
+{d:21,rest:true},
+{d:22,title:"Physical geography review",k:"Revisit all flagged weak spots from Days 1-20. Pick the 3 you're most unsure about and read their Wikipedia intros.",buzz:"Speed round: 20 questions, no pausing, maximum interrupts. Track your early buzz percentage.",sim:"2022 Round 4 timed — use real competition scoring.",prompt:"I'm weak on [topic]. Give me 10 pyramidal questions focused specifically on that topic, starting with hard clues."},
+{d:23,title:"Repeat topic patterns",k:"Read through 2023-24 EMS Bowl Finals (Geo bee 1.pdf) focusing on which topics appear. Compare to 2022 rounds — what repeats?",buzz:"Power clue list: write down the very first clue of every question you answer correctly.",sim:"2019 EMS Finals full timed. Compare score to Day 1 to measure growth.",prompt:"What are the most commonly repeated topic clusters in IAC Geography Bee nationals? Give me one pyramidal question from each cluster."},
+{d:24,title:"Maps + physical features",k:"Map drill session: Seterra or similar. Rivers, mountain ranges, borders. Focus on Africa and Southeast Asia.",buzz:"15-question drill — interrupt on EVERY question, even if not sure. Build the reflex.",sim:"2022 Round 6 full timed.",prompt:"Give me 8 pyramidal questions where the answer is a physical feature — river, sea, mountain, desert."},
+{d:25,title:"Mock nationals set 1",k:"After simulation: deep review of 3 misses. Wikipedia intro for each missed answer, plus one extra fact to associate.",buzz:"Review: which questions did you buzz too late? What clue should have triggered you?",sim:"Full 2022 MS Nationals: Rounds 1+2. Real scoring, timed, no breaks.",prompt:"I missed questions on [topics from simulation]. Give me 5 pyramidal questions on each weak area."},
+{d:26,title:"Mock nationals set 2",k:"Deep Wikipedia read on 2 answers you missed in today's simulation.",buzz:"Clue-trigger log: write the single word that should trigger each missed answer.",sim:"Full 2022 MS Nationals: Rounds 3+4. Timed, real scoring.",prompt:"Help me build a power-clue cheat sheet. For [country/place], what are the most common early clues used in pyramidal questions?"},
+{d:27,title:"Mock nationals set 3",k:"Review 2021 MS Nationals Rounds 1-3 topic list. What topics appeared in 2021 AND 2022? Highest-probability topics.",buzz:"Run the interrupt drill using today's simulation questions. Focus on getting each one on clue 2 or earlier.",sim:"Full 2022 MS Nationals: Rounds 5+6. Timed.",prompt:""},
+{d:28,rest:true},
+{d:29,title:"Remediation sprint",k:"Target the top 3 weak topic areas from all mock rounds. Use Claude to generate focused question sets on each.",buzz:"10-question interrupt drill on weak topics only.",sim:"2021 Finals timed. Compare this score to your Day 25 score.",prompt:"I keep missing questions about [topic]. Give me 10 pyramidal questions starting with hard clues. Don't reveal answers until I guess."},
+{d:30,title:"Full simulation",k:"Light review only: read through your power-clue cheat sheet and trigger word list. No new material.",buzz:"5-question warm-up only, focusing on early clue triggering.",sim:"2022 MS Finals + 2023-24 EMS Bowl Finals. Full timed run, real scoring.",prompt:""},
+{d:31,title:"Day before — confidence day",k:"Power-clue cheat sheet for 15 min only. No new geography today.",buzz:"5 easy warm-up questions for rhythm. Stop there.",sim:"5 questions from 2019 Finals for confidence — stop after 5. You are ready.",prompt:"Give me 5 easy then 5 medium geography questions at nationals level. Warm-up session only."},
+];
+const WK=["Week 1 — Apr 19","Week 2 — Apr 26","Week 3 — May 3","Week 4 — May 10","Week 5 — May 17"];
+function getState(){try{return JSON.parse(localStorage.getItem('geobee31')||'{}')}catch{return{}}}
+function saveState(s){localStorage.setItem('geobee31',JSON.stringify(s))}
+function updateStats(){
+  const st=getState();
+  const nr=DAYS.filter(d=>!d.rest);
+  const done=nr.filter(d=>st['d'+d.d]).length;
+  document.getElementById('stat-done').textContent=done;
+  document.getElementById('stat-left').textContent=Math.max(0,nr.length-done);
+  document.getElementById('progress-fill').style.width=Math.round(done/nr.length*100)+'%';
+  let streak=0;
+  for(let i=DAYS.length-1;i>=0;i--){if(DAYS[i].rest)continue;if(st['d'+DAYS[i].d])streak++;else break;}
+  document.getElementById('stat-streak').textContent=streak;
+  const scores=nr.map(d=>parseFloat(st['s'+d.d])).filter(v=>!isNaN(v));
+  document.getElementById('stat-avg').textContent=scores.length?(scores.reduce((a,b)=>a+b,0)/scores.length).toFixed(1):'—';
+}
+function toggleDone(n,e){e&&e.stopPropagation();const st=getState();st['d'+n]=!st['d'+n];saveState(st);render();updateStats()}
+function saveScore(n,v){const st=getState();st['s'+n]=v;saveState(st);updateStats()}
+function openDetail(n){
+  const day=DAYS.find(d=>d.d===n);if(!day||day.rest)return;
+  const st=getState();const isDone=!!st['d'+n];
+  document.getElementById('detail-content').innerHTML=`
+    <div class="detail-day-num">Day ${day.d}</div>
+    <div class="detail-title">${day.title}</div>
+    <div class="detail-section"><div class="detail-section-label" style="color:var(--k-txt)">Knowledge — 20 min</div><div class="detail-section-body">${day.k}</div></div>
+    <div class="detail-section"><div class="detail-section-label" style="color:var(--b-txt)">Buzzer drill — 15 min</div><div class="detail-section-body">${day.buzz}</div></div>
+    <div class="detail-section"><div class="detail-section-label" style="color:var(--s-txt)">Simulation — 20 min</div><div class="detail-section-body">${day.sim}</div></div>
+    ${day.prompt?`<div class="detail-section"><div class="detail-section-label">Claude prompt for today</div><div class="prompt-box" id="ptxt">${day.prompt}</div><button class="copy-btn" onclick="copyP()">⎘ Copy prompt</button></div>`:''}
+    <div class="detail-section" style="margin-bottom:0"><div class="detail-section-label">Simulation score (0-15)</div><input type="number" class="score-input" placeholder="0–15" min="0" max="15" value="${st['s'+n]||''}" oninput="saveScore(${n},this.value)"></div>
+    <div class="done-toggle ${isDone?'marked':''}" id="dtoggle" onclick="toggleDoneD(${n})"><span>${isDone?'✓':'○'}</span><span>${isDone?'Marked as done':'Mark as done'}</span></div>`;
+  document.getElementById('overlay').classList.add('open');
+}
+function toggleDoneD(n){const st=getState();st['d'+n]=!st['d'+n];saveState(st);render();updateStats();const t=document.getElementById('dtoggle');if(t){const done=!!st['d'+n];t.className='done-toggle'+(done?' marked':'');t.innerHTML=`<span>${done?'✓':'○'}</span><span>${done?'Marked as done':'Mark as done'}</span>`}}
+function copyP(){const t=document.getElementById('ptxt');if(!t)return;navigator.clipboard.writeText(t.textContent).then(()=>{const b=document.querySelector('.copy-btn');if(b){b.textContent='✓ Copied';setTimeout(()=>b.textContent='⎘ Copy prompt',2000)}})}
+function closeDetail(){document.getElementById('overlay').classList.remove('open')}
+function maybeClose(e){if(e.target===document.getElementById('overlay'))closeDetail()}
+function render(){
+  const st=getState();const main=document.getElementById('main');let html='';
+  for(let w=0;w<5;w++){
+    html+=`<div class="week-block"><div class="week-title">${WK[w]}</div><div class="week-grid">`;
+    for(let d=0;d<7;d++){
+      const idx=w*7+d;if(idx>=DAYS.length){html+='<div></div>';continue;}
+      const day=DAYS[idx];
+      if(day.rest){html+=`<div class="day-card rest"><div class="day-top"><div class="day-num">Day ${day.d}</div></div><div class="day-rest-label">Rest</div></div>`;}
+      else{
+        const done=!!st['d'+day.d];const sc=st['s'+day.d];
+        html+=`<div class="day-card${done?' completed':''}" onclick="openDetail(${day.d})">
+          <div class="day-top"><div class="day-num">Day ${day.d}</div><div class="check-btn${done?' done':''}" onclick="toggleDone(${day.d},event)">${done?'✓':''}</div></div>
+          <div class="pills"><span class="pill pill-k">K</span><span class="pill pill-b">B</span><span class="pill pill-s">S</span></div>
+          <div class="day-title">${day.title}</div>
+          ${sc?`<div class="score-row"><span class="score-label">Score:</span><span style="font-size:11px;font-weight:600;color:var(--s-txt)">${sc}</span></div>`:''}
+        </div>`;
+      }
+    }
+    html+='</div></div>';
+  }
+  main.innerHTML=html;
+}
+render();updateStats();
+</script>
+</body>
+</html>
