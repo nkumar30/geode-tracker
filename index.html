@@ -3,187 +3,540 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Geography Bee Nationals — 31-Day Tracker</title>
+<title>Geography Bee — 31-Day Tracker</title>
 <style>
 @import url('https://fonts.googleapis.com/css2?family=DM+Serif+Display&family=DM+Sans:wght@400;500;600&display=swap');
 *,*::before,*::after{box-sizing:border-box;margin:0;padding:0}
-:root{--k:#185FA5;--k-bg:#E6F1FB;--k-txt:#0C447C;--b:#3B6D11;--b-bg:#EAF3DE;--b-txt:#27500A;--s:#854F0B;--s-bg:#FAEEDA;--s-txt:#633806;--gray:#F1EFE8;--gray2:#D3D1C7;--gray3:#888780;--text:#2C2C2A;--text2:#5F5E5A;--text3:#888780;--bg:#FAFAF8;--card:#FFFFFF;--border:rgba(0,0,0,0.1);--radius:10px}
+:root{--k:#185FA5;--k-bg:#E6F1FB;--k-txt:#0C447C;--b:#3B6D11;--b-bg:#EAF3DE;--b-txt:#27500A;--s:#854F0B;--s-bg:#FAEEDA;--s-txt:#633806;--gray:#F1EFE8;--gray2:#D3D1C7;--gray3:#888780;--text:#2C2C2A;--text2:#5F5E5A;--text3:#888780;--bg:#FAFAF8;--card:#FFFFFF;--border:rgba(0,0,0,0.1);--radius:10px;--orange:#c2410c;--orange-bg:#fff7ed}
 body{font-family:'DM Sans',sans-serif;background:var(--bg);color:var(--text);min-height:100vh}
-header{background:var(--text);color:white;padding:28px 32px 24px}
-header h1{font-family:'DM Serif Display',serif;font-size:26px;font-weight:400;margin-bottom:4px}
-header p{font-size:14px;opacity:0.6}
-.stats-bar{background:white;border-bottom:1px solid var(--border);padding:16px 32px;display:flex;gap:32px;flex-wrap:wrap;align-items:center}
-.stat{text-align:center}.stat-num{font-size:22px;font-weight:600}.stat-label{font-size:11px;color:var(--text3);text-transform:uppercase;letter-spacing:.06em;margin-top:1px}
-.stat-div{width:1px;height:32px;background:var(--border)}
-.progress-bar-wrap{flex:1;min-width:160px}.progress-label{font-size:11px;color:var(--text3);margin-bottom:5px;text-transform:uppercase;letter-spacing:.06em}
-.progress-track{background:var(--gray);border-radius:99px;height:8px;overflow:hidden}
+header{background:var(--text);color:white;padding:24px 32px;display:flex;justify-content:space-between;align-items:flex-end;flex-wrap:wrap;gap:12px}
+header h1{font-family:'DM Serif Display',serif;font-size:24px;font-weight:400;margin-bottom:3px}
+header p{font-size:13px;opacity:0.55}
+.sync-badge{font-size:12px;padding:5px 12px;border-radius:99px;border:1px solid rgba(255,255,255,0.25);color:rgba(255,255,255,0.75);display:flex;align-items:center;gap:6px;white-space:nowrap}
+.sync-dot{width:7px;height:7px;border-radius:50%;background:#4ade80}
+.sync-dot.offline{background:#f87171}.sync-dot.syncing{background:#facc15;animation:pulse 1s infinite}
+@keyframes pulse{0%,100%{opacity:1}50%{opacity:.4}}
+
+/* Carryover banner */
+.carryover-bar{background:var(--orange-bg);border-bottom:1px solid #fed7aa;padding:14px 32px;display:flex;align-items:center;justify-content:space-between;gap:12px;flex-wrap:wrap}
+.carryover-bar.hidden{display:none}
+.co-left{display:flex;align-items:center;gap:10px;font-size:14px;font-weight:500;color:var(--orange)}
+.co-items{font-size:13px;color:var(--text2);display:flex;flex-wrap:wrap;gap:8px;margin-top:4px}
+.co-pill{background:white;border:1px solid #fed7aa;border-radius:6px;padding:3px 10px;font-size:12px;color:var(--orange);cursor:pointer}
+.co-pill:hover{background:#fff7ed}
+.co-btn{padding:6px 14px;border-radius:8px;border:1px solid var(--orange);background:var(--orange);color:white;font-size:13px;font-family:inherit;cursor:pointer;white-space:nowrap}
+.co-btn:hover{opacity:.85}
+
+/* Stats */
+.stats-bar{background:white;border-bottom:1px solid var(--border);padding:14px 32px;display:flex;gap:28px;flex-wrap:wrap;align-items:center}
+.stat{text-align:center}.stat-num{font-size:20px;font-weight:600}.stat-label{font-size:10px;color:var(--text3);text-transform:uppercase;letter-spacing:.06em;margin-top:1px}
+.stat-div{width:1px;height:28px;background:var(--border)}
+.progress-bar-wrap{flex:1;min-width:140px}.progress-label{font-size:10px;color:var(--text3);margin-bottom:4px;text-transform:uppercase;letter-spacing:.06em}
+.progress-track{background:var(--gray);border-radius:99px;height:7px;overflow:hidden}
 .progress-fill{height:100%;border-radius:99px;background:var(--text);transition:width .4s}
-main{padding:28px 32px;max-width:1100px}
-.week-block{margin-bottom:28px}
-.week-title{font-size:11px;font-weight:600;color:var(--text3);text-transform:uppercase;letter-spacing:.08em;margin-bottom:10px}
-.week-grid{display:grid;grid-template-columns:repeat(7,minmax(0,1fr));gap:8px}
-.day-card{background:var(--card);border:1px solid var(--border);border-radius:var(--radius);padding:10px;cursor:pointer;transition:border-color .15s,box-shadow .15s;min-height:110px;display:flex;flex-direction:column}
-.day-card:hover{border-color:rgba(0,0,0,0.25);box-shadow:0 2px 8px rgba(0,0,0,.06)}
+
+/* Legend */
+.legend-bar{display:flex;gap:16px;flex-wrap:wrap;padding:12px 32px;background:white;border-bottom:1px solid var(--border);font-size:12px;color:var(--text2)}
+.leg{display:flex;align-items:center;gap:6px}.leg-dot{width:9px;height:9px;border-radius:50%}
+
+/* Calendar */
+main{padding:24px 32px;max-width:1100px}
+.week-block{margin-bottom:24px}
+.week-title{font-size:10px;font-weight:600;color:var(--text3);text-transform:uppercase;letter-spacing:.08em;margin-bottom:8px}
+.week-grid{display:grid;grid-template-columns:repeat(7,minmax(0,1fr));gap:7px}
+.day-card{background:var(--card);border:1px solid var(--border);border-radius:var(--radius);padding:9px;cursor:pointer;transition:border-color .15s,box-shadow .15s;min-height:108px;display:flex;flex-direction:column;position:relative}
+.day-card:hover{border-color:rgba(0,0,0,0.22);box-shadow:0 2px 6px rgba(0,0,0,.05)}
 .day-card.rest{background:var(--gray);cursor:default}.day-card.rest:hover{border-color:var(--border);box-shadow:none}
-.day-card.completed{background:#F0F9F4;border-color:#A8D5B5}
-.day-top{display:flex;justify-content:space-between;align-items:flex-start;margin-bottom:6px}
-.day-num{font-size:11px;color:var(--text3)}
-.check-btn{width:18px;height:18px;border-radius:50%;border:1.5px solid var(--gray2);background:white;cursor:pointer;display:flex;align-items:center;justify-content:center;font-size:10px;color:transparent;flex-shrink:0;transition:all .15s}
-.check-btn.done{background:#2D7A47;border-color:#2D7A47;color:white}.day-card.rest .check-btn{display:none}
-.pills{display:flex;gap:3px;flex-wrap:wrap;margin-bottom:5px}
-.pill{font-size:9px;font-weight:600;letter-spacing:.04em;border-radius:4px;padding:2px 5px}
-.pill-k{background:var(--k-bg);color:var(--k-txt)}.pill-b{background:var(--b-bg);color:var(--b-txt)}.pill-s{background:var(--s-bg);color:var(--s-txt)}
-.day-title{font-size:11px;font-weight:500;color:var(--text);line-height:1.4;flex:1}
-.day-rest-label{font-size:11px;color:var(--text3);font-style:italic;flex:1;padding-top:8px}
-.score-row{display:flex;align-items:center;gap:6px;margin-top:6px}
-.score-label{font-size:9px;color:var(--text3)}
-.detail-overlay{display:none;position:fixed;inset:0;background:rgba(0,0,0,0.4);z-index:100;align-items:center;justify-content:center;padding:20px}
+.day-card.all-done{background:#F0F9F4;border-color:#A8D5B5}
+.day-card.partial{background:#fffbf0;border-color:#fcd34d}
+.day-card.has-carryover{border-color:#fb923c}
+
+.day-top{display:flex;justify-content:space-between;align-items:flex-start;margin-bottom:5px}
+.day-num{font-size:10px;color:var(--text3)}
+.day-flag{font-size:9px;padding:1px 5px;border-radius:4px;font-weight:600}
+.flag-done{background:#dcfce7;color:#166534}
+.flag-partial{background:#fef9c3;color:#854d0e}
+.flag-co{background:#ffedd5;color:#c2410c}
+
+/* Phase checkboxes */
+.phases{display:flex;flex-direction:column;gap:3px;margin:4px 0}
+.phase-row{display:flex;align-items:center;gap:5px;cursor:pointer}
+.phase-cb{width:13px;height:13px;border-radius:3px;border:1.5px solid var(--gray2);flex-shrink:0;display:flex;align-items:center;justify-content:center;font-size:8px;color:transparent}
+.phase-cb.checked-k{background:var(--k);border-color:var(--k);color:white}
+.phase-cb.checked-b{background:var(--b);border-color:var(--b);color:white}
+.phase-cb.checked-s{background:var(--s);border-color:var(--s);color:white}
+.phase-label{font-size:9px;font-weight:600;letter-spacing:.04em}
+.phase-label-k{color:var(--k-txt)}.phase-label-b{color:var(--b-txt)}.phase-label-s{color:var(--s-txt)}
+.phase-label.done-label{text-decoration:line-through;opacity:.5}
+
+.day-title{font-size:10px;font-weight:500;color:var(--text);line-height:1.4;flex:1;margin-top:3px}
+.day-rest-label{font-size:10px;color:var(--text3);font-style:italic;flex:1;padding-top:6px}
+.score-chip{font-size:9px;color:var(--s-txt);font-weight:600;margin-top:4px}
+.notes-chip{font-size:9px;color:var(--text3);margin-top:2px}
+
+/* Detail panel */
+.detail-overlay{display:none;position:fixed;inset:0;background:rgba(0,0,0,0.4);z-index:100;align-items:center;justify-content:center;padding:16px}
 .detail-overlay.open{display:flex}
-.detail-panel{background:white;border-radius:16px;padding:28px;max-width:560px;width:100%;max-height:90vh;overflow-y:auto;position:relative}
-.detail-close{position:absolute;top:20px;right:20px;width:28px;height:28px;border-radius:50%;border:1px solid var(--border);background:var(--bg);cursor:pointer;display:flex;align-items:center;justify-content:center;font-size:14px;color:var(--text2)}
+.detail-panel{background:white;border-radius:16px;padding:26px;max-width:580px;width:100%;max-height:92vh;overflow-y:auto;position:relative}
+.detail-close{position:absolute;top:18px;right:18px;width:26px;height:26px;border-radius:50%;border:1px solid var(--border);background:var(--bg);cursor:pointer;display:flex;align-items:center;justify-content:center;font-size:13px;color:var(--text2)}
 .detail-close:hover{background:var(--gray)}
-.detail-day-num{font-size:12px;color:var(--text3);margin-bottom:4px}
-.detail-title{font-family:'DM Serif Display',serif;font-size:22px;font-weight:400;margin-bottom:20px}
-.detail-section{margin-bottom:16px}
-.detail-section-label{font-size:11px;font-weight:600;letter-spacing:.06em;text-transform:uppercase;margin-bottom:6px}
-.detail-section-body{font-size:14px;color:var(--text2);line-height:1.6}
-.prompt-box{background:var(--gray);border-radius:8px;padding:12px 14px;font-size:13px;color:var(--text);line-height:1.5;border-left:3px solid var(--text3)}
-.copy-btn{display:inline-flex;align-items:center;gap:5px;margin-top:8px;padding:5px 12px;border:1px solid var(--border);border-radius:6px;font-size:12px;font-family:inherit;cursor:pointer;background:white;color:var(--text2);transition:all .15s}
+.detail-day-num{font-size:11px;color:var(--text3);margin-bottom:3px}
+.detail-title{font-family:'DM Serif Display',serif;font-size:21px;font-weight:400;margin-bottom:18px}
+.detail-section{margin-bottom:14px}
+.section-label{font-size:11px;font-weight:600;letter-spacing:.05em;text-transform:uppercase;margin-bottom:6px;display:flex;align-items:center;gap:8px}
+.section-body{font-size:13px;color:var(--text2);line-height:1.6}
+
+/* Phase completion toggles inside detail */
+.phase-toggle-row{display:flex;align-items:flex-start;gap:10px;padding:10px 12px;border-radius:8px;border:1px solid var(--border);margin-bottom:8px;cursor:pointer;transition:all .15s}
+.phase-toggle-row:hover{border-color:var(--gray2)}
+.phase-toggle-row.done-k{background:var(--k-bg);border-color:#93c5fd}
+.phase-toggle-row.done-b{background:var(--b-bg);border-color:#86efac}
+.phase-toggle-row.done-s{background:var(--s-bg);border-color:#fcd34d}
+.ptog-check{width:20px;height:20px;border-radius:5px;border:2px solid var(--gray2);flex-shrink:0;margin-top:1px;display:flex;align-items:center;justify-content:center;font-size:11px;color:transparent;transition:all .15s}
+.ptog-check.ck{color:white}
+.ck-k{background:var(--k);border-color:var(--k)}.ck-b{background:var(--b);border-color:var(--b)}.ck-s{background:var(--s);border-color:var(--s)}
+.ptog-content{flex:1}
+.ptog-title{font-size:12px;font-weight:600;margin-bottom:2px}
+.ptog-body{font-size:12px;color:var(--text2);line-height:1.5}
+.ptog-title-k{color:var(--k-txt)}.ptog-title-b{color:var(--b-txt)}.ptog-title-s{color:var(--s-txt)}
+
+/* Carryover schedule modal */
+.co-schedule{background:var(--orange-bg);border:1px solid #fed7aa;border-radius:10px;padding:14px 16px;margin-top:10px;display:none}
+.co-schedule.open{display:block}
+.co-schedule-title{font-size:12px;font-weight:600;color:var(--orange);margin-bottom:8px}
+.co-day-btns{display:flex;flex-wrap:wrap;gap:6px}
+.co-day-btn{padding:4px 10px;border-radius:6px;border:1px solid #fed7aa;background:white;font-size:12px;color:var(--text2);cursor:pointer;font-family:inherit}
+.co-day-btn:hover{background:var(--orange);color:white;border-color:var(--orange)}
+.co-day-btn.assigned{background:var(--orange);color:white;border-color:var(--orange)}
+
+.prompt-box{background:var(--gray);border-radius:8px;padding:11px 13px;font-size:12px;color:var(--text);line-height:1.5;border-left:3px solid var(--text3);margin-top:4px}
+.copy-btn{display:inline-flex;align-items:center;gap:4px;margin-top:6px;padding:4px 10px;border:1px solid var(--border);border-radius:6px;font-size:11px;font-family:inherit;cursor:pointer;background:white;color:var(--text2)}
 .copy-btn:hover{background:var(--gray)}
-.done-toggle{display:flex;align-items:center;gap:10px;padding:12px 16px;border-radius:10px;border:1px solid var(--border);cursor:pointer;margin-top:20px;transition:all .15s;font-size:14px;font-weight:500}
-.done-toggle:hover{background:var(--gray)}.done-toggle.marked{background:#F0F9F4;border-color:#A8D5B5;color:#2D7A47}
-.legend-bar{display:flex;gap:16px;flex-wrap:wrap;padding:14px 32px;background:white;border-bottom:1px solid var(--border);font-size:12px;color:var(--text2)}
-.leg{display:flex;align-items:center;gap:6px}.leg-dot{width:10px;height:10px;border-radius:50%}
-.score-input{width:80px;height:32px;border:1px solid var(--gray2);border-radius:5px;font-size:14px;font-family:inherit;text-align:center;color:var(--text);background:transparent;padding:0 4px}
+.score-row-detail{display:flex;align-items:center;gap:10px}
+.score-input{width:70px;height:30px;border:1px solid var(--gray2);border-radius:7px;font-size:13px;font-family:inherit;text-align:center;color:var(--text);background:transparent;padding:0 4px}
 .score-input:focus{outline:none;border-color:var(--text)}
-@media(max-width:700px){header,.stats-bar,.legend-bar,main{padding-left:16px;padding-right:16px}.week-grid{grid-template-columns:repeat(4,1fr)}.day-card{min-height:90px}}
+.notes-input{width:100%;margin-top:6px;padding:8px 10px;border:1px solid var(--gray2);border-radius:8px;font-size:12px;font-family:inherit;color:var(--text);resize:vertical;min-height:56px}
+.notes-input:focus{outline:none;border-color:var(--text)}
+
+/* Config */
+.config-panel{background:white;border:1px solid var(--border);border-radius:10px;padding:18px 22px;margin:14px 32px;font-size:14px}
+.config-panel h3{font-size:14px;font-weight:500;margin-bottom:10px}
+.config-row{display:flex;gap:7px;align-items:center;flex-wrap:wrap;margin-bottom:6px}
+.config-input{flex:1;min-width:180px;height:34px;border:1px solid var(--gray2);border-radius:7px;padding:0 10px;font-size:12px;font-family:inherit}
+.config-btn{height:34px;padding:0 14px;border:1px solid var(--text);border-radius:7px;background:var(--text);color:white;font-size:12px;font-family:inherit;cursor:pointer}
+.config-btn.sec{background:white;color:var(--text)}
+.config-help{font-size:11px;color:var(--text3);margin-top:4px}
+.setup-banner{background:#185FA5;color:white;padding:12px 32px;font-size:13px;display:flex;align-items:center;gap:10px;flex-wrap:wrap}
+.setup-banner a{color:#93c5fd;text-decoration:underline}.setup-banner.hidden{display:none}
+
+@media(max-width:700px){header,.stats-bar,.legend-bar,main,.config-panel,.carryover-bar{padding-left:14px;padding-right:14px}.week-grid{grid-template-columns:repeat(4,1fr)}.day-card{min-height:90px}}
 </style>
 </head>
 <body>
+
 <header>
-  <h1>Geography Bee Nationals — 31-Day Tracker</h1>
-  <p>Orlando Nationals &nbsp;·&nbsp; Mixed Phase: Knowledge + Buzzer + Simulation every day &nbsp;·&nbsp; ~55 min/day</p>
+  <div>
+    <h1>Geography Bee Nationals — 31-Day Tracker</h1>
+    <p>Orlando Nationals · Tap a day to log which phases you completed · Unfinished phases carry over automatically</p>
+  </div>
+  <div class="sync-badge" id="sync-badge"><div class="sync-dot" id="sync-dot"></div><span id="sync-label">Connecting…</span></div>
 </header>
-<div class="legend-bar">
-  <div class="leg"><div class="leg-dot" style="background:#185FA5"></div>Knowledge (20 min)</div>
-  <div class="leg"><div class="leg-dot" style="background:#3B6D11"></div>Buzzer drill (15 min)</div>
-  <div class="leg"><div class="leg-dot" style="background:#854F0B"></div>Simulation (20 min)</div>
-  <div class="leg" style="margin-left:auto;color:#888780;font-size:11px">Tap any day for full details · scores auto-save in browser</div>
+
+<div class="setup-banner" id="setup-banner">
+  ⚙️ <strong>Setup needed:</strong> Add your Firebase config below.
+  <a href="https://console.firebase.google.com/" target="_blank">Open Firebase Console →</a>
 </div>
+
+<div class="config-panel" id="config-panel">
+  <h3>Firebase Setup (one-time)</h3>
+  <div class="config-row">
+    <input class="config-input" id="cfg-apikey" placeholder="apiKey"/>
+    <input class="config-input" id="cfg-projectid" placeholder="projectId"/>
+  </div>
+  <div class="config-row">
+    <input class="config-input" id="cfg-appid" placeholder="appId"/>
+    <button class="config-btn" onclick="saveConfig()">Connect</button>
+    <button class="config-btn sec" onclick="dismissConfig()">Use offline only</button>
+  </div>
+  <div class="config-help">Project Settings → Your apps → Web → SDK config. Copy apiKey, projectId, appId.</div>
+</div>
+
+<!-- Carryover banner -->
+<div class="carryover-bar hidden" id="carryover-bar">
+  <div>
+    <div class="co-left">⚠ Unfinished phases need rescheduling</div>
+    <div class="co-items" id="co-items"></div>
+  </div>
+  <button class="co-btn" onclick="openCarryoverPlanner()">Plan catch-up →</button>
+</div>
+
+<div class="legend-bar">
+  <div class="leg"><div class="leg-dot" style="background:var(--k)"></div>K = Knowledge (20 min)</div>
+  <div class="leg"><div class="leg-dot" style="background:var(--b)"></div>B = Buzzer (15 min)</div>
+  <div class="leg"><div class="leg-dot" style="background:var(--s)"></div>S = Simulation (20 min)</div>
+  <div class="leg" style="margin-left:auto;color:var(--gray3);font-size:11px">🟡 partial &nbsp; 🟢 all done &nbsp; 🟠 has carryover</div>
+</div>
+
 <div class="stats-bar">
   <div class="stat"><div class="stat-num" id="stat-done">0</div><div class="stat-label">Days done</div></div>
   <div class="stat-div"></div>
-  <div class="stat"><div class="stat-num" id="stat-left">27</div><div class="stat-label">Days left</div></div>
+  <div class="stat"><div class="stat-num" id="stat-part">0</div><div class="stat-label">Partial</div></div>
+  <div class="stat-div"></div>
+  <div class="stat"><div class="stat-num" id="stat-co">0</div><div class="stat-label">Carrying over</div></div>
   <div class="stat-div"></div>
   <div class="stat"><div class="stat-num" id="stat-streak">0</div><div class="stat-label">Streak</div></div>
   <div class="stat-div"></div>
-  <div class="stat"><div class="stat-num" id="stat-avg">—</div><div class="stat-label">Avg sim score</div></div>
+  <div class="stat"><div class="stat-num" id="stat-avg">—</div><div class="stat-label">Avg score</div></div>
   <div class="stat-div"></div>
   <div class="progress-bar-wrap">
-    <div class="progress-label">Overall progress</div>
+    <div class="progress-label">Phases completed</div>
     <div class="progress-track"><div class="progress-fill" id="progress-fill" style="width:0%"></div></div>
   </div>
 </div>
+
 <main id="main"></main>
+
+<!-- Detail overlay -->
 <div class="detail-overlay" id="overlay" onclick="maybeClose(event)">
-  <div class="detail-panel" id="detail-panel">
-    <button class="detail-close" onclick="closeDetail()">✕</button>
-    <div id="detail-content"></div>
-  </div>
+  <div class="detail-panel"><button class="detail-close" onclick="closeDetail()">✕</button><div id="detail-content"></div></div>
 </div>
+
+<!-- Firebase -->
+<script src="https://www.gstatic.com/firebasejs/10.12.0/firebase-app-compat.js"></script>
+<script src="https://www.gstatic.com/firebasejs/10.12.0/firebase-firestore-compat.js"></script>
 <script>
+// ─── Day data ────────────────────────────────────────────────────────────────
 const DAYS=[
-{d:1,title:"Diagnostic + continents",k:"Work through GeographyBeeCourse.docx beginner section. Flag every topic where you feel shaky — this becomes your master weak-spot list.",buzz:"Read 5 questions aloud from any round, pausing after each clue. Practice saying the answer as soon as you know it.",sim:"Score yourself on 2019 EMS Finals Q1-5. Record which topics you got right and wrong.",prompt:"Quiz me on continent and ocean geography at IAC nationals level — pyramidal format. Start with the hardest clue. After each answer, tell me what the earliest power clue was."},
-{d:2,title:"Physical features",k:"GeographyBeeCourse.docx physical features section. Focus on types: mountains, rivers, deserts, plateaus, capes, gulfs.",buzz:"Interrupt drill with a parent: they read mid-sentence, you buzz when you know. Don't wait for the easy clue.",sim:"Review 2022 MS Round 1 Q1-5. Note the power clues — what was the first word that should have triggered each answer?",prompt:"Give me 5 pyramidal questions on rivers and mountain ranges. After each answer tell me what the earliest power clue was and one extra fact to remember."},
-{d:3,title:"Africa + buzzer basics",k:"2021 Round 1: Study Kalahari, Gabon, Ho Chi Minh question structures. What clues appear early vs late?",buzz:"Track your early vs late buzz rate on 10 questions. Count: how many did you get on clue 1? Clue 2? The giveaway?",sim:"Full timed run of 2020 MS Nationals Round 1.",prompt:"Quiz me on African geography — countries, rivers, deserts, capitals — 8 pyramidal questions at nationals difficulty."},
-{d:4,title:"Southeast Asia",k:"2022 Round 6: Luzon, Niger Delta, Lapland clues. Build an association: what single word clue ties to each answer?",buzz:"Interrupt practice with parent reading — no pausing allowed. You must buzz mid-sentence.",sim:"Score 2021 Round 1 Q6-10. Tally hits/misses by region.",prompt:"Give me 8 pyramidal questions on Southeast Asian island nations and capitals. Start each with the most obscure geographic clue."},
-{d:5,title:"Americas + South America",k:"2022 Round 6: Manaus/Amazon clues. 2019 Finals Q3 (Salinas). Study river systems in South America.",buzz:"Buzz-out simulation: race to 8 correct in a 30-question round. Track how many bonus points you earn.",sim:"Full timed 2021 MS Nationals Round 2.",prompt:"Quiz me on South American geography — rivers, countries, capitals, physical features — 8 pyramidal questions."},
-{d:6,title:"Europe deep dive",k:"2021 Round 2: Norway, St Lawrence River, Adriatic Sea clues. Focus on Scandinavian and Balkan geography.",buzz:"Use 2022 Round 1 questions. Aim to buzz on clue 1 for at least 3 questions.",sim:"2022 Round 2 timed. Score using real competition bonus point system.",prompt:"Give me 8 pyramidal tossups on European geography — rivers, mountains, seas, countries."},
+{d:1,title:"Diagnostic + continents",k:"Work through GeographyBeeCourse.docx beginner section. Flag every topic where you feel shaky.",buzz:"Read 5 questions aloud from any round, pausing after each clue.",sim:"Score yourself on 2019 EMS Finals Q1-5. Record which topics you got right and wrong.",prompt:"Quiz me on continent and ocean geography at IAC nationals level — pyramidal format. Start with the hardest clue."},
+{d:2,title:"Physical features",k:"GeographyBeeCourse.docx physical features section. Mountains, rivers, deserts, plateaus, capes, gulfs.",buzz:"Interrupt drill with a parent: they read mid-sentence, you buzz when you know.",sim:"Review 2022 MS Round 1 Q1-5. Note the power clues.",prompt:"Give me 5 pyramidal questions on rivers and mountain ranges. After each answer tell me what the earliest power clue was."},
+{d:3,title:"Africa + buzzer basics",k:"2021 Round 1: Study Kalahari, Gabon, Ho Chi Minh question structures.",buzz:"Track your early vs late buzz rate on 10 questions.",sim:"Full timed run of 2020 MS Nationals Round 1.",prompt:"Quiz me on African geography — 8 pyramidal questions at nationals difficulty."},
+{d:4,title:"Southeast Asia",k:"2022 Round 6: Luzon, Niger Delta, Lapland clues. Build single-word trigger associations.",buzz:"Interrupt practice with parent reading — no pausing allowed.",sim:"Score 2021 Round 1 Q6-10. Tally hits/misses by region.",prompt:"Give me 8 pyramidal questions on Southeast Asian island nations and capitals."},
+{d:5,title:"Americas + South America",k:"2022 Round 6: Manaus/Amazon clues. 2019 Finals Q3 (Salinas). River systems in South America.",buzz:"Buzz-out simulation: race to 8 correct in 30 questions.",sim:"Full timed 2021 MS Nationals Round 2.",prompt:"Quiz me on South American geography — 8 pyramidal questions."},
+{d:6,title:"Europe deep dive",k:"2021 Round 2: Norway, St Lawrence River, Adriatic Sea clues.",buzz:"Use 2022 Round 1 questions. Aim to buzz on clue 1 for at least 3 questions.",sim:"2022 Round 2 timed. Real bonus point scoring.",prompt:"Give me 8 pyramidal tossups on European geography."},
 {d:7,rest:true},
-{d:8,title:"Middle East + Central Asia",k:"2022 Round 6 Q4 (Herat, Afghanistan). 2020 Round 1 Q4 (Kurds). Build a mental map of the region.",buzz:"Clue-by-clue analysis: for each question, identify which specific word should trigger the answer.",sim:"2022 Round 3 timed. Note which topics appear for the second time.",prompt:"Give me 8 pyramidal questions on Middle Eastern and Central Asian geography."},
-{d:9,title:"Oceans + bodies of water",k:"2021 Round 1: Bering Sea. 2021 Round 3: Aegean Sea, Kalahari. Study straits, gulfs, bays, and seas worldwide.",buzz:"Interrupt 10 questions from 2021 Round 3 — parent reads, no pausing.",sim:"Score 2022 Round 4. Classify every miss by region and add to your weak-spot list.",prompt:"Quiz me on seas, bays, straits, and oceanic geography — 8 pyramidal questions."},
-{d:10,title:"Himalaya + South Asia",k:"2021 Round 2: Sri Lanka, Bhutan. 2022 Round 4 Q10 (Kangchenjunga). Learn the major Himalayan peaks.",buzz:"Buzz-out race: 8 correct, track bonus points. Aim for 13+ total.",sim:"2021 Round 1 full timed run.",prompt:"Give me 8 pyramidal tossups on Himalayan peaks, South Asian countries, and their geography."},
-{d:11,title:"US geography",k:"GeographyBeeCourse.docx + 2022 Round 1 Q4 (Pensacola). US geography always appears — rivers, mountain ranges, state capitals.",buzz:"Interrupt drill on US questions — aim for clue 2 buzz consistently.",sim:"2022 Round 5 timed. Note which topics repeat from previous rounds.",prompt:"Quiz me on US geography — rivers, mountain ranges, state capitals, physical features — 8 pyramidal questions."},
-{d:12,title:"Current events geography",k:"Read The Economist or BBC World for 20 min. Flag 5 stories with geographic significance. Write down the country, region, and why it matters.",buzz:"Turn 3 of today's news stories into your own pyramidal questions. Drill them with a parent.",sim:"2019 EMS Round 2 timed.",prompt:"Summarize 5 recent geopolitical events with geographic significance. For each, write a pyramidal tossup I could be asked at nationals."},
-{d:13,title:"Islands + archipelagos",k:"2019 Finals: Aleutians, Basque, Gotland. 2021 Round 2: Macau. Build a list of major archipelagos and the countries they belong to.",buzz:"For each question, rank clues 1, 2, 3 by what knowledge they require. Practice identifying the trigger word.",sim:"2022 Round 6 timed. Track how many questions you buzzed early vs late.",prompt:"Give me 8 pyramidal questions on island nations, archipelagos, and island geography worldwide."},
+{d:8,title:"Middle East + Central Asia",k:"2022 Round 6 Q4 (Herat). 2020 Round 1 Q4 (Kurds). Build a mental map of the region.",buzz:"Clue-by-clue: identify which specific word triggers the answer.",sim:"2022 Round 3 timed.",prompt:"Give me 8 pyramidal questions on Middle Eastern and Central Asian geography."},
+{d:9,title:"Oceans + bodies of water",k:"2021 Round 1: Bering Sea. 2021 Round 3: Aegean Sea. Study straits, gulfs, bays, seas worldwide.",buzz:"Interrupt 10 questions from 2021 Round 3 — parent reads, no pausing.",sim:"Score 2022 Round 4. Classify misses by region.",prompt:"Quiz me on seas, bays, straits, and oceanic geography — 8 pyramidal questions."},
+{d:10,title:"Himalaya + South Asia",k:"2021 Round 2: Sri Lanka, Bhutan. 2022 Round 4 Q10 (Kangchenjunga).",buzz:"Buzz-out race: 8 correct, track bonus points. Aim 13+.",sim:"2021 Round 1 full timed run.",prompt:"Give me 8 pyramidal tossups on Himalayan peaks and South Asian geography."},
+{d:11,title:"US geography",k:"GeographyBeeCourse.docx + 2022 Round 1 Q4 (Pensacola). Rivers, mountain ranges, state capitals.",buzz:"Interrupt drill on US questions — aim for clue 2 buzz.",sim:"2022 Round 5 timed.",prompt:"Quiz me on US geography — 8 pyramidal questions."},
+{d:12,title:"Current events geography",k:"Read The Economist or BBC World for 20 min. Flag 5 stories with geographic significance.",buzz:"Turn 3 news stories into pyramidal questions. Drill with a parent.",sim:"2019 EMS Round 2 timed.",prompt:"Summarize 5 recent geopolitical events with geographic significance. Write a pyramidal tossup for each."},
+{d:13,title:"Islands + archipelagos",k:"2019 Finals: Aleutians, Basque, Gotland. 2021 Round 2: Macau.",buzz:"Rank clues 1, 2, 3 by knowledge required. Identify trigger words.",sim:"2022 Round 6 timed. Track early vs late buzzes.",prompt:"Give me 8 pyramidal questions on island nations and archipelagos."},
 {d:14,rest:true},
-{d:15,title:"Deserts + arid regions",k:"2021 Round 3: Gobi, Kalahari. 2020 Round 1: Kalahari again. Study desert borders — what countries does each desert touch?",buzz:"10-question interrupt drill. Parent reads with no pausing. Count early buzzes.",sim:"2021 Round 2 full timed.",prompt:"Give me 8 pyramidal questions on world deserts — locations, borders, notable features, bordering countries."},
-{d:16,title:"African Great Lakes + rivers",k:"2021 Round 3: Lake Malawi. 2023-24 EMS Bowl Finals (Geo bee 1.pdf): Pearl River, Kara Sea. Study the African Great Lakes system.",buzz:"Buzz-out race with real bonus scoring. Aim for 13+ total points.",sim:"2022 Finals timed. Track exactly which clue you buzz on for each question.",prompt:"Quiz me on African lakes, rivers, and their countries — 8 pyramidal tossups."},
-{d:17,title:"Capitals deep drill",k:"IAC Study Guide: National + Regional Capitals. Focus on capitals in Africa, Oceania, and Central Asia — the hardest ones.",buzz:"Rapid-fire: parent says country, you say capital. Then reverse. Time it.",sim:"2019 EMS Round 1 timed.",prompt:"Give me 10 rapid-fire capital questions embedded in pyramidal tossups — the capital itself is the answer."},
-{d:18,title:"East + Southeast Asia",k:"2022 Round 4 Q2 (Narita Airport). 2021 Round 1: Ho Chi Minh clues. Study East Asian capitals, rivers, and mountain ranges.",buzz:"Interrupt 15 questions. Count how many you get on clue 1.",sim:"2020 Round 1 full timed.",prompt:"Give me 8 pyramidal questions on East and Southeast Asian geography — rivers, islands, mountain ranges, cities."},
-{d:19,title:"Geopolitical + current events",k:"Read one long-form piece on an ongoing border dispute (Kashmir, South China Sea, Western Sahara, etc.).",buzz:"Turn 3 current events into pyramidal questions and drill them together.",sim:"2022 Round 1 timed. Aim for personal best on bonus points.",prompt:"Create 8 pyramidal questions about geography tied to current geopolitical situations — borders, conflicts, resource geography."},
-{d:20,title:"Landlocked countries + borders",k:"Build a reference list of all landlocked countries with their neighbors. Learn the double-landlocked ones (Liechtenstein, Uzbekistan).",buzz:"Country border chain drill: name all neighbors of a given country in 10 seconds.",sim:"2021 Round 3 full timed.",prompt:"Quiz me on landlocked countries and their bordering nations — 8 pyramidal questions."},
+{d:15,title:"Deserts + arid regions",k:"2021 Round 3: Gobi, Kalahari. Desert borders — what countries does each touch?",buzz:"10-question interrupt drill. Count early buzzes.",sim:"2021 Round 2 full timed.",prompt:"Give me 8 pyramidal questions on world deserts."},
+{d:16,title:"African Great Lakes + rivers",k:"2021 Round 3: Lake Malawi. 2023-24 EMS Bowl Finals: Pearl River, Kara Sea.",buzz:"Buzz-out race with real bonus scoring. Aim 13+ pts.",sim:"2022 Finals timed. Track which clue triggers each buzz.",prompt:"Quiz me on African lakes and rivers — 8 pyramidal tossups."},
+{d:17,title:"Capitals deep drill",k:"IAC Study Guide: National + Regional Capitals. Focus Africa, Oceania, Central Asia.",buzz:"Rapid-fire: parent says country, you say capital. Then reverse.",sim:"2019 EMS Round 1 timed.",prompt:"Give me 10 capital questions embedded in pyramidal tossups."},
+{d:18,title:"East + Southeast Asia",k:"2022 Round 4 Q2 (Narita). 2021 Round 1: Ho Chi Minh clues.",buzz:"Interrupt 15 questions. Count clue-1 buzzes.",sim:"2020 Round 1 full timed.",prompt:"Give me 8 pyramidal questions on East and Southeast Asian geography."},
+{d:19,title:"Geopolitical + current events",k:"Read one long-form piece on an ongoing border dispute.",buzz:"Turn 3 current events into pyramidal questions and drill.",sim:"2022 Round 1 timed. Aim for personal best bonus points.",prompt:"Create 8 pyramidal questions about geography tied to current geopolitical situations."},
+{d:20,title:"Landlocked countries + borders",k:"Build a list of landlocked countries with neighbors. Double-landlocked: Liechtenstein, Uzbekistan.",buzz:"Border chain drill: all neighbors of a country in 10 seconds.",sim:"2021 Round 3 full timed.",prompt:"Quiz me on landlocked countries and their neighbors — 8 pyramidal questions."},
 {d:21,rest:true},
-{d:22,title:"Physical geography review",k:"Revisit all flagged weak spots from Days 1-20. Pick the 3 you're most unsure about and read their Wikipedia intros.",buzz:"Speed round: 20 questions, no pausing, maximum interrupts. Track your early buzz percentage.",sim:"2022 Round 4 timed — use real competition scoring.",prompt:"I'm weak on [topic]. Give me 10 pyramidal questions focused specifically on that topic, starting with hard clues."},
-{d:23,title:"Repeat topic patterns",k:"Read through 2023-24 EMS Bowl Finals (Geo bee 1.pdf) focusing on which topics appear. Compare to 2022 rounds — what repeats?",buzz:"Power clue list: write down the very first clue of every question you answer correctly.",sim:"2019 EMS Finals full timed. Compare score to Day 1 to measure growth.",prompt:"What are the most commonly repeated topic clusters in IAC Geography Bee nationals? Give me one pyramidal question from each cluster."},
-{d:24,title:"Maps + physical features",k:"Map drill session: Seterra or similar. Rivers, mountain ranges, borders. Focus on Africa and Southeast Asia.",buzz:"15-question drill — interrupt on EVERY question, even if not sure. Build the reflex.",sim:"2022 Round 6 full timed.",prompt:"Give me 8 pyramidal questions where the answer is a physical feature — river, sea, mountain, desert."},
-{d:25,title:"Mock nationals set 1",k:"After simulation: deep review of 3 misses. Wikipedia intro for each missed answer, plus one extra fact to associate.",buzz:"Review: which questions did you buzz too late? What clue should have triggered you?",sim:"Full 2022 MS Nationals: Rounds 1+2. Real scoring, timed, no breaks.",prompt:"I missed questions on [topics from simulation]. Give me 5 pyramidal questions on each weak area."},
-{d:26,title:"Mock nationals set 2",k:"Deep Wikipedia read on 2 answers you missed in today's simulation.",buzz:"Clue-trigger log: write the single word that should trigger each missed answer.",sim:"Full 2022 MS Nationals: Rounds 3+4. Timed, real scoring.",prompt:"Help me build a power-clue cheat sheet. For [country/place], what are the most common early clues used in pyramidal questions?"},
-{d:27,title:"Mock nationals set 3",k:"Review 2021 MS Nationals Rounds 1-3 topic list. What topics appeared in 2021 AND 2022? Highest-probability topics.",buzz:"Run the interrupt drill using today's simulation questions. Focus on getting each one on clue 2 or earlier.",sim:"Full 2022 MS Nationals: Rounds 5+6. Timed.",prompt:""},
+{d:22,title:"Physical geography review",k:"Revisit top 3 weak spots from Days 1-20. Read their Wikipedia intros.",buzz:"Speed round: 20 questions, no pausing, max interrupts.",sim:"2022 Round 4 timed.",prompt:"I'm weak on [topic]. Give me 10 pyramidal questions on that topic."},
+{d:23,title:"Repeat topic patterns",k:"2023-24 EMS Bowl Finals (Geo bee 1.pdf): which topics appear? What repeats from 2022?",buzz:"Power clue list: write first clue of every correct answer.",sim:"2019 EMS Finals full timed. Compare to Day 1.",prompt:"What are the most repeated topic clusters in IAC Geography Bee nationals?"},
+{d:24,title:"Maps + physical features",k:"Seterra map drill: rivers, mountain ranges, borders. Focus Africa and Southeast Asia.",buzz:"15-question drill — interrupt on EVERY question, build the reflex.",sim:"2022 Round 6 full timed.",prompt:"Give me 8 pyramidal questions where the answer is a physical feature."},
+{d:25,title:"Mock nationals set 1",k:"Deep review of 3 misses from simulation. Wikipedia intro + one extra fact each.",buzz:"Which questions did you buzz too late? What clue should have triggered you?",sim:"Full 2022 MS Nationals: Rounds 1+2. Real scoring, timed.",prompt:"I missed questions on [topics]. Give me 5 pyramidal questions on each weak area."},
+{d:26,title:"Mock nationals set 2",k:"Deep Wikipedia read on 2 answers you missed today.",buzz:"Clue-trigger log: write the single word that should trigger each missed answer.",sim:"Full 2022 MS Nationals: Rounds 3+4. Timed.",prompt:"Help me build a power-clue cheat sheet for [country/place]."},
+{d:27,title:"Mock nationals set 3",k:"2021 MS Nationals Rounds 1-3 topic list. What appeared in 2021 AND 2022?",buzz:"Interrupt drill using today's simulation questions.",sim:"Full 2022 MS Nationals: Rounds 5+6. Timed.",prompt:""},
 {d:28,rest:true},
-{d:29,title:"Remediation sprint",k:"Target the top 3 weak topic areas from all mock rounds. Use Claude to generate focused question sets on each.",buzz:"10-question interrupt drill on weak topics only.",sim:"2021 Finals timed. Compare this score to your Day 25 score.",prompt:"I keep missing questions about [topic]. Give me 10 pyramidal questions starting with hard clues. Don't reveal answers until I guess."},
-{d:30,title:"Full simulation",k:"Light review only: read through your power-clue cheat sheet and trigger word list. No new material.",buzz:"5-question warm-up only, focusing on early clue triggering.",sim:"2022 MS Finals + 2023-24 EMS Bowl Finals. Full timed run, real scoring.",prompt:""},
-{d:31,title:"Day before — confidence day",k:"Power-clue cheat sheet for 15 min only. No new geography today.",buzz:"5 easy warm-up questions for rhythm. Stop there.",sim:"5 questions from 2019 Finals for confidence — stop after 5. You are ready.",prompt:"Give me 5 easy then 5 medium geography questions at nationals level. Warm-up session only."},
+{d:29,title:"Remediation sprint",k:"Target top 3 weak areas from all mock rounds.",buzz:"10-question interrupt drill on weak topics only.",sim:"2021 Finals timed. Compare to Day 25.",prompt:"I keep missing [topic]. Give me 10 pyramidal questions starting with hard clues."},
+{d:30,title:"Full simulation",k:"Light review of power-clue cheat sheet only. No new material.",buzz:"5-question warm-up, focusing on early clue triggering.",sim:"2022 MS Finals + 2023-24 EMS Bowl Finals. Full timed.",prompt:""},
+{d:31,title:"Day before — confidence day",k:"Power-clue cheat sheet for 15 min only. No new geography.",buzz:"5 easy warm-up questions for rhythm. Stop there.",sim:"5 questions from 2019 Finals for confidence — stop after 5.",prompt:"Give me 5 easy then 5 medium geography questions at nationals level. Warm-up only."},
 ];
 const WK=["Week 1 — Apr 19","Week 2 — Apr 26","Week 3 — May 3","Week 4 — May 10","Week 5 — May 17"];
-function getState(){try{return JSON.parse(localStorage.getItem('geobee31')||'{}')}catch{return{}}}
-function saveState(s){localStorage.setItem('geobee31',JSON.stringify(s))}
+const NON_REST=DAYS.filter(d=>!d.rest);
+
+// ─── State ────────────────────────────────────────────────────────────────────
+// STATE[dayNum] = { k:bool, b:bool, s:bool, score:str, notes:str, coAssigned:{k:dayNum,...} }
+let STATE={};
+let db=null, unsub=null, CONFIGURED=false;
+
+function lsGet(){try{return JSON.parse(localStorage.getItem('geobee31_v3')||'{}')}catch{return{}}}
+function lsSet(s){localStorage.setItem('geobee31_v3',JSON.stringify(s))}
+function cfgGet(){try{return JSON.parse(localStorage.getItem('geobee31_cfg')||'{}')}catch{return{}}}
+function cfgSet(c){localStorage.setItem('geobee31_cfg',JSON.stringify(c))}
+
+// ─── Firebase ─────────────────────────────────────────────────────────────────
+function initFirebase(cfg){
+  try{if(firebase.apps.length)firebase.apps[0].delete().then(()=>_init(cfg)).catch(()=>_init(cfg));else _init(cfg);}catch{setSyncStatus('offline');}
+}
+function _init(cfg){
+  try{
+    firebase.initializeApp(cfg);
+    db=firebase.firestore();
+    setSyncStatus('syncing');
+    if(unsub)unsub();
+    unsub=db.collection('geobee').doc('tracker').onSnapshot(snap=>{
+      STATE=snap.exists?snap.data():lsGet();
+      if(!snap.exists)db.collection('geobee').doc('tracker').set(STATE);
+      lsSet(STATE);
+      render();updateStats();updateCarryoverBanner();
+      setSyncStatus('online');
+    },err=>{setSyncStatus('offline');STATE=lsGet();render();updateStats();updateCarryoverBanner();});
+    CONFIGURED=true;
+    document.getElementById('config-panel').style.display='none';
+    document.getElementById('setup-banner').classList.add('hidden');
+  }catch(e){setSyncStatus('offline');}
+}
+function setSyncStatus(s){
+  document.getElementById('sync-dot').className='sync-dot'+(s==='online'?'':s==='syncing'?' syncing':' offline');
+  document.getElementById('sync-label').textContent=s==='online'?'Synced':s==='syncing'?'Syncing…':'Offline';
+}
+function persist(updates){
+  Object.assign(STATE,updates);
+  lsSet(STATE);
+  if(db&&CONFIGURED){
+    setSyncStatus('syncing');
+    db.collection('geobee').doc('tracker').set(STATE,{merge:true}).then(()=>setSyncStatus('online')).catch(()=>setSyncStatus('offline'));
+  }
+}
+
+// ─── Config UI ────────────────────────────────────────────────────────────────
+function saveConfig(){
+  const apiKey=document.getElementById('cfg-apikey').value.trim();
+  const projectId=document.getElementById('cfg-projectid').value.trim();
+  const appId=document.getElementById('cfg-appid').value.trim();
+  if(!apiKey||!projectId||!appId){alert('Please fill in all three fields.');return;}
+  const cfg={apiKey,projectId,appId,authDomain:projectId+'.firebaseapp.com',storageBucket:projectId+'.appspot.com',messagingSenderId:'000000000000'};
+  cfgSet(cfg);initFirebase(cfg);
+}
+function dismissConfig(){
+  document.getElementById('config-panel').style.display='none';
+  document.getElementById('setup-banner').classList.add('hidden');
+  STATE=lsGet();render();updateStats();updateCarryoverBanner();setSyncStatus('offline');
+}
+
+// ─── Phase helpers ────────────────────────────────────────────────────────────
+function dayState(n){return STATE['day'+n]||{k:false,b:false,s:false,score:'',notes:'',co:{}}}
+function setDayState(n,obj){const cur=dayState(n);const next=Object.assign({},cur,obj);persist({['day'+n]:next});}
+
+function phasesDone(n){const ds=dayState(n);return[ds.k?'k':null,ds.b?'b':null,ds.s?'s':null].filter(Boolean)}
+function phasesLeft(n){const ds=dayState(n);return[ds.k?null:'k',ds.b?null:'b',ds.s?null:'s'].filter(Boolean)}
+function allDone(n){const ds=dayState(n);return ds.k&&ds.b&&ds.s}
+function anyDone(n){const ds=dayState(n);return ds.k||ds.b||ds.s}
+
+// ─── Carryover logic ─────────────────────────────────────────────────────────
+function getCarryovers(){
+  // Returns array of {fromDay, phases:[]} for days that have incomplete phases
+  const result=[];
+  NON_REST.forEach(day=>{
+    const left=phasesLeft(day.d);
+    if(left.length>0&&anyDone(day.d)){
+      // Only flag days that are "past" — user has started them
+      result.push({fromDay:day.d,title:day.title,phases:left});
+    }
+  });
+  return result;
+}
+
+function updateCarryoverBanner(){
+  const cos=getCarryovers();
+  const bar=document.getElementById('carryover-bar');
+  const items=document.getElementById('co-items');
+  if(cos.length===0){bar.classList.add('hidden');return;}
+  bar.classList.remove('hidden');
+  items.innerHTML=cos.map(c=>`<span class="co-pill" onclick="openDetail(${c.fromDay})">Day ${c.fromDay}: ${c.phases.map(p=>p.toUpperCase()).join('+')} missed</span>`).join('');
+}
+
+// ─── Stats ────────────────────────────────────────────────────────────────────
 function updateStats(){
-  const st=getState();
-  const nr=DAYS.filter(d=>!d.rest);
-  const done=nr.filter(d=>st['d'+d.d]).length;
-  document.getElementById('stat-done').textContent=done;
-  document.getElementById('stat-left').textContent=Math.max(0,nr.length-done);
-  document.getElementById('progress-fill').style.width=Math.round(done/nr.length*100)+'%';
+  const allPhases=NON_REST.length*3;
+  let doneDays=0,partDays=0,coCount=0,completedPhases=0;
+  NON_REST.forEach(d=>{
+    if(allDone(d.d))doneDays++;
+    else if(anyDone(d.d))partDays++;
+    const left=phasesLeft(d.d);
+    if(left.length>0&&anyDone(d.d))coCount+=left.length;
+    completedPhases+=phasesDone(d.d).length;
+  });
+  document.getElementById('stat-done').textContent=doneDays;
+  document.getElementById('stat-part').textContent=partDays;
+  document.getElementById('stat-co').textContent=coCount;
+  document.getElementById('progress-fill').style.width=Math.round(completedPhases/allPhases*100)+'%';
   let streak=0;
-  for(let i=DAYS.length-1;i>=0;i--){if(DAYS[i].rest)continue;if(st['d'+DAYS[i].d])streak++;else break;}
+  for(let i=DAYS.length-1;i>=0;i--){if(DAYS[i].rest)continue;if(allDone(DAYS[i].d))streak++;else break;}
   document.getElementById('stat-streak').textContent=streak;
-  const scores=nr.map(d=>parseFloat(st['s'+d.d])).filter(v=>!isNaN(v));
+  const scores=NON_REST.map(d=>parseFloat(dayState(d.d).score)).filter(v=>!isNaN(v));
   document.getElementById('stat-avg').textContent=scores.length?(scores.reduce((a,b)=>a+b,0)/scores.length).toFixed(1):'—';
 }
-function toggleDone(n,e){e&&e.stopPropagation();const st=getState();st['d'+n]=!st['d'+n];saveState(st);render();updateStats()}
-function saveScore(n,v){const st=getState();st['s'+n]=v;saveState(st);updateStats()}
+
+// ─── Carryover planner modal ──────────────────────────────────────────────────
+function openCarryoverPlanner(){
+  const cos=getCarryovers();
+  if(cos.length===0)return;
+  // Open detail of first unfinished day
+  openDetail(cos[0].fromDay);
+}
+
+// ─── Detail panel ─────────────────────────────────────────────────────────────
+let activeDay=null;
 function openDetail(n){
   const day=DAYS.find(d=>d.d===n);if(!day||day.rest)return;
-  const st=getState();const isDone=!!st['d'+n];
+  activeDay=n;
+  renderDetail(n);
+  document.getElementById('overlay').classList.add('open');
+}
+function renderDetail(n){
+  const day=DAYS.find(d=>d.d===n);
+  const ds=dayState(n);
+  const cos=getCarryovers().filter(c=>c.fromDay!==n);// other days carrying over
+  const futureDays=NON_REST.filter(d=>d.d>n&&d.d<=31);
+
+  // Phases
+  const phaseHTML=(phase,label,colorClass,body)=>{
+    const checked=ds[phase];
+    const rowClass=checked?`done-${phase}`:'';
+    const cbClass=checked?`ck ck-${phase}`:'';
+    return `<div class="phase-toggle-row ${rowClass}" onclick="togglePhase(${n},'${phase}')">
+      <div class="ptog-check ${cbClass}">${checked?'✓':''}</div>
+      <div class="ptog-content">
+        <div class="ptog-title ptog-title-${phase}">${label}</div>
+        <div class="ptog-body">${body}</div>
+      </div>
+    </div>`;
+  };
+
+  // Carryover section — show if any phases incomplete and day has been started
+  const leftPhases=phasesLeft(n);
+  const hasStarted=anyDone(n);
+  let coHTML='';
+  if(leftPhases.length>0&&hasStarted){
+    const assignedCo=ds.co||{};
+    const futureOptions=futureDays.slice(0,10);
+    coHTML=`<div class="detail-section">
+      <div class="section-label" style="color:var(--orange)">📋 Schedule missed phases</div>
+      <div class="section-body" style="margin-bottom:8px">You didn't complete: <strong>${leftPhases.map(p=>p.toUpperCase()).join(', ')}</strong>. Pick a future day to carry them over:</div>
+      <div class="co-day-btns" id="co-btns">
+        ${futureOptions.map(fd=>{
+          const assigned=Object.values(assignedCo).includes(fd.d);
+          return `<button class="co-day-btn${assigned?' assigned':''}" onclick="assignCarryover(${n},'${leftPhases.join(',')}',${fd.d})">Day ${fd.d}</button>`;
+        }).join('')}
+      </div>
+      ${Object.keys(assignedCo).length>0?`<div style="font-size:11px;color:var(--orange);margin-top:8px">✓ Carried over to Day ${Object.values(assignedCo).join(', ')}</div>`:''}
+    </div>`;
+  } else if(leftPhases.length>0&&!hasStarted){
+    coHTML='';// Not started yet, no carryover needed
+  }
+
+  // Incoming carryovers for this day
+  let incomingHTML='';
+  const incoming=[];
+  NON_REST.forEach(d=>{
+    const dds=dayState(d.d);
+    if(dds.co&&Object.values(dds.co).includes(n)){
+      const phases=Object.entries(dds.co).filter(([,v])=>v===n).map(([k])=>k.toUpperCase());
+      incoming.push(`Day ${d.d} ${phases.join('+')}`);
+    }
+  });
+  if(incoming.length>0){
+    incomingHTML=`<div class="detail-section">
+      <div class="section-label" style="color:var(--k)">📥 Carrying in from other days</div>
+      <div class="section-body">${incoming.join(', ')} — make sure to fit these in today's session.</div>
+    </div>`;
+  }
+
   document.getElementById('detail-content').innerHTML=`
     <div class="detail-day-num">Day ${day.d}</div>
     <div class="detail-title">${day.title}</div>
-    <div class="detail-section"><div class="detail-section-label" style="color:var(--k-txt)">Knowledge — 20 min</div><div class="detail-section-body">${day.k}</div></div>
-    <div class="detail-section"><div class="detail-section-label" style="color:var(--b-txt)">Buzzer drill — 15 min</div><div class="detail-section-body">${day.buzz}</div></div>
-    <div class="detail-section"><div class="detail-section-label" style="color:var(--s-txt)">Simulation — 20 min</div><div class="detail-section-body">${day.sim}</div></div>
-    ${day.prompt?`<div class="detail-section"><div class="detail-section-label">Claude prompt for today</div><div class="prompt-box" id="ptxt">${day.prompt}</div><button class="copy-btn" onclick="copyP()">⎘ Copy prompt</button></div>`:''}
-    <div class="detail-section" style="margin-bottom:0"><div class="detail-section-label">Simulation score (0-15)</div><input type="number" class="score-input" placeholder="0–15" min="0" max="15" value="${st['s'+n]||''}" oninput="saveScore(${n},this.value)"></div>
-    <div class="done-toggle ${isDone?'marked':''}" id="dtoggle" onclick="toggleDoneD(${n})"><span>${isDone?'✓':'○'}</span><span>${isDone?'Marked as done':'Mark as done'}</span></div>`;
-  document.getElementById('overlay').classList.add('open');
+    ${incomingHTML}
+    <div class="detail-section">
+      <div class="section-label">Tap to mark complete</div>
+      ${phaseHTML('k','K — Knowledge (20 min)', 'k', day.k)}
+      ${phaseHTML('b','B — Buzzer drill (15 min)', 'b', day.buzz)}
+      ${phaseHTML('s','S — Simulation (20 min)', 's', day.sim)}
+    </div>
+    ${coHTML}
+    ${day.prompt?`<div class="detail-section"><div class="section-label">Claude prompt</div><div class="prompt-box" id="ptxt">${day.prompt}</div><button class="copy-btn" onclick="copyP()">⎘ Copy</button></div>`:''}
+    <div class="detail-section">
+      <div class="section-label">Simulation score (0–15)</div>
+      <input type="number" class="score-input" placeholder="0–15" min="0" max="15" value="${ds.score||''}" oninput="saveField(${n},'score',this.value)">
+    </div>
+    <div class="detail-section" style="margin-bottom:0">
+      <div class="section-label">Notes / weak spots</div>
+      <textarea class="notes-input" placeholder="What did you miss? What to review next?" oninput="saveField(${n},'notes',this.value)">${ds.notes||''}</textarea>
+    </div>`;
 }
-function toggleDoneD(n){const st=getState();st['d'+n]=!st['d'+n];saveState(st);render();updateStats();const t=document.getElementById('dtoggle');if(t){const done=!!st['d'+n];t.className='done-toggle'+(done?' marked':'');t.innerHTML=`<span>${done?'✓':'○'}</span><span>${done?'Marked as done':'Mark as done'}</span>`}}
-function copyP(){const t=document.getElementById('ptxt');if(!t)return;navigator.clipboard.writeText(t.textContent).then(()=>{const b=document.querySelector('.copy-btn');if(b){b.textContent='✓ Copied';setTimeout(()=>b.textContent='⎘ Copy prompt',2000)}})}
-function closeDetail(){document.getElementById('overlay').classList.remove('open')}
-function maybeClose(e){if(e.target===document.getElementById('overlay'))closeDetail()}
+
+function togglePhase(n,phase){
+  const cur=dayState(n);
+  setDayState(n,{[phase]:!cur[phase]});
+  render();updateStats();updateCarryoverBanner();
+  if(activeDay===n)renderDetail(n);
+}
+function assignCarryover(fromDay,phasesStr,toDay){
+  const cur=dayState(fromDay);
+  const co=cur.co||{};
+  const phases=phasesStr.split(',');
+  phases.forEach(p=>{co[p]=toDay;});
+  setDayState(fromDay,{co});
+  render();updateStats();updateCarryoverBanner();
+  if(activeDay===fromDay)renderDetail(fromDay);
+}
+function saveField(n,field,val){
+  setDayState(n,{[field]:val});
+  if(field==='score')updateStats();
+}
+function copyP(){
+  const t=document.getElementById('ptxt');if(!t)return;
+  navigator.clipboard.writeText(t.textContent).then(()=>{
+    const b=document.querySelector('.copy-btn');if(b){b.textContent='✓ Copied';setTimeout(()=>b.textContent='⎘ Copy',2000);}
+  });
+}
+function closeDetail(){document.getElementById('overlay').classList.remove('open');activeDay=null;}
+function maybeClose(e){if(e.target===document.getElementById('overlay'))closeDetail();}
+
+// ─── Render calendar ──────────────────────────────────────────────────────────
 function render(){
-  const st=getState();const main=document.getElementById('main');let html='';
+  const main=document.getElementById('main');let html='';
   for(let w=0;w<5;w++){
     html+=`<div class="week-block"><div class="week-title">${WK[w]}</div><div class="week-grid">`;
     for(let d=0;d<7;d++){
       const idx=w*7+d;if(idx>=DAYS.length){html+='<div></div>';continue;}
       const day=DAYS[idx];
-      if(day.rest){html+=`<div class="day-card rest"><div class="day-top"><div class="day-num">Day ${day.d}</div></div><div class="day-rest-label">Rest</div></div>`;}
-      else{
-        const done=!!st['d'+day.d];const sc=st['s'+day.d];
-        html+=`<div class="day-card${done?' completed':''}" onclick="openDetail(${day.d})">
-          <div class="day-top"><div class="day-num">Day ${day.d}</div><div class="check-btn${done?' done':''}" onclick="toggleDone(${day.d},event)">${done?'✓':''}</div></div>
-          <div class="pills"><span class="pill pill-k">K</span><span class="pill pill-b">B</span><span class="pill pill-s">S</span></div>
-          <div class="day-title">${day.title}</div>
-          ${sc?`<div class="score-row"><span class="score-label">Score:</span><span style="font-size:11px;font-weight:600;color:var(--s-txt)">${sc}</span></div>`:''}
-        </div>`;
-      }
+      if(day.rest){html+=`<div class="day-card rest"><div class="day-top"><div class="day-num">Day ${day.d}</div></div><div class="day-rest-label">Rest</div></div>`;continue;}
+      const ds=dayState(day.d);
+      const done=allDone(day.d);
+      const partial=anyDone(day.d)&&!done;
+      const hasCo=Object.keys(ds.co||{}).length>0;
+      const hasIncoming=NON_REST.some(od=>{const ods=dayState(od.d);return ods.co&&Object.values(ods.co).includes(day.d);});
+      let cardClass='day-card';
+      if(done)cardClass+=' all-done';
+      else if(partial)cardClass+=' partial';
+      if(hasCo||hasIncoming)cardClass+=' has-carryover';
+
+      // Phase mini-checkboxes
+      const pcb=(p,cls)=>`<div class="phase-row" onclick="event.stopPropagation();togglePhase(${day.d},'${p}')">
+        <div class="phase-cb${ds[p]?' checked-'+p:''}>${ds[p]?'✓':''}</div>
+        <span class="phase-label phase-label-${p}${ds[p]?' done-label':''}">${p.toUpperCase()}</span>
+      </div>`;
+
+      // Flag
+      let flag='';
+      if(done)flag='<span class="day-flag flag-done">done</span>';
+      else if(partial)flag='<span class="day-flag flag-partial">partial</span>';
+      else if(hasIncoming)flag='<span class="day-flag flag-co">+carryover</span>';
+
+      html+=`<div class="${cardClass}" onclick="openDetail(${day.d})">
+        <div class="day-top"><div class="day-num">Day ${day.d}</div>${flag}</div>
+        <div class="phases">
+          ${pcb('k')} ${pcb('b')} ${pcb('s')}
+        </div>
+        <div class="day-title">${day.title}</div>
+        ${ds.score?`<div class="score-chip">Score: ${ds.score}</div>`:''}
+        ${ds.notes?`<div class="notes-chip">✎ notes</div>`:''}
+      </div>`;
     }
     html+='</div></div>';
   }
   main.innerHTML=html;
 }
-render();updateStats();
+
+// ─── Boot ─────────────────────────────────────────────────────────────────────
+STATE=lsGet();
+render();updateStats();updateCarryoverBanner();
+const saved=cfgGet();
+if(saved.apiKey&&saved.projectId&&saved.appId){
+  document.getElementById('cfg-apikey').value=saved.apiKey;
+  document.getElementById('cfg-projectid').value=saved.projectId;
+  document.getElementById('cfg-appid').value=saved.appId;
+  initFirebase(saved);
+}else{setSyncStatus('offline');}
 </script>
 </body>
 </html>
