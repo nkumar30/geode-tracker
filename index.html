@@ -4,8 +4,9 @@
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>Geo Bee Tracker</title>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/4.4.1/chart.umd.min.js"></script>
 <style>
-@import url('https://fonts.googleapis.com/css2?family=DM+Serif+Display:ital@0;1&family=DM+Sans:wght@400;500&display=swap');
+@import url('https://fonts.googleapis.com/css2?family=DM+Serif+Display:ital@0;1&family=DM+Sans:wght@400;500;600&display=swap');
 *,*::before,*::after{box-sizing:border-box;margin:0;padding:0}
 :root{
   --ink:#1a1a18;--ink2:#555551;--ink3:#99998f;
@@ -13,72 +14,81 @@
   --k:#1d5fa8;--k-l:#e8f1fb;--k-d:#0c3d72;
   --b:#2d6e1a;--b-l:#e6f4e0;--b-d:#1a4210;
   --s:#8a4800;--s-l:#fdf0e0;--s-d:#5a2f00;
-  --today:#1a1a18;--today-txt:#ffffff;
   --done-bg:#f0faf3;--done-bdr:#7ec8a0;
   --part-bg:#fffbee;--part-bdr:#f5c842;
   --co-bg:#fff5ed;--co-bdr:#f0a050;--co-txt:#8a4000;
+  --right:#16a34a;--right-l:#dcfce7;
+  --wrong:#dc2626;--wrong-l:#fee2e2;
   --border:#e8e8e2;--radius:12px;
+  --tab-h:52px;
 }
-body{font-family:'DM Sans',sans-serif;background:var(--paper);color:var(--ink);min-height:100vh}
+body{font-family:'DM Sans',sans-serif;background:var(--paper);color:var(--ink);min-height:100vh;padding-bottom:80px}
 
-/* ── HEADER ── */
-.hdr{background:var(--ink);color:#fff;padding:18px 24px 16px;display:flex;justify-content:space-between;align-items:center;gap:12px}
-.hdr-left h1{font-family:'DM Serif Display',serif;font-size:20px;font-weight:400;letter-spacing:-.2px}
-.hdr-left p{font-size:12px;opacity:.5;margin-top:2px}
-.sync{font-size:11px;display:flex;align-items:center;gap:5px;opacity:.7;white-space:nowrap}
-.sync-dot{width:6px;height:6px;border-radius:50%;background:#4ade80;flex-shrink:0}
-.sync-dot.off{background:#f87171}.sync-dot.spin{background:#facc15;animation:p 1s infinite}
-@keyframes p{0%,100%{opacity:1}50%{opacity:.3}}
+/* HEADER */
+.hdr{background:var(--ink);color:#fff;padding:16px 24px;display:flex;justify-content:space-between;align-items:center;gap:12px;position:sticky;top:0;z-index:50}
+.hdr h1{font-family:'DM Serif Display',serif;font-size:19px;font-weight:400}
+.hdr p{font-size:11px;opacity:.45;margin-top:1px}
+.sync{font-size:11px;display:flex;align-items:center;gap:5px;opacity:.65;white-space:nowrap;flex-shrink:0}
+.sdot{width:6px;height:6px;border-radius:50%;background:#4ade80;flex-shrink:0}
+.sdot.off{background:#f87171}.sdot.spin{background:#facc15;animation:pulse 1s infinite}
+@keyframes pulse{0%,100%{opacity:1}50%{opacity:.3}}
 
-/* ── TODAY BANNER ── */
-.today-banner{background:var(--ink);color:#fff;padding:0 24px 20px}
-.today-card{background:#2a2a26;border-radius:var(--radius);padding:18px 20px}
-.today-label{font-size:10px;letter-spacing:.1em;text-transform:uppercase;opacity:.5;margin-bottom:4px}
+/* TAB BAR */
+.tabs{display:flex;background:#fff;border-bottom:1px solid var(--border);position:sticky;top:57px;z-index:40}
+.tab{flex:1;height:var(--tab-h);display:flex;align-items:center;justify-content:center;gap:6px;font-size:13px;font-weight:500;color:var(--ink3);cursor:pointer;border-bottom:2px solid transparent;transition:all .15s}
+.tab.active{color:var(--ink);border-bottom-color:var(--ink)}
+.tab-icon{font-size:15px}
+
+/* PAGES */
+.page{display:none}.page.active{display:block}
+
+/* ── TODAY PAGE ── */
+.today-wrap{padding:20px 24px}
+.today-card{background:var(--ink);color:#fff;border-radius:14px;padding:20px}
+.today-label{font-size:10px;letter-spacing:.1em;text-transform:uppercase;opacity:.45;margin-bottom:3px}
 .today-title{font-family:'DM Serif Display',serif;font-size:22px;font-weight:400;margin-bottom:16px;line-height:1.2}
-.phase-checks{display:flex;flex-direction:column;gap:8px}
-.pcheck{display:flex;align-items:center;gap:12px;cursor:pointer;padding:10px 14px;border-radius:9px;border:1px solid rgba(255,255,255,.1);transition:background .15s}
-.pcheck:hover{background:rgba(255,255,255,.06)}
-.pcheck.done-k{background:rgba(29,95,168,.25);border-color:rgba(29,95,168,.5)}
-.pcheck.done-b{background:rgba(45,110,26,.25);border-color:rgba(45,110,26,.5)}
-.pcheck.done-s{background:rgba(138,72,0,.25);border-color:rgba(138,72,0,.5)}
-.pcheck-box{width:22px;height:22px;border-radius:6px;border:2px solid rgba(255,255,255,.3);flex-shrink:0;display:flex;align-items:center;justify-content:center;font-size:12px;transition:all .15s}
+.phase-checks{display:flex;flex-direction:column;gap:7px}
+.pcheck{display:flex;align-items:center;gap:12px;cursor:pointer;padding:10px 13px;border-radius:9px;border:1px solid rgba(255,255,255,.12);transition:background .15s;user-select:none}
+.pcheck:hover{background:rgba(255,255,255,.07)}
+.pcheck.done-k{background:rgba(29,95,168,.28);border-color:rgba(29,95,168,.55)}
+.pcheck.done-b{background:rgba(45,110,26,.28);border-color:rgba(45,110,26,.55)}
+.pcheck.done-s{background:rgba(138,72,0,.28);border-color:rgba(138,72,0,.55)}
+.pcheck-box{width:22px;height:22px;border-radius:6px;border:2px solid rgba(255,255,255,.3);flex-shrink:0;display:flex;align-items:center;justify-content:center;font-size:11px;transition:all .15s}
 .pcheck-box.ck-k{background:var(--k);border-color:var(--k);color:#fff}
 .pcheck-box.ck-b{background:var(--b);border-color:var(--b);color:#fff}
 .pcheck-box.ck-s{background:var(--s);border-color:var(--s);color:#fff}
-.pcheck-info{flex:1}
-.pcheck-name{font-size:13px;font-weight:500;color:#fff}
-.pcheck-desc{font-size:11px;color:rgba(255,255,255,.45);margin-top:1px;line-height:1.4}
-.pcheck-name.struck{text-decoration:line-through;opacity:.45}
-.today-footer{margin-top:14px;display:flex;gap:8px;flex-wrap:wrap}
-.today-btn{padding:8px 14px;border-radius:8px;font-size:12px;font-family:inherit;cursor:pointer;border:1px solid rgba(255,255,255,.2);background:transparent;color:rgba(255,255,255,.75);transition:all .15s}
-.today-btn:hover{background:rgba(255,255,255,.1)}
-.today-btn.primary{background:#fff;color:var(--ink);border-color:#fff;font-weight:500}
-.today-btn.primary:hover{opacity:.9}
+.pcheck-info{flex:1}.pcheck-name{font-size:13px;font-weight:500;color:#fff}
+.pcheck-name.struck{text-decoration:line-through;opacity:.4}
+.pcheck-desc{font-size:11px;color:rgba(255,255,255,.4);margin-top:1px;line-height:1.4}
+.today-btns{margin-top:14px;display:flex;gap:8px;flex-wrap:wrap}
+.tbtn{padding:8px 14px;border-radius:8px;font-size:12px;font-family:inherit;cursor:pointer;border:1px solid rgba(255,255,255,.2);background:transparent;color:rgba(255,255,255,.75);transition:all .15s}
+.tbtn:hover{background:rgba(255,255,255,.1)}
+.tbtn.primary{background:#fff;color:var(--ink);border-color:#fff;font-weight:500}
 
-/* ── CARRYOVER NUDGE ── */
-.co-nudge{background:var(--co-bg);border-bottom:1px solid var(--co-bdr);padding:12px 24px;display:flex;align-items:center;justify-content:space-between;gap:12px;flex-wrap:wrap}
+/* CARRYOVER NUDGE */
+.co-nudge{background:var(--co-bg);border-bottom:1px solid var(--co-bdr);padding:11px 24px;display:flex;align-items:center;justify-content:space-between;gap:12px;flex-wrap:wrap}
 .co-nudge.hidden{display:none}
 .co-nudge-txt{font-size:13px;color:var(--co-txt);font-weight:500}
-.co-nudge-sub{font-size:11px;color:var(--co-txt);opacity:.7;margin-top:2px}
-.co-nudge-btn{padding:6px 12px;border-radius:7px;background:var(--co-txt);color:#fff;border:none;font-size:12px;font-family:inherit;cursor:pointer;white-space:nowrap}
+.co-nudge-sub{font-size:11px;color:var(--co-txt);opacity:.7;margin-top:1px}
+.co-btn{padding:6px 12px;border-radius:7px;background:var(--co-txt);color:#fff;border:none;font-size:12px;font-family:inherit;cursor:pointer}
 
-/* ── STATS ── */
-.stats{display:flex;gap:0;background:#fff;border-bottom:1px solid var(--border)}
-.stat{flex:1;text-align:center;padding:12px 8px;border-right:1px solid var(--border)}
+/* STATS ROW */
+.stats{display:flex;background:#fff;border-bottom:1px solid var(--border)}
+.stat{flex:1;text-align:center;padding:11px 6px;border-right:1px solid var(--border)}
 .stat:last-child{border-right:none}
-.stat-n{font-size:20px;font-weight:500;color:var(--ink)}
-.stat-l{font-size:10px;color:var(--ink3);text-transform:uppercase;letter-spacing:.05em;margin-top:1px}
-.prog-wrap{background:#fff;border-bottom:1px solid var(--border);padding:10px 24px;display:flex;align-items:center;gap:12px}
+.stat-n{font-size:19px;font-weight:600;color:var(--ink)}
+.stat-l{font-size:9px;color:var(--ink3);text-transform:uppercase;letter-spacing:.05em;margin-top:1px}
+.prog-wrap{background:#fff;border-bottom:1px solid var(--border);padding:9px 24px;display:flex;align-items:center;gap:12px}
 .prog-track{flex:1;height:6px;background:var(--border);border-radius:99px;overflow:hidden}
 .prog-fill{height:100%;background:var(--ink);border-radius:99px;transition:width .5s}
 .prog-label{font-size:11px;color:var(--ink3);white-space:nowrap}
 
-/* ── CALENDAR ── */
-.cal-wrap{padding:20px 24px 32px}
-.week-hdr{display:grid;grid-template-columns:repeat(7,1fr);gap:5px;margin-bottom:4px}
+/* CALENDAR */
+.cal-wrap{padding:18px 24px 24px}
+.week-hdr{display:grid;grid-template-columns:repeat(7,1fr);gap:5px;margin-bottom:3px}
 .week-hdr span{font-size:9px;text-transform:uppercase;letter-spacing:.07em;color:var(--ink3);text-align:center}
-.week-sep{font-size:10px;font-weight:500;color:var(--ink3);letter-spacing:.06em;text-transform:uppercase;margin:12px 0 6px}
-.week-grid{display:grid;grid-template-columns:repeat(7,1fr);gap:5px;margin-bottom:0}
+.week-sep{font-size:10px;font-weight:500;color:var(--ink3);letter-spacing:.06em;text-transform:uppercase;margin:10px 0 5px}
+.week-grid{display:grid;grid-template-columns:repeat(7,1fr);gap:5px}
 .dc{background:var(--card);border:1px solid var(--border);border-radius:9px;padding:7px 6px 6px;cursor:pointer;min-height:72px;display:flex;flex-direction:column;transition:border-color .15s,box-shadow .15s;position:relative}
 .dc:hover{border-color:#aaa;box-shadow:0 2px 6px rgba(0,0,0,.07)}
 .dc.is-today{border:2px solid var(--ink);background:var(--ink);color:#fff}
@@ -87,92 +97,190 @@ body{font-family:'DM Sans',sans-serif;background:var(--paper);color:var(--ink);m
 .dc.is-done{background:var(--done-bg);border-color:var(--done-bdr)}
 .dc.is-part{background:var(--part-bg);border-color:var(--part-bdr)}
 .dc.is-co{border-color:var(--co-bdr)}
-.dc-num{font-size:10px;color:var(--ink3);margin-bottom:4px}
-.dc.is-today .dc-num{color:rgba(255,255,255,.55)}
-.dc.is-today .dc-dayname{color:rgba(255,255,255,.9)}
-.dc-dayname{font-size:10px;font-weight:500;color:var(--ink);line-height:1.3;flex:1}
-.dc.is-rest .dc-dayname{color:var(--ink3);font-style:italic;font-weight:400}
-.pip-row{display:flex;gap:3px;margin-top:5px;flex-wrap:wrap}
-.pip{width:8px;height:8px;border-radius:50%}
+.dc-num{font-size:10px;color:var(--ink3);margin-bottom:3px}
+.dc.is-today .dc-num{color:rgba(255,255,255,.45)}
+.dc.is-today .dc-name{color:#fff}
+.dc-name{font-size:10px;font-weight:500;color:var(--ink);line-height:1.3;flex:1}
+.dc.is-rest .dc-name{color:var(--ink3);font-style:italic;font-weight:400}
+.pip-row{display:flex;gap:3px;margin-top:4px}
+.pip{width:7px;height:7px;border-radius:50%}
 .pip-k{background:var(--k)}.pip-b{background:var(--b)}.pip-s{background:var(--s)}
-.pip-k-e{background:var(--k-l);border:1px solid #bcd4f0}
-.pip-b-e{background:var(--b-l);border:1px solid #a8d4a0}
-.pip-s-e{background:var(--s-l);border:1px solid #f0c898}
-.co-dot{position:absolute;top:5px;right:5px;width:6px;height:6px;border-radius:50%;background:var(--co-bdr)}
+.pip-ke{background:var(--k-l);border:1px solid #bcd4f0}
+.pip-be{background:var(--b-l);border:1px solid #a8d4a0}
+.pip-se{background:var(--s-l);border:1px solid #f0c898}
+.score-badge{position:absolute;bottom:5px;right:6px;font-size:9px;font-weight:600;color:var(--ink3)}
+.co-dot{position:absolute;top:4px;right:4px;width:6px;height:6px;border-radius:50%;background:var(--co-bdr)}
 
-/* ── DETAIL OVERLAY ── */
+/* ── DASHBOARD PAGE ── */
+.dash-wrap{padding:20px 24px}
+.dash-section{margin-bottom:28px}
+.dash-title{font-size:13px;font-weight:600;color:var(--ink);margin-bottom:12px;display:flex;align-items:center;gap:8px}
+.dash-title span{font-size:16px}
+.chart-card{background:#fff;border:1px solid var(--border);border-radius:12px;padding:16px;position:relative}
+.chart-container{position:relative;height:180px}
+
+/* Stats grid */
+.dash-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:10px;margin-bottom:16px}
+.dash-stat{background:#fff;border:1px solid var(--border);border-radius:10px;padding:14px;text-align:center}
+.dash-stat-n{font-size:24px;font-weight:600;color:var(--ink)}
+.dash-stat-l{font-size:10px;color:var(--ink3);text-transform:uppercase;letter-spacing:.05em;margin-top:2px}
+
+/* Weak topics */
+.topic-row{display:flex;align-items:center;gap:10px;padding:8px 0;border-bottom:1px solid var(--border)}
+.topic-row:last-child{border-bottom:none}
+.topic-name{font-size:13px;color:var(--ink);flex:1}
+.topic-bar-wrap{width:120px;height:8px;background:var(--border);border-radius:99px;overflow:hidden;flex-shrink:0}
+.topic-bar{height:100%;border-radius:99px;background:var(--wrong)}
+.topic-pct{font-size:11px;color:var(--wrong);font-weight:500;width:32px;text-align:right;flex-shrink:0}
+.topic-tag{font-size:9px;padding:2px 6px;border-radius:4px;font-weight:600}
+.topic-tag.weak{background:var(--wrong-l);color:var(--wrong)}
+.topic-tag.ok{background:#fef9c3;color:#854d0e}
+.topic-tag.good{background:var(--right-l);color:var(--right)}
+
+/* Phase accuracy */
+.phase-acc-row{display:flex;align-items:center;gap:12px;margin-bottom:8px}
+.phase-acc-lbl{font-size:12px;font-weight:500;width:80px;flex-shrink:0}
+.phase-acc-bar-wrap{flex:1;height:10px;background:var(--border);border-radius:99px;overflow:hidden}
+.phase-acc-bar{height:100%;border-radius:99px;transition:width .5s}
+.bar-k{background:var(--k)}.bar-b{background:var(--b)}.bar-s{background:var(--s)}
+.phase-acc-num{font-size:11px;color:var(--ink3);width:40px;text-align:right;flex-shrink:0}
+
+/* Q log in dashboard */
+.qlog-table{width:100%;border-collapse:collapse}
+.qlog-table th{font-size:10px;text-transform:uppercase;letter-spacing:.06em;color:var(--ink3);text-align:left;padding:6px 8px;border-bottom:1px solid var(--border)}
+.qlog-table td{font-size:12px;padding:8px;border-bottom:1px solid var(--border);color:var(--ink2);vertical-align:top}
+.qlog-table tr:last-child td{border-bottom:none}
+.q-result{display:inline-flex;align-items:center;justify-content:center;width:22px;height:22px;border-radius:50%;font-size:10px;font-weight:700}
+.q-right{background:var(--right-l);color:var(--right)}
+.q-wrong{background:var(--wrong-l);color:var(--wrong)}
+.q-topic-chip{font-size:10px;padding:2px 6px;border-radius:4px;background:var(--k-l);color:var(--k-d);display:inline-block;margin-top:3px}
+
+/* ── SHEET OVERLAY ── */
 .overlay{display:none;position:fixed;inset:0;background:rgba(0,0,0,.45);z-index:200;align-items:flex-end;justify-content:center;padding:0}
 .overlay.open{display:flex}
-.sheet{background:#fff;border-radius:18px 18px 0 0;width:100%;max-width:560px;max-height:92vh;overflow-y:auto;padding:24px 24px 32px;position:relative}
-.sheet-handle{width:36px;height:4px;background:#ddd;border-radius:99px;margin:0 auto 20px}
-.sheet-day{font-size:11px;color:var(--ink3);margin-bottom:3px}
-.sheet-title{font-family:'DM Serif Display',serif;font-size:22px;font-weight:400;margin-bottom:18px;line-height:1.2}
+.sheet{background:#fff;border-radius:18px 18px 0 0;width:100%;max-width:600px;max-height:94vh;overflow-y:auto;padding:22px 24px 36px;position:relative}
+.sheet-handle{width:36px;height:4px;background:#ddd;border-radius:99px;margin:0 auto 18px}
+.sheet-close{position:absolute;top:18px;right:18px;width:27px;height:27px;border-radius:50%;border:1px solid var(--border);background:var(--paper);cursor:pointer;display:flex;align-items:center;justify-content:center;font-size:12px;color:var(--ink2)}
+.sheet-day{font-size:11px;color:var(--ink3);margin-bottom:2px}
+.sheet-title{font-family:'DM Serif Display',serif;font-size:21px;font-weight:400;margin-bottom:16px;line-height:1.2}
+
+/* SECTIONS */
 .sec{margin-bottom:18px}
-.sec-lbl{font-size:10px;font-weight:500;letter-spacing:.08em;text-transform:uppercase;color:var(--ink3);margin-bottom:8px}
+.sec-lbl{font-size:10px;font-weight:600;letter-spacing:.08em;text-transform:uppercase;color:var(--ink3);margin-bottom:8px}
+
 /* Phase rows in sheet */
-.sphase{display:flex;align-items:flex-start;gap:12px;padding:12px 14px;border-radius:10px;border:1px solid var(--border);margin-bottom:8px;cursor:pointer;transition:all .15s}
+.sphase{display:flex;align-items:flex-start;gap:11px;padding:11px 13px;border-radius:10px;border:1px solid var(--border);margin-bottom:7px;cursor:pointer;transition:all .15s;user-select:none}
 .sphase:hover{border-color:#bbb}
-.sphase.sp-done-k{background:var(--k-l);border-color:#9dc4ee}
-.sphase.sp-done-b{background:var(--b-l);border-color:#94d494}
-.sphase.sp-done-s{background:var(--s-l);border-color:#f5c078}
-.sp-box{width:22px;height:22px;border-radius:6px;border:2px solid #ccc;flex-shrink:0;margin-top:1px;display:flex;align-items:center;justify-content:center;font-size:11px;transition:all .15s}
-.sp-box.spck-k{background:var(--k);border-color:var(--k);color:#fff}
-.sp-box.spck-b{background:var(--b);border-color:var(--b);color:#fff}
-.sp-box.spck-s{background:var(--s);border-color:var(--s);color:#fff}
+.sphase.sp-k{background:var(--k-l);border-color:#9dc4ee}
+.sphase.sp-b{background:var(--b-l);border-color:#94d494}
+.sphase.sp-s{background:var(--s-l);border-color:#f5c078}
+.sp-box{width:21px;height:21px;border-radius:6px;border:2px solid #ccc;flex-shrink:0;margin-top:1px;display:flex;align-items:center;justify-content:center;font-size:10px;transition:all .15s}
+.spck-k{background:var(--k);border-color:var(--k);color:#fff}
+.spck-b{background:var(--b);border-color:var(--b);color:#fff}
+.spck-s{background:var(--s);border-color:var(--s);color:#fff}
 .sp-txt{flex:1}
 .sp-name{font-size:13px;font-weight:500;margin-bottom:3px}
 .sp-name-k{color:var(--k-d)}.sp-name-b{color:var(--b-d)}.sp-name-s{color:var(--s-d)}
 .sp-desc{font-size:12px;color:var(--ink2);line-height:1.5}
-/* Carryover suggestion */
-.co-box{background:var(--co-bg);border:1px solid var(--co-bdr);border-radius:10px;padding:14px 16px;margin-bottom:18px}
-.co-box-title{font-size:12px;font-weight:500;color:var(--co-txt);margin-bottom:4px}
-.co-box-sub{font-size:12px;color:var(--co-txt);opacity:.8;margin-bottom:10px;line-height:1.5}
-.co-suggestion{display:flex;align-items:center;justify-content:space-between;background:#fff;border:1px solid var(--co-bdr);border-radius:8px;padding:10px 12px;margin-bottom:6px}
-.co-sug-txt{font-size:13px;color:var(--ink)}
-.co-sug-actions{display:flex;gap:6px}
-.co-sug-btn{padding:4px 10px;border-radius:6px;font-size:11px;font-family:inherit;cursor:pointer;border:1px solid var(--co-bdr);background:transparent;color:var(--co-txt);transition:all .15s}
-.co-sug-btn:hover,.co-sug-btn.accepted{background:var(--co-txt);color:#fff;border-color:var(--co-txt)}
-/* Incoming carryover */
-.in-box{background:var(--k-l);border:1px solid #9dc4ee;border-radius:10px;padding:12px 14px;margin-bottom:16px;font-size:12px;color:var(--k-d);line-height:1.5}
-/* Prompt */
-.prompt-box{background:#f5f5f2;border-radius:8px;padding:11px 13px;font-size:12px;color:var(--ink);line-height:1.55;border-left:3px solid #ccc;margin-top:4px}
-.copy-btn{font-size:11px;color:var(--k);background:none;border:none;cursor:pointer;padding:4px 0;font-family:inherit}
-.copy-btn:hover{text-decoration:underline}
-.score-row{display:flex;align-items:center;gap:10px}
-.score-input{width:70px;height:32px;border:1px solid var(--border);border-radius:7px;font-size:14px;font-family:inherit;text-align:center;color:var(--ink);background:#fff}
-.score-input:focus{outline:none;border-color:var(--ink)}
-.notes-ta{width:100%;margin-top:6px;padding:9px 11px;border:1px solid var(--border);border-radius:8px;font-size:13px;font-family:inherit;color:var(--ink);resize:vertical;min-height:60px}
-.notes-ta:focus{outline:none;border-color:var(--ink)}
-.sheet-close{position:absolute;top:20px;right:20px;width:28px;height:28px;border-radius:50%;border:1px solid var(--border);background:var(--paper);cursor:pointer;display:flex;align-items:center;justify-content:center;font-size:13px;color:var(--ink2)}
 
-/* ── CONFIG ── */
-.cfg{background:#fff;border:1px solid var(--border);border-radius:10px;padding:16px 20px;margin:12px 24px}
-.cfg h3{font-size:13px;font-weight:500;margin-bottom:10px}
-.cfg-row{display:flex;gap:6px;flex-wrap:wrap;margin-bottom:6px}
-.cfg-in{flex:1;min-width:160px;height:34px;border:1px solid var(--border);border-radius:7px;padding:0 10px;font-size:12px;font-family:inherit;background:#fff}
-.cfg-btn{height:34px;padding:0 14px;border-radius:7px;border:1px solid var(--ink);background:var(--ink);color:#fff;font-size:12px;font-family:inherit;cursor:pointer}
+/* Carryover in sheet */
+.co-box{background:var(--co-bg);border:1px solid var(--co-bdr);border-radius:10px;padding:13px 15px;margin-bottom:16px}
+.co-box-title{font-size:12px;font-weight:600;color:var(--co-txt);margin-bottom:3px}
+.co-box-sub{font-size:12px;color:var(--co-txt);opacity:.8;margin-bottom:9px;line-height:1.5}
+.co-sug{display:flex;align-items:center;justify-content:space-between;background:#fff;border:1px solid var(--co-bdr);border-radius:8px;padding:9px 11px;margin-bottom:5px}
+.co-sug-label{font-size:13px;color:var(--ink)}
+.co-sug-btns{display:flex;gap:5px;flex-wrap:wrap}
+.co-sug-btn{padding:3px 9px;border-radius:6px;font-size:11px;font-family:inherit;cursor:pointer;border:1px solid var(--co-bdr);background:transparent;color:var(--co-txt);transition:all .15s}
+.co-sug-btn:hover,.co-sug-btn.ok{background:var(--co-txt);color:#fff;border-color:var(--co-txt)}
+
+/* Incoming */
+.in-box{background:var(--k-l);border:1px solid #9dc4ee;border-radius:10px;padding:11px 13px;margin-bottom:14px;font-size:12px;color:var(--k-d);line-height:1.5}
+
+/* ── REVIEW SECTION ── */
+.review-section{background:#fafaf7;border:1px solid var(--border);border-radius:12px;padding:16px;margin-bottom:16px}
+.review-tabs{display:flex;gap:4px;margin-bottom:14px;background:var(--border);border-radius:8px;padding:3px}
+.rtab{flex:1;text-align:center;padding:6px;border-radius:6px;font-size:12px;font-weight:500;cursor:pointer;color:var(--ink3);transition:all .15s}
+.rtab.active{background:#fff;color:var(--ink);box-shadow:0 1px 3px rgba(0,0,0,.1)}
+
+/* TALLY MODE */
+.tally-grid{display:grid;grid-template-columns:1fr 1fr;gap:10px;margin-bottom:14px}
+.tally-box{background:#fff;border:1px solid var(--border);border-radius:10px;padding:14px;text-align:center}
+.tally-box.right-box{border-color:var(--right);background:var(--right-l)}
+.tally-box.wrong-box{border-color:var(--wrong);background:var(--wrong-l)}
+.tally-lbl{font-size:10px;font-weight:600;text-transform:uppercase;letter-spacing:.06em;margin-bottom:8px}
+.tally-box.right-box .tally-lbl{color:var(--right)}
+.tally-box.wrong-box .tally-lbl{color:var(--wrong)}
+.tally-controls{display:flex;align-items:center;justify-content:center;gap:10px}
+.tally-btn{width:32px;height:32px;border-radius:50%;border:1.5px solid currentColor;background:transparent;cursor:pointer;font-size:18px;display:flex;align-items:center;justify-content:center;transition:all .15s;font-family:inherit;line-height:1}
+.right-box .tally-btn{color:var(--right)}.right-box .tally-btn:hover{background:var(--right);color:#fff}
+.wrong-box .tally-btn{color:var(--wrong)}.wrong-box .tally-btn:hover{background:var(--wrong);color:#fff}
+.tally-num{font-size:28px;font-weight:600;min-width:36px;text-align:center}
+.right-box .tally-num{color:var(--right)}.wrong-box .tally-num{color:var(--wrong)}
+.score-display{background:#fff;border:1px solid var(--border);border-radius:10px;padding:12px 16px;display:flex;align-items:center;justify-content:space-between;margin-bottom:10px}
+.score-display-lbl{font-size:12px;color:var(--ink2)}
+.score-display-num{font-size:26px;font-weight:600;color:var(--ink)}
+.score-bar-wrap{height:8px;background:var(--border);border-radius:99px;overflow:hidden;margin-top:6px}
+.score-bar{height:100%;border-radius:99px;background:var(--k);transition:width .4s}
+.topic-select{width:100%;padding:8px 10px;border:1px solid var(--border);border-radius:8px;font-size:13px;font-family:inherit;background:#fff;color:var(--ink);margin-bottom:10px}
+.topic-select:focus{outline:none;border-color:var(--ink)}
+
+/* Q&A LOG MODE */
+.qa-entry{background:#fff;border:1px solid var(--border);border-radius:10px;padding:12px;margin-bottom:8px}
+.qa-entry-top{display:flex;gap:8px;align-items:flex-start;margin-bottom:8px}
+.qa-q{flex:1;font-size:13px;color:var(--ink);border:none;background:transparent;font-family:inherit;resize:none;line-height:1.5;min-height:48px;width:100%}
+.qa-q:focus{outline:none}
+.qa-q::placeholder{color:var(--ink3)}
+.qa-result-btns{display:flex;flex-direction:column;gap:4px;flex-shrink:0}
+.qa-rb{width:36px;height:36px;border-radius:8px;border:1.5px solid var(--border);background:#fff;cursor:pointer;font-size:14px;font-weight:700;transition:all .15s;font-family:inherit}
+.qa-rb:hover.right{background:var(--right-l);border-color:var(--right);color:var(--right)}
+.qa-rb:hover.wrong{background:var(--wrong-l);border-color:var(--wrong);color:var(--wrong)}
+.qa-rb.selected-right{background:var(--right);border-color:var(--right);color:#fff}
+.qa-rb.selected-wrong{background:var(--wrong);border-color:var(--wrong);color:#fff}
+.qa-bottom{display:flex;gap:8px;align-items:center;flex-wrap:wrap}
+.qa-topic-in{flex:1;min-width:120px;padding:5px 9px;border:1px solid var(--border);border-radius:7px;font-size:12px;font-family:inherit;color:var(--ink)}
+.qa-topic-in:focus{outline:none;border-color:var(--ink)}
+.qa-delete{padding:5px 9px;border:1px solid var(--border);border-radius:7px;font-size:11px;font-family:inherit;cursor:pointer;color:var(--ink3);background:#fff}
+.qa-delete:hover{border-color:var(--wrong);color:var(--wrong)}
+.add-q-btn{width:100%;padding:9px;border:1.5px dashed var(--border);border-radius:9px;background:transparent;font-size:13px;color:var(--ink3);cursor:pointer;font-family:inherit;transition:all .15s;margin-top:4px}
+.add-q-btn:hover{border-color:var(--ink3);color:var(--ink)}
+
+/* PROMPT SAVE */
+.prompt-box{background:#f5f5f2;border-radius:8px;padding:11px 13px;font-size:12px;color:var(--ink);line-height:1.55;border-left:3px solid #ccc;margin-top:4px}
+.prompt-actions{display:flex;gap:8px;margin-top:8px;flex-wrap:wrap}
+.pact-btn{padding:5px 11px;border-radius:7px;border:1px solid var(--border);background:#fff;font-size:12px;font-family:inherit;cursor:pointer;color:var(--ink2);transition:all .15s}
+.pact-btn:hover{border-color:var(--ink);color:var(--ink)}
+
+/* NOTES */
+.notes-ta{width:100%;padding:9px 11px;border:1px solid var(--border);border-radius:8px;font-size:13px;font-family:inherit;color:var(--ink);resize:vertical;min-height:56px}
+.notes-ta:focus{outline:none;border-color:var(--ink)}
+
+/* CONFIG */
+.cfg{background:#fff;border:1px solid var(--border);border-radius:10px;padding:15px 20px;margin:10px 24px}
+.cfg h3{font-size:13px;font-weight:500;margin-bottom:9px}
+.cfg-row{display:flex;gap:6px;flex-wrap:wrap;margin-bottom:5px}
+.cfg-in{flex:1;min-width:150px;height:33px;border:1px solid var(--border);border-radius:7px;padding:0 10px;font-size:12px;font-family:inherit}
+.cfg-btn{height:33px;padding:0 13px;border-radius:7px;border:1px solid var(--ink);background:var(--ink);color:#fff;font-size:12px;font-family:inherit;cursor:pointer}
 .cfg-btn.sec{background:#fff;color:var(--ink)}
 .cfg-help{font-size:11px;color:var(--ink3);line-height:1.5}
-.setup-bar{background:var(--k);color:#fff;padding:10px 24px;font-size:13px;display:flex;align-items:center;gap:8px;flex-wrap:wrap}
-.setup-bar a{color:#bde0ff}.setup-bar.hidden{display:none}
+.setup-bar{background:var(--k);color:#fff;padding:9px 24px;font-size:13px;display:flex;align-items:center;gap:8px;flex-wrap:wrap}
+.setup-bar a{color:#bde0ff;text-decoration:underline}.setup-bar.hidden{display:none}
 
-@media(min-width:560px){.overlay{align-items:center;padding:20px}.sheet{border-radius:18px;max-height:88vh}}
-@media(max-width:500px){.hdr,.today-banner,.cal-wrap,.cfg{padding-left:14px;padding-right:14px}.co-nudge{padding:10px 14px}.stats .stat{padding:10px 4px}}
+.empty-state{text-align:center;padding:32px 20px;color:var(--ink3);font-size:14px}
+.btn-link{background:none;border:none;color:var(--k);font-size:13px;cursor:pointer;font-family:inherit;text-decoration:underline;padding:0}
+
+@media(min-width:600px){.overlay{align-items:center;padding:20px}.sheet{border-radius:18px;max-height:90vh}}
+@media(max-width:500px){.hdr,.today-wrap,.cal-wrap,.cfg,.dash-wrap{padding-left:14px;padding-right:14px}.co-nudge{padding:10px 14px}.dash-grid{grid-template-columns:repeat(2,1fr)}}
 </style>
 </head>
 <body>
 
-<!-- HEADER -->
 <div class="hdr">
-  <div class="hdr-left">
-    <h1>Geo Bee Nationals</h1>
-    <p>31-Day Prep Tracker &nbsp;·&nbsp; Orlando</p>
-  </div>
-  <div class="sync"><div class="sync-dot" id="sdot"></div><span id="slbl">Connecting…</span></div>
+  <div><h1>Geo Bee Nationals</h1><p>31-Day Prep Tracker · Orlando</p></div>
+  <div class="sync"><div class="sdot" id="sdot"></div><span id="slbl">Connecting…</span></div>
 </div>
 
 <div class="setup-bar" id="setup-bar">
-  ⚙ <strong>Setup:</strong> Add Firebase config to enable sync.
+  ⚙ <strong>Setup:</strong> Add Firebase config to enable sync across devices.
   <a href="https://console.firebase.google.com/" target="_blank">Firebase Console →</a>
 </div>
 <div class="cfg" id="cfg-panel">
@@ -183,42 +291,64 @@ body{font-family:'DM Sans',sans-serif;background:var(--paper);color:var(--ink);m
   </div>
   <div class="cfg-row">
     <input class="cfg-in" id="ci-aid" placeholder="appId"/>
-    <button class="cfg-btn" onclick="saveCfg()">Connect &amp; sync</button>
+    <button class="cfg-btn" onclick="saveCfg()">Connect</button>
     <button class="cfg-btn sec" onclick="dismissCfg()">Offline only</button>
   </div>
   <div class="cfg-help">Project Settings → Your apps → Web app → SDK config. Copy apiKey, projectId, appId.</div>
 </div>
 
-<!-- TODAY BANNER (rendered by JS) -->
-<div id="today-banner"></div>
-
-<!-- CARRYOVER NUDGE -->
 <div class="co-nudge hidden" id="co-nudge">
-  <div>
-    <div class="co-nudge-txt" id="co-nudge-txt"></div>
-    <div class="co-nudge-sub">Tap a day to reschedule missed phases</div>
-  </div>
-  <button class="co-nudge-btn" onclick="openTodayDetail()">View today →</button>
+  <div><div class="co-nudge-txt" id="co-nudge-txt"></div><div class="co-nudge-sub">Open the day to reschedule</div></div>
+  <button class="co-btn" onclick="openSheet(TDAY)">View today →</button>
 </div>
 
-<!-- STATS -->
-<div class="stats">
-  <div class="stat"><div class="stat-n" id="sn-done">0</div><div class="stat-l">Days done</div></div>
-  <div class="stat"><div class="stat-n" id="sn-part">0</div><div class="stat-l">Partial</div></div>
-  <div class="stat"><div class="stat-n" id="sn-co">0</div><div class="stat-l">Carrying over</div></div>
-  <div class="stat"><div class="stat-n" id="sn-avg">—</div><div class="stat-l">Avg score</div></div>
-</div>
-<div class="prog-wrap">
-  <div class="prog-track"><div class="prog-fill" id="prog" style="width:0%"></div></div>
-  <div class="prog-label" id="prog-lbl">0% phases done</div>
+<div class="tabs">
+  <div class="tab active" onclick="showPage('tracker')" id="tab-tracker"><span class="tab-icon">📅</span>Tracker</div>
+  <div class="tab" onclick="showPage('dashboard')" id="tab-dashboard"><span class="tab-icon">📊</span>Dashboard</div>
 </div>
 
-<!-- CALENDAR -->
-<div class="cal-wrap">
-  <div class="week-hdr">
-    <span>Sun</span><span>Mon</span><span>Tue</span><span>Wed</span><span>Thu</span><span>Fri</span><span>Sat</span>
+<!-- TRACKER PAGE -->
+<div class="page active" id="page-tracker">
+  <div class="stats">
+    <div class="stat"><div class="stat-n" id="sn-done">0</div><div class="stat-l">Done</div></div>
+    <div class="stat"><div class="stat-n" id="sn-part">0</div><div class="stat-l">Partial</div></div>
+    <div class="stat"><div class="stat-n" id="sn-co">0</div><div class="stat-l">Carry over</div></div>
+    <div class="stat"><div class="stat-n" id="sn-avg">—</div><div class="stat-l">Avg score</div></div>
   </div>
-  <div id="cal"></div>
+  <div class="prog-wrap">
+    <div class="prog-track"><div class="prog-fill" id="prog" style="width:0%"></div></div>
+    <div class="prog-label" id="prog-lbl">0% phases done</div>
+  </div>
+  <div id="today-section"></div>
+  <div class="cal-wrap">
+    <div class="week-hdr"><span>Sun</span><span>Mon</span><span>Tue</span><span>Wed</span><span>Thu</span><span>Fri</span><span>Sat</span></div>
+    <div id="cal"></div>
+  </div>
+</div>
+
+<!-- DASHBOARD PAGE -->
+<div class="page" id="page-dashboard">
+  <div class="dash-wrap">
+    <div class="dash-section">
+      <div class="dash-grid" id="dash-summary"></div>
+    </div>
+    <div class="dash-section">
+      <div class="dash-title"><span>📈</span> Score trend (1–100)</div>
+      <div class="chart-card"><div class="chart-container"><canvas id="score-chart"></canvas></div></div>
+    </div>
+    <div class="dash-section">
+      <div class="dash-title"><span>🎯</span> Phase accuracy</div>
+      <div class="chart-card" id="phase-acc"></div>
+    </div>
+    <div class="dash-section">
+      <div class="dash-title"><span>🗺</span> Weak topics (by miss rate)</div>
+      <div class="chart-card" id="weak-topics"></div>
+    </div>
+    <div class="dash-section">
+      <div class="dash-title"><span>📝</span> Full question log</div>
+      <div class="chart-card" id="q-log-section"></div>
+    </div>
+  </div>
 </div>
 
 <!-- DETAIL SHEET -->
@@ -233,75 +363,69 @@ body{font-family:'DM Sans',sans-serif;background:var(--paper);color:var(--ink);m
 <script src="https://www.gstatic.com/firebasejs/10.12.0/firebase-app-compat.js"></script>
 <script src="https://www.gstatic.com/firebasejs/10.12.0/firebase-firestore-compat.js"></script>
 <script>
-// ─── DATA ────────────────────────────────────────────────────────────────────
+// ─── DATA ──────────────────────────────────────────────────────────────────
 const DAYS=[
-{d:1,title:"Diagnostic + continents",k:"Work through GeographyBeeCourse.docx beginner section. Flag every topic where you feel shaky.",b:"Read 5 questions aloud from any round, pausing after each clue. Say the answer as soon as you know it.",s:"Score yourself on 2019 EMS Finals Q1-5. Record which topics you got right and wrong.",p:"Quiz me on continent and ocean geography at IAC nationals level — pyramidal format, hard clue first."},
-{d:2,title:"Physical features",k:"GeographyBeeCourse.docx physical features section. Mountains, rivers, deserts, plateaus, capes, gulfs.",b:"Interrupt drill with a parent: they read mid-sentence, you buzz when you know.",s:"Review 2022 MS Round 1 Q1-5. Note the power clue for each answer.",p:"Give me 5 pyramidal questions on rivers and mountain ranges. After each answer tell me the earliest power clue."},
-{d:3,title:"Africa + buzzer basics",k:"2021 Round 1: Study Kalahari, Gabon, Ho Chi Minh question structures. What clues appear early vs late?",b:"Track your early vs late buzz rate on 10 questions. Clue 1? Clue 2? Giveaway?",s:"Full timed run of 2020 MS Nationals Round 1.",p:"Quiz me on African geography — 8 pyramidal questions at nationals difficulty."},
-{d:4,title:"Southeast Asia",k:"2022 Round 6: Luzon, Niger Delta, Lapland clues. Build single-word trigger associations.",b:"Interrupt practice — parent reads with no pausing. Buzz mid-sentence.",s:"Score 2021 Round 1 Q6-10. Tally hits/misses by region.",p:"Give me 8 pyramidal questions on Southeast Asian island nations and capitals."},
-{d:5,title:"Americas + South America",k:"2022 Round 6: Manaus/Amazon clues. 2019 Finals Q3 (Salinas). Study South American river systems.",b:"Buzz-out sim: race to 8 correct in 30 questions. Track bonus points earned.",s:"Full timed 2021 MS Nationals Round 2.",p:"Quiz me on South American geography — 8 pyramidal questions."},
-{d:6,title:"Europe deep dive",k:"2021 Round 2: Norway, St Lawrence River, Adriatic Sea clues. Scandinavian and Balkan focus.",b:"Use 2022 Round 1 questions. Aim to buzz on clue 1 for at least 3 questions.",s:"2022 Round 2 timed. Real bonus point scoring.",p:"Give me 8 pyramidal tossups on European geography."},
+{d:1,title:"Diagnostic + continents",k:"Work through GeographyBeeCourse.docx beginner section. Flag shaky topics.",b:"Read 5 questions aloud, pausing after each clue.",s:"Score yourself on 2019 EMS Finals Q1-5.",p:"Quiz me on continent and ocean geography at IAC nationals level — pyramidal format, hard clue first. Give me 10 questions."},
+{d:2,title:"Physical features",k:"GeographyBeeCourse.docx physical features section. Mountains, rivers, deserts, capes, gulfs.",b:"Interrupt drill with a parent: they read mid-sentence, you buzz when you know.",s:"Review 2022 MS Round 1 Q1-5. Note the power clue for each.",p:"Give me 10 pyramidal questions on rivers and mountain ranges. Hard clue first. After each answer tell me the earliest power clue."},
+{d:3,title:"Africa + buzzer basics",k:"2021 Round 1: Study Kalahari, Gabon, Ho Chi Minh question structures.",b:"Track early vs late buzz rate on 10 questions.",s:"Full timed run of 2020 MS Nationals Round 1.",p:"Quiz me on African geography — 10 pyramidal questions at nationals difficulty. Hard clue first."},
+{d:4,title:"Southeast Asia",k:"2022 Round 6: Luzon, Niger Delta, Lapland clues. Build single-word trigger associations.",b:"Interrupt practice — parent reads with no pausing.",s:"Score 2021 Round 1 Q6-10. Tally hits/misses by region.",p:"Give me 10 pyramidal questions on Southeast Asian island nations and capitals."},
+{d:5,title:"Americas + South America",k:"2022 Round 6: Manaus/Amazon clues. 2019 Finals Q3. Study South American rivers.",b:"Buzz-out sim: race to 8 correct in 30 questions.",s:"Full timed 2021 MS Nationals Round 2.",p:"Quiz me on South American geography — 10 pyramidal questions."},
+{d:6,title:"Europe deep dive",k:"2021 Round 2: Norway, St Lawrence River, Adriatic Sea. Scandinavian and Balkan focus.",b:"2022 Round 1 questions. Aim to buzz on clue 1 for 3+ questions.",s:"2022 Round 2 timed. Real bonus point scoring.",p:"Give me 10 pyramidal tossups on European geography."},
 {d:7,rest:true},
-{d:8,title:"Middle East + Central Asia",k:"2022 Round 6 Q4 (Herat). 2020 Round 1 Q4 (Kurds). Build a mental map of the region.",b:"Clue-by-clue: identify the exact word that triggers each answer.",s:"2022 Round 3 timed.",p:"Give me 8 pyramidal questions on Middle Eastern and Central Asian geography."},
-{d:9,title:"Oceans + bodies of water",k:"2021 Round 1: Bering Sea. 2021 Round 3: Aegean Sea. Study straits, gulfs, bays, seas worldwide.",b:"Interrupt 10 questions from 2021 Round 3 — parent reads, no pausing.",s:"Score 2022 Round 4. Classify misses by region.",p:"Quiz me on seas, bays, straits, oceanic geography — 8 pyramidal questions."},
-{d:10,title:"Himalaya + South Asia",k:"2021 Round 2: Sri Lanka, Bhutan. 2022 Round 4 Q10 (Kangchenjunga). Major Himalayan peaks.",b:"Buzz-out race: 8 correct, track bonus points. Aim for 13+.",s:"2021 Round 1 full timed run.",p:"Give me 8 pyramidal tossups on Himalayan peaks and South Asian geography."},
-{d:11,title:"US geography",k:"GeographyBeeCourse.docx + 2022 Round 1 Q4 (Pensacola). Rivers, mountain ranges, state capitals.",b:"Interrupt drill on US questions — aim for clue 2 buzz.",s:"2022 Round 5 timed.",p:"Quiz me on US geography — rivers, mountain ranges, state capitals — 8 pyramidal questions."},
-{d:12,title:"Current events geography",k:"Read The Economist or BBC World for 20 min. Flag 5 stories with geographic significance.",b:"Turn 3 news stories into pyramidal questions. Drill with a parent.",s:"2019 EMS Round 2 timed.",p:"Summarize 5 recent geopolitical events with geographic significance. Write a pyramidal tossup for each."},
-{d:13,title:"Islands + archipelagos",k:"2019 Finals: Aleutians, Basque, Gotland. 2021 Round 2: Macau. Major archipelagos and countries.",b:"Rank clues 1, 2, 3 by knowledge required. Identify trigger words.",s:"2022 Round 6 timed. Track early vs late buzzes.",p:"Give me 8 pyramidal questions on island nations and archipelagos."},
+{d:8,title:"Middle East + Central Asia",k:"2022 Round 6 Q4 (Herat). 2020 Round 1 Q4 (Kurds). Build a mental map.",b:"Clue-by-clue: identify exact trigger word for each answer.",s:"2022 Round 3 timed.",p:"Give me 10 pyramidal questions on Middle Eastern and Central Asian geography."},
+{d:9,title:"Oceans + bodies of water",k:"2021 Round 1: Bering Sea. 2021 Round 3: Aegean. Straits, gulfs, bays, seas worldwide.",b:"Interrupt 10 questions from 2021 Round 3 — no pausing.",s:"Score 2022 Round 4. Classify misses by region.",p:"Quiz me on seas, bays, straits, oceanic geography — 10 pyramidal questions."},
+{d:10,title:"Himalaya + South Asia",k:"2021 Round 2: Sri Lanka, Bhutan. 2022 Round 4 Q10 (Kangchenjunga).",b:"Buzz-out race: 8 correct, track bonus points. Aim for 13+.",s:"2021 Round 1 full timed run.",p:"Give me 10 pyramidal tossups on Himalayan peaks and South Asian geography."},
+{d:11,title:"US geography",k:"GeographyBeeCourse.docx + 2022 Round 1 Q4 (Pensacola). Rivers, ranges, state capitals.",b:"Interrupt drill on US questions — aim for clue 2 buzz.",s:"2022 Round 5 timed.",p:"Quiz me on US geography — rivers, mountain ranges, state capitals — 10 pyramidal questions."},
+{d:12,title:"Current events geography",k:"Read The Economist or BBC World 20 min. Flag 5 stories with geographic significance.",b:"Turn 3 news stories into pyramidal questions. Drill with a parent.",s:"2019 EMS Round 2 timed.",p:"Summarize 5 recent geopolitical events with geographic significance. Write a pyramidal tossup for each."},
+{d:13,title:"Islands + archipelagos",k:"2019 Finals: Aleutians, Basque, Gotland. 2021 Round 2: Macau.",b:"Rank clues 1, 2, 3 by knowledge required. Identify trigger words.",s:"2022 Round 6 timed. Track early vs late buzzes.",p:"Give me 10 pyramidal questions on island nations and archipelagos."},
 {d:14,rest:true},
-{d:15,title:"Deserts + arid regions",k:"2021 Round 3: Gobi, Kalahari. Which countries does each desert touch?",b:"10-question interrupt drill. Count early buzzes.",s:"2021 Round 2 full timed.",p:"Give me 8 pyramidal questions on world deserts."},
-{d:16,title:"African Great Lakes + rivers",k:"2021 Round 3: Lake Malawi. 2023-24 EMS Bowl Finals: Pearl River, Kara Sea.",b:"Buzz-out race with real bonus scoring. Aim for 13+ pts.",s:"2022 Finals timed. Track which clue triggers each buzz.",p:"Quiz me on African lakes and rivers — 8 pyramidal tossups."},
-{d:17,title:"Capitals deep drill",k:"IAC Study Guide: National + Regional Capitals. Focus on Africa, Oceania, Central Asia.",b:"Rapid-fire: parent says country, you say capital. Then reverse.",s:"2019 EMS Round 1 timed.",p:"Give me 10 capital questions embedded in pyramidal tossups."},
-{d:18,title:"East + Southeast Asia",k:"2022 Round 4 Q2 (Narita). 2021 Round 1: Ho Chi Minh clues. East Asian capitals and rivers.",b:"Interrupt 15 questions. Count clue-1 buzzes.",s:"2020 Round 1 full timed.",p:"Give me 8 pyramidal questions on East and Southeast Asian geography."},
-{d:19,title:"Geopolitical + current events",k:"Read one long-form piece on an ongoing border dispute.",b:"Turn 3 current events into pyramidal questions and drill together.",s:"2022 Round 1 timed. Aim for personal best bonus points.",p:"Create 8 pyramidal questions about geography tied to current geopolitical situations."},
-{d:20,title:"Landlocked countries + borders",k:"List all landlocked countries with neighbors. Double-landlocked: Liechtenstein, Uzbekistan.",b:"Border chain drill: all neighbors of a country in 10 seconds.",s:"2021 Round 3 full timed.",p:"Quiz me on landlocked countries and their neighbors — 8 pyramidal questions."},
+{d:15,title:"Deserts + arid regions",k:"2021 Round 3: Gobi, Kalahari. Which countries does each desert touch?",b:"10-question interrupt drill. Count early buzzes.",s:"2021 Round 2 full timed.",p:"Give me 10 pyramidal questions on world deserts."},
+{d:16,title:"African Great Lakes + rivers",k:"2021 Round 3: Lake Malawi. 2023-24 EMS Bowl Finals: Pearl River, Kara Sea.",b:"Buzz-out race with real bonus scoring. Aim 13+ pts.",s:"2022 Finals timed. Track which clue triggers each buzz.",p:"Quiz me on African lakes and rivers — 10 pyramidal tossups."},
+{d:17,title:"Capitals deep drill",k:"IAC Study Guide: National + Regional Capitals. Focus Africa, Oceania, Central Asia.",b:"Rapid-fire: parent says country, you say capital. Then reverse.",s:"2019 EMS Round 1 timed.",p:"Give me 10 capital questions embedded in pyramidal tossups."},
+{d:18,title:"East + Southeast Asia",k:"2022 Round 4 Q2 (Narita). 2021 Round 1: Ho Chi Minh clues.",b:"Interrupt 15 questions. Count clue-1 buzzes.",s:"2020 Round 1 full timed.",p:"Give me 10 pyramidal questions on East and Southeast Asian geography."},
+{d:19,title:"Geopolitical + current events",k:"Read one long-form piece on an ongoing border dispute.",b:"Turn 3 current events into pyramidal questions and drill.",s:"2022 Round 1 timed. Aim for personal best bonus points.",p:"Create 10 pyramidal questions about geography tied to current geopolitical situations."},
+{d:20,title:"Landlocked countries + borders",k:"List all landlocked countries with neighbors. Double-landlocked: Liechtenstein, Uzbekistan.",b:"Border chain drill: all neighbors of a country in 10 seconds.",s:"2021 Round 3 full timed.",p:"Quiz me on landlocked countries and their neighbors — 10 pyramidal questions."},
 {d:21,rest:true},
-{d:22,title:"Physical geography review",k:"Revisit top 3 weak spots from Days 1-20. Read their Wikipedia intros.",b:"Speed round: 20 questions, no pausing, max interrupts.",s:"2022 Round 4 timed.",p:"I'm weak on [topic]. Give me 10 pyramidal questions on that topic."},
-{d:23,title:"Repeat topic patterns",k:"2023-24 EMS Bowl Finals (Geo bee 1.pdf): which topics appear? What repeats from 2022?",b:"Power clue list: write first clue of every correct answer.",s:"2019 EMS Finals full timed. Compare score to Day 1.",p:"What are the most repeated topic clusters in IAC Geography Bee nationals?"},
-{d:24,title:"Maps + physical features",k:"Seterra map drill: rivers, mountain ranges, borders. Africa and Southeast Asia.",b:"15-question drill — interrupt on EVERY question. Build the reflex.",s:"2022 Round 6 full timed.",p:"Give me 8 pyramidal questions where the answer is a physical feature."},
-{d:25,title:"Mock nationals set 1",k:"Deep review of 3 misses from simulation. Wikipedia intro + one extra fact each.",b:"Which questions did you buzz too late? What clue should have triggered you?",s:"Full 2022 MS Nationals: Rounds 1+2. Real scoring, timed.",p:"I missed questions on [topics]. Give me 5 pyramidal questions on each weak area."},
-{d:26,title:"Mock nationals set 2",k:"Deep Wikipedia read on 2 answers you missed today.",b:"Clue-trigger log: write the single word that should trigger each missed answer.",s:"Full 2022 MS Nationals: Rounds 3+4. Timed.",p:"Help me build a power-clue cheat sheet for [country/place]."},
-{d:27,title:"Mock nationals set 3",k:"2021 Nationals Rounds 1-3 topic list. What appeared in both 2021 and 2022?",b:"Interrupt drill using today's simulation questions.",s:"Full 2022 MS Nationals: Rounds 5+6. Timed.",p:""},
+{d:22,title:"Physical geography review",k:"Revisit top 3 weak spots from Days 1-20. Wikipedia intros.",b:"Speed round: 20 questions, no pausing, max interrupts.",s:"2022 Round 4 timed.",p:"I'm weak on [topic]. Give me 10 pyramidal questions on that topic specifically."},
+{d:23,title:"Repeat topic patterns",k:"2023-24 EMS Bowl Finals (Geo bee 1.pdf): which topics appear? What repeats from 2022?",b:"Power clue list: write first clue of every correct answer.",s:"2019 EMS Finals full timed. Compare score to Day 1.",p:"What are the most repeated topic clusters in IAC Geography Bee nationals? Give 2 questions per cluster."},
+{d:24,title:"Maps + physical features",k:"Seterra map drill: rivers, mountain ranges, borders. Africa and Southeast Asia.",b:"15-question drill — interrupt on EVERY question.",s:"2022 Round 6 full timed.",p:"Give me 10 pyramidal questions where the answer is a physical feature."},
+{d:25,title:"Mock nationals set 1",k:"Deep review of 3 misses from simulation. Wikipedia intro + one fact each.",b:"Which questions did you buzz too late? What clue should have triggered you?",s:"Full 2022 MS Nationals: Rounds 1+2. Real scoring, timed.",p:"I missed questions on [topics]. Give me 5 pyramidal questions on each weak area."},
+{d:26,title:"Mock nationals set 2",k:"Deep Wikipedia read on 2 answers you missed today.",b:"Clue-trigger log: write the single word that triggers each missed answer.",s:"Full 2022 MS Nationals: Rounds 3+4. Timed.",p:"Help me build a power-clue cheat sheet for [country/place]."},
+{d:27,title:"Mock nationals set 3",k:"2021 Nationals Rounds 1-3 topic list. What appeared in 2021 AND 2022?",b:"Interrupt drill using today's simulation questions.",s:"Full 2022 MS Nationals: Rounds 5+6. Timed.",p:""},
 {d:28,rest:true},
 {d:29,title:"Remediation sprint",k:"Target top 3 weak areas from all mock rounds.",b:"10-question interrupt drill on weak topics only.",s:"2021 Finals timed. Compare to Day 25.",p:"I keep missing [topic]. Give me 10 pyramidal questions starting with hard clues."},
 {d:30,title:"Full simulation",k:"Light review of power-clue cheat sheet only. No new material.",b:"5-question warm-up, early clue triggering only.",s:"2022 MS Finals + 2023-24 EMS Bowl Finals. Full timed.",p:""},
-{d:31,title:"Day before — confidence day",k:"Power-clue cheat sheet for 15 min only. No new geography.",b:"5 easy warm-up questions for rhythm. Stop there.",s:"5 questions from 2019 Finals for confidence — stop after 5.",p:"Give me 5 easy then 5 medium geography questions. Warm-up only."},
+{d:31,title:"Day before — confidence day",k:"Power-clue cheat sheet 15 min only. No new geography.",b:"5 easy warm-up questions for rhythm.",s:"5 questions from 2019 Finals for confidence — stop after 5.",p:"Give me 5 easy then 5 medium geography questions. Warm-up only."},
 ];
+
 const WK_LABELS=["Week 1 — Apr 19","Week 2 — Apr 26","Week 3 — May 3","Week 4 — May 10","Week 5 — May 17"];
 const NON_REST=DAYS.filter(d=>!d.rest);
-const TODAY_NUM=1; // Day 1 = Apr 20. Change this daily or compute from date.
+const TOPICS=["Africa","Americas","Asia-East","Asia-South","Asia-Southeast","Capitals","Central Asia","Current Events","Deserts","Europe","Islands","Landlocked","Middle East","Mountains","Oceans & Water","Physical Features","US Geography","Other"];
 
-// Auto-compute today's day number based on start date Apr 20 2026
 function computeToday(){
   const start=new Date('2026-04-20');
-  const now=new Date();
-  const diff=Math.floor((now-start)/(1000*60*60*24));
-  const n=diff+1;
-  return Math.max(1,Math.min(31,n));
+  const diff=Math.floor((new Date()-start)/(864e5));
+  return Math.max(1,Math.min(31,diff+1));
 }
 const TDAY=computeToday();
 
-// ─── STATE ───────────────────────────────────────────────────────────────────
-// STATE['d'+n] = {k,b,s: bool, score:str, notes:str, co:{k:dayN,b:dayN,s:dayN}}
+// ─── STATE ──────────────────────────────────────────────────────────────────
+// d{n}: {k,b,s:bool, score:int(1-100), notes:str, co:{}, prompt:str,
+//         mode:'tally'|'qa', right:int, wrong:int, questions:[{q,result,topic}]}
 let STATE={};
 let db=null,unsub=null,CFGD=false;
-
-function lsG(){try{return JSON.parse(localStorage.getItem('gb_v4')||'{}')}catch{return{}}}
-function lsS(s){localStorage.setItem('gb_v4',JSON.stringify(s))}
+function lsG(){try{return JSON.parse(localStorage.getItem('gb_v5')||'{}')}catch{return{}}}
+function lsS(s){localStorage.setItem('gb_v5',JSON.stringify(s))}
 function cfgG(){try{return JSON.parse(localStorage.getItem('gb_cfg')||'{}')}catch{return{}}}
 function cfgS(c){localStorage.setItem('gb_cfg',JSON.stringify(c))}
 
 // ─── FIREBASE ────────────────────────────────────────────────────────────────
 function initFB(cfg){
-  try{
-    if(firebase.apps.length)firebase.apps[0].delete().then(()=>_fb(cfg)).catch(()=>_fb(cfg));
-    else _fb(cfg);
-  }catch{sync('off')}
+  try{if(firebase.apps.length)firebase.apps[0].delete().then(()=>_fb(cfg)).catch(()=>_fb(cfg));else _fb(cfg);}catch{sync('off')}
 }
 function _fb(cfg){
   try{
-    firebase.initializeApp(cfg);
-    db=firebase.firestore();sync('spin');
+    firebase.initializeApp(cfg);db=firebase.firestore();sync('spin');
     if(unsub)unsub();
     unsub=db.collection('geobee').doc('tracker').onSnapshot(snap=>{
       STATE=snap.exists?snap.data():lsG();
@@ -311,22 +435,18 @@ function _fb(cfg){
     CFGD=true;
     document.getElementById('cfg-panel').style.display='none';
     document.getElementById('setup-bar').classList.add('hidden');
-  }catch(e){sync('off')}
+  }catch{sync('off')}
 }
 function sync(s){
-  document.getElementById('sdot').className='sync-dot'+(s==='on'?'':s==='spin'?' spin':' off');
+  document.getElementById('sdot').className='sdot'+(s==='on'?'':s==='spin'?' spin':' off');
   document.getElementById('slbl').textContent=s==='on'?'Synced':s==='spin'?'Syncing…':'Offline';
 }
 function persist(updates){
   Object.assign(STATE,updates);lsS(STATE);
   if(db&&CFGD){sync('spin');db.collection('geobee').doc('tracker').set(STATE,{merge:true}).then(()=>sync('on')).catch(()=>sync('off'));}
 }
-
-// ─── CONFIG ──────────────────────────────────────────────────────────────────
 function saveCfg(){
-  const k=document.getElementById('ci-key').value.trim();
-  const p=document.getElementById('ci-pid').value.trim();
-  const a=document.getElementById('ci-aid').value.trim();
+  const k=document.getElementById('ci-key').value.trim(),p=document.getElementById('ci-pid').value.trim(),a=document.getElementById('ci-aid').value.trim();
   if(!k||!p||!a){alert('Fill in all three fields.');return;}
   const cfg={apiKey:k,projectId:p,appId:a,authDomain:p+'.firebaseapp.com',storageBucket:p+'.appspot.com',messagingSenderId:'000000000000'};
   cfgS(cfg);initFB(cfg);
@@ -338,113 +458,138 @@ function dismissCfg(){
 }
 
 // ─── STATE HELPERS ───────────────────────────────────────────────────────────
-function ds(n){return STATE['d'+n]||{k:false,b:false,s:false,score:'',notes:'',co:{}}}
+function ds(n){return STATE['d'+n]||{k:false,b:false,s:false,score:null,notes:'',co:{},mode:'tally',right:0,wrong:0,questions:[],prompt:''}}
 function setDs(n,obj){const cur=ds(n);persist({['d'+n]:Object.assign({},cur,obj)})}
 function allDone(n){const d=ds(n);return d.k&&d.b&&d.s}
 function anyDone(n){const d=ds(n);return d.k||d.b||d.s}
-function leftPhases(n){const d=ds(n);return ['k','b','s'].filter(p=>!d[p])}
-function hasCarryover(n){return Object.keys(ds(n).co||{}).length>0}
-function getUnplannedCarryovers(){
-  // Days that have been started but have unfinished phases with no co assigned
-  return NON_REST.filter(day=>{
-    if(!anyDone(day.d))return false;
-    const left=leftPhases(day.d);
-    if(left.length===0)return false;
-    const co=ds(day.d).co||{};
-    return left.some(p=>!co[p]); // at least one unplanned
-  });
-}
-function nextAvailableDays(fromDay,count=5){
-  return NON_REST.filter(d=>d.d>fromDay&&d.d<=31).slice(0,count);
-}
+function leftPhases(n){const d=ds(n);return['k','b','s'].filter(p=>!d[p])}
+function nextDays(from,ct=6){return NON_REST.filter(d=>d.d>from&&d.d<=31).slice(0,ct)}
 function incomingFor(n){
   const inc=[];
-  NON_REST.forEach(d=>{
-    const co=ds(d.d).co||{};
-    const phases=Object.entries(co).filter(([,v])=>v===n).map(([k])=>k.toUpperCase());
-    if(phases.length)inc.push({fromDay:d.d,phases,title:DAYS.find(x=>x.d===d.d).title});
-  });
+  NON_REST.forEach(d=>{const co=ds(d.d).co||{};const ps=Object.entries(co).filter(([,v])=>v===n).map(([k])=>k.toUpperCase());if(ps.length)inc.push({fromDay:d.d,phases:ps});});
   return inc;
 }
+function calcScore(n){
+  const d=ds(n);
+  if(d.score!=null)return d.score;
+  const total=(d.right||0)+(d.wrong||0);
+  if(total===0)return null;
+  return Math.round((d.right/total)*100);
+}
 
-// ─── TOGGLE PHASE ────────────────────────────────────────────────────────────
-function togglePhase(n,phase){
+// ─── PHASES ──────────────────────────────────────────────────────────────────
+function togglePhase(n,ph){const cur=ds(n);setDs(n,{[ph]:!cur[ph]});redraw();if(activeDay===n)renderSheet(n);}
+function assignCO(fromDay,ph,toDay){const cur=ds(fromDay);const co=Object.assign({},cur.co||{});co[ph]=toDay;setDs(fromDay,{co});redraw();if(activeDay===fromDay)renderSheet(fromDay);}
+
+// ─── REVIEW HELPERS ──────────────────────────────────────────────────────────
+function setMode(n,mode){setDs(n,{mode});if(activeDay===n)renderSheet(n);}
+function adjustTally(n,field,delta){
   const cur=ds(n);
-  setDs(n,{[phase]:!cur[phase]});
+  const val=Math.max(0,(cur[field]||0)+delta);
+  setDs(n,{[field]:val});
+  updateReviewDisplay(n);
+  updateStats();
   redraw();
-  // Re-render detail if open
-  if(document.getElementById('overlay').classList.contains('open')&&activeDay===n)renderSheet(n);
 }
-function assignCO(fromDay,phase,toDay){
-  const cur=ds(fromDay);
-  const co=Object.assign({},cur.co||{});
-  co[phase]=toDay;
-  setDs(fromDay,{co});
-  redraw();
-  if(activeDay===fromDay)renderSheet(fromDay);
+function addQuestion(n){
+  const cur=ds(n);
+  const qs=[...(cur.questions||[]),{q:'',result:null,topic:''}];
+  setDs(n,{questions:qs});
+  renderSheet(n);
+  // Focus last textarea
+  setTimeout(()=>{const tas=document.querySelectorAll('.qa-q');if(tas.length)tas[tas.length-1].focus();},50);
 }
-function saveField(n,field,val){setDs(n,{[field]:val});if(field==='score')updateStats();}
+function updateQuestion(n,i,field,val){
+  const cur=ds(n);const qs=[...(cur.questions||[])];qs[i]={...qs[i],[field]:val};
+  setDs(n,{questions:qs});
+  if(field==='result'){updateStats();redraw();}
+}
+function deleteQuestion(n,i){
+  const cur=ds(n);const qs=[...(cur.questions||[])];qs.splice(i,1);
+  setDs(n,{questions:qs});renderSheet(n);
+}
+function setManualScore(n,val){
+  const v=Math.max(1,Math.min(100,parseInt(val)||0));
+  setDs(n,{score:v});updateStats();redraw();
+}
+function saveNotes(n,val){setDs(n,{notes:val});}
+function savePrompt(n,val){setDs(n,{prompt:val});}
+function updateReviewDisplay(n){
+  const d=ds(n);
+  const right=d.right||0,wrong=d.wrong||0,total=right+wrong;
+  const auto=total>0?Math.round(right/total*100):null;
+  const score=d.score!=null?d.score:auto;
+  const rEl=document.getElementById('tally-right-'+n);
+  const wEl=document.getElementById('tally-wrong-'+n);
+  const sEl=document.getElementById('score-display-num-'+n);
+  const barEl=document.getElementById('score-bar-'+n);
+  if(rEl)rEl.textContent=right;
+  if(wEl)wEl.textContent=wrong;
+  if(sEl)sEl.textContent=score!=null?score:'—';
+  if(barEl)barEl.style.width=(score||0)+'%';
+}
 
 // ─── STATS ───────────────────────────────────────────────────────────────────
 function updateStats(){
   const total=NON_REST.length*3;
-  let done=0,part=0,coCount=0,phases=0;
+  let done=0,part=0,coC=0,phases=0;
   NON_REST.forEach(d=>{
-    if(allDone(d.d))done++;
-    else if(anyDone(d.d))part++;
+    if(allDone(d.d))done++;else if(anyDone(d.d))part++;
     const left=leftPhases(d.d);
-    if(anyDone(d.d)&&left.length)coCount+=left.length;
+    if(anyDone(d.d)&&left.length)coC+=left.filter(p=>!(ds(d.d).co||{})[p]).length;
     phases+=(3-left.length);
   });
   document.getElementById('sn-done').textContent=done;
   document.getElementById('sn-part').textContent=part;
-  document.getElementById('sn-co').textContent=coCount;
+  document.getElementById('sn-co').textContent=coC;
   const pct=Math.round(phases/total*100);
   document.getElementById('prog').style.width=pct+'%';
   document.getElementById('prog-lbl').textContent=pct+'% phases done';
-  const scores=NON_REST.map(d=>parseFloat(ds(d.d).score)).filter(v=>!isNaN(v));
-  document.getElementById('sn-avg').textContent=scores.length?(scores.reduce((a,b)=>a+b,0)/scores.length).toFixed(1):'—';
+  const scores=NON_REST.map(d=>calcScore(d.d)).filter(v=>v!=null);
+  document.getElementById('sn-avg').textContent=scores.length?Math.round(scores.reduce((a,b)=>a+b,0)/scores.length)+'%':'—';
+  updateNudge();
 }
-
-// ─── CARRYOVER NUDGE ─────────────────────────────────────────────────────────
 function updateNudge(){
-  const unplanned=getUnplannedCarryovers();
+  const unplanned=NON_REST.filter(d=>{
+    if(!anyDone(d.d))return false;
+    const left=leftPhases(d.d);const co=ds(d.d).co||{};
+    return left.some(p=>!co[p]);
+  });
   const nudge=document.getElementById('co-nudge');
-  if(unplanned.length===0){nudge.classList.add('hidden');return;}
+  if(!unplanned.length){nudge.classList.add('hidden');return;}
   nudge.classList.remove('hidden');
-  const phases=unplanned.reduce((a,d)=>a+leftPhases(d.d).filter(p=>!(ds(d.d).co||{})[p]).length,0);
-  document.getElementById('co-nudge-txt').textContent=`${phases} phase${phases>1?'s':''} from ${unplanned.length} day${unplanned.length>1?'s':''} still need rescheduling`;
+  const ct=unplanned.reduce((a,d)=>a+leftPhases(d.d).filter(p=>!(ds(d.d).co||{})[p]).length,0);
+  document.getElementById('co-nudge-txt').textContent=`${ct} unscheduled phase${ct>1?'s':''} across ${unplanned.length} day${unplanned.length>1?'s':''}`;
 }
 
-// ─── TODAY BANNER ────────────────────────────────────────────────────────────
-function renderTodayBanner(){
+// ─── PAGE SWITCH ─────────────────────────────────────────────────────────────
+function showPage(pg){
+  document.querySelectorAll('.page').forEach(p=>p.classList.remove('active'));
+  document.querySelectorAll('.tab').forEach(t=>t.classList.remove('active'));
+  document.getElementById('page-'+pg).classList.add('active');
+  document.getElementById('tab-'+pg).classList.add('active');
+  if(pg==='dashboard')renderDashboard();
+}
+
+// ─── TODAY SECTION ───────────────────────────────────────────────────────────
+function renderToday(){
   const day=DAYS.find(d=>d.d===TDAY);
-  const el=document.getElementById('today-banner');
+  const el=document.getElementById('today-section');
   if(!day||day.rest){el.innerHTML='';return;}
   const d=ds(TDAY);
-  const phase=(ph,label,desc)=>`
-    <div class="pcheck${d[ph]?' done-'+ph:''}" onclick="togglePhase(${TDAY},'${ph}')">
-      <div class="pcheck-box${d[ph]?' ck-'+ph:''}">${d[ph]?'✓':''}</div>
-      <div class="pcheck-info">
-        <div class="pcheck-name${d[ph]?' struck':''}">${label}</div>
-        <div class="pcheck-desc">${desc}</div>
-      </div>
-    </div>`;
-  el.innerHTML=`<div class="today-banner">
-    <div class="today-card">
-      <div class="today-label">Today · Day ${TDAY}</div>
-      <div class="today-title">${day.title}</div>
-      <div class="phase-checks">
-        ${phase('k','K — Knowledge (20 min)',day.k)}
-        ${phase('b','B — Buzzer drill (15 min)',day.b)}
-        ${phase('s','S — Simulation (20 min)',day.s)}
-      </div>
-      <div class="today-footer">
-        <button class="today-btn primary" onclick="openSheet(${TDAY})">Full details &amp; notes</button>
-        ${day.p?`<button class="today-btn" onclick="copyPrompt(${TDAY})">Copy Claude prompt</button>`:''}
-      </div>
-    </div>
+  const ph=(ph,label,desc)=>`<div class="pcheck${d[ph]?' done-'+ph:''}" onclick="togglePhase(${TDAY},'${ph}')">
+    <div class="pcheck-box${d[ph]?' ck-'+ph:''}">${d[ph]?'✓':''}</div>
+    <div class="pcheck-info"><div class="pcheck-name${d[ph]?' struck':''}">${label}</div><div class="pcheck-desc">${desc}</div></div>
   </div>`;
+  el.innerHTML=`<div class="today-wrap"><div class="today-card">
+    <div class="today-label">Today · Day ${TDAY} of 31</div>
+    <div class="today-title">${day.title}</div>
+    <div class="phase-checks">${ph('k','K — Knowledge (20 min)',day.k)}${ph('b','B — Buzzer drill (15 min)',day.b)}${ph('s','S — Simulation (20 min)',day.s)}</div>
+    <div class="today-btns">
+      <button class="tbtn primary" onclick="openSheet(${TDAY})">Session details &amp; review</button>
+      ${day.p?`<button class="tbtn" onclick="copyTxt(${TDAY})">Copy Claude prompt</button>`:''}
+    </div>
+  </div></div>`;
 }
 
 // ─── CALENDAR ────────────────────────────────────────────────────────────────
@@ -453,34 +598,22 @@ function renderCal(){
   for(let w=0;w<5;w++){
     html+=`<div class="week-sep">${WK_LABELS[w]}</div><div class="week-grid">`;
     for(let di=0;di<7;di++){
-      const idx=w*7+di;
-      if(idx>=DAYS.length){html+='<div></div>';continue;}
+      const idx=w*7+di;if(idx>=DAYS.length){html+='<div></div>';continue;}
       const day=DAYS[idx];
-      if(day.rest){
-        html+=`<div class="dc is-rest"><div class="dc-num">${day.d}</div><div class="dc-dayname">Rest</div></div>`;
-        continue;
-      }
+      if(day.rest){html+=`<div class="dc is-rest"><div class="dc-num">${day.d}</div><div class="dc-name">Rest</div></div>`;continue;}
       const d=ds(day.d);
-      const left=leftPhases(day.d);
-      const done=allDone(day.d);
-      const part=anyDone(day.d)&&!done;
-      const isToday=day.d===TDAY;
-      const hasCO=hasCarryover(day.d);
-      const hasInc=incomingFor(day.d).length>0;
-      let cls='dc';
-      if(isToday)cls+=' is-today';
-      else if(done)cls+=' is-done';
-      else if(part)cls+=' is-part';
-      if(hasCO||hasInc)cls+=' is-co';
-
-      // Pips: filled = done, empty = not
-      const pip=ph=>d[ph]?`<div class="pip pip-${ph}"></div>`:`<div class="pip pip-${ph}-e"></div>`;
-
+      const done=allDone(day.d),part=anyDone(day.d)&&!done;
+      const isT=day.d===TDAY;
+      const hasCO=Object.keys(d.co||{}).length>0||incomingFor(day.d).length>0;
+      let cls='dc'+(isT?' is-today':done?' is-done':part?' is-part':'')+(hasCO?' is-co':'');
+      const pip=ph=>d[ph]?`<div class="pip pip-${ph}"></div>`:`<div class="pip pip-${ph}e"></div>`;
+      const sc=calcScore(day.d);
       html+=`<div class="${cls}" onclick="openSheet(${day.d})">
-        ${hasCO?'<div class="co-dot"></div>':''}
+        ${hasCO&&!isT?'<div class="co-dot"></div>':''}
         <div class="dc-num">${day.d}</div>
-        <div class="dc-dayname">${day.title.length>22?day.title.slice(0,20)+'…':day.title}</div>
+        <div class="dc-name">${day.title.length>22?day.title.slice(0,20)+'…':day.title}</div>
         <div class="pip-row">${pip('k')}${pip('b')}${pip('s')}</div>
+        ${sc!=null?`<div class="score-badge">${sc}%</div>`:''}
       </div>`;
     }
     html+='</div>';
@@ -491,7 +624,6 @@ function renderCal(){
 // ─── SHEET ───────────────────────────────────────────────────────────────────
 let activeDay=null;
 function openSheet(n){activeDay=n;renderSheet(n);document.getElementById('overlay').classList.add('open');}
-function openTodayDetail(){openSheet(TDAY);}
 function closeSheet(){document.getElementById('overlay').classList.remove('open');activeDay=null;}
 function maybeClose(e){if(e.target===document.getElementById('overlay'))closeSheet();}
 
@@ -500,99 +632,255 @@ function renderSheet(n){
   const d=ds(n);
   const left=leftPhases(n);
   const incoming=incomingFor(n);
-  const isToday=n===TDAY;
+  const isT=n===TDAY;
+  const right=d.right||0,wrong=d.wrong||0,total=right+wrong;
+  const autoScore=total>0?Math.round(right/total*100):null;
+  const score=d.score!=null?d.score:autoScore;
+  const mode=d.mode||'tally';
 
   // Phase rows
-  const phaseRow=(ph,label,desc)=>{
-    const done=d[ph];
-    return `<div class="sphase${done?' sp-done-'+ph:''}" onclick="togglePhase(${n},'${ph}')">
-      <div class="sp-box${done?' spck-'+ph:''}">${done?'✓':''}</div>
-      <div class="sp-txt">
-        <div class="sp-name sp-name-${ph}">${label}</div>
-        <div class="sp-desc">${desc}</div>
-      </div>
-    </div>`;
-  };
+  const phRow=(ph,label,desc)=>`<div class="sphase${d[ph]?' sp-'+ph:''}" onclick="togglePhase(${n},'${ph}')">
+    <div class="sp-box${d[ph]?' spck-'+ph:''}">${d[ph]?'✓':''}</div>
+    <div class="sp-txt"><div class="sp-name sp-name-${ph}">${label}</div><div class="sp-desc">${desc}</div></div>
+  </div>`;
 
-  // Carryover suggestions — only show for days that have been started with unfinished phases
+  // Carryover
   let coHTML='';
   if(anyDone(n)&&left.length>0){
     const co=d.co||{};
     const unplanned=left.filter(p=>!co[p]);
     const planned=left.filter(p=>co[p]);
-    let sugHTML='';
-    if(unplanned.length>0){
-      const nextDays=nextAvailableDays(n,6);
-      unplanned.forEach(ph=>{
-        sugHTML+=`<div class="co-suggestion">
-          <div class="co-sug-txt">Move <strong>${ph.toUpperCase()}</strong> to…</div>
-          <div class="co-sug-actions">
-            ${nextDays.map(fd=>`<button class="co-sug-btn${co[ph]===fd.d?' accepted':''}" onclick="assignCO(${n},'${ph}',${fd.d})">Day ${fd.d}</button>`).join('')}
-          </div>
-        </div>`;
-      });
-    }
-    if(planned.length>0){
-      sugHTML+=planned.map(ph=>`<div style="font-size:12px;color:var(--co-txt);padding:4px 0">✓ <strong>${ph.toUpperCase()}</strong> carried over to Day ${co[ph]}</div>`).join('');
-    }
+    const nxt=nextDays(n,6);
     coHTML=`<div class="co-box">
-      <div class="co-box-title">⚠ Some phases not done</div>
-      <div class="co-box-sub">Pick a day to carry over each missed phase — we'll remind you when you get there.</div>
-      ${sugHTML}
+      <div class="co-box-title">⚠ Missed phases — pick a day to reschedule</div>
+      <div class="co-box-sub">Tap a day button to schedule each missed phase. We'll remind you when you get there.</div>
+      ${unplanned.map(ph=>`<div class="co-sug">
+        <div class="co-sug-label">Move <strong>${ph.toUpperCase()}</strong> to…</div>
+        <div class="co-sug-btns">${nxt.map(fd=>`<button class="co-sug-btn${co[ph]===fd.d?' ok':''}" onclick="assignCO(${n},'${ph}',${fd.d})">Day ${fd.d}</button>`).join('')}</div>
+      </div>`).join('')}
+      ${planned.map(ph=>`<div style="font-size:12px;color:var(--co-txt);padding:5px 0">✓ <strong>${ph.toUpperCase()}</strong> → Day ${co[ph]}</div>`).join('')}
     </div>`;
   }
 
-  // Incoming carryovers
-  let incHTML='';
-  if(incoming.length>0){
-    incHTML=`<div class="in-box">📥 <strong>Carrying in today:</strong> ${incoming.map(i=>`${i.phases.join('+')} from Day ${i.fromDay}`).join(', ')} — make sure to fit these in.</div>`;
-  }
+  // Incoming
+  const incHTML=incoming.length?`<div class="in-box">📥 <strong>Carrying in today:</strong> ${incoming.map(i=>`${i.phases.join('+')} from Day ${i.fromDay}`).join(', ')}</div>`:'';
+
+  // Review section
+  const tallyHTML=`
+    <div class="tally-grid">
+      <div class="tally-box right-box">
+        <div class="tally-lbl">✓ Correct</div>
+        <div class="tally-controls">
+          <button class="tally-btn" onclick="adjustTally(${n},'right',-1)">−</button>
+          <div class="tally-num" id="tally-right-${n}">${right}</div>
+          <button class="tally-btn" onclick="adjustTally(${n},'right',1)">+</button>
+        </div>
+      </div>
+      <div class="tally-box wrong-box">
+        <div class="tally-lbl">✗ Missed</div>
+        <div class="tally-controls">
+          <button class="tally-btn" onclick="adjustTally(${n},'wrong',-1)">−</button>
+          <div class="tally-num" id="tally-wrong-${n}">${wrong}</div>
+          <button class="tally-btn" onclick="adjustTally(${n},'wrong',1)">+</button>
+        </div>
+      </div>
+    </div>
+    <div style="font-size:11px;color:var(--ink3);text-align:center;margin-bottom:10px">${total>0?`${total} questions attempted`:'No questions logged yet'}</div>`;
+
+  const qaHTML=`
+    ${(d.questions||[]).map((q,i)=>`<div class="qa-entry">
+      <div class="qa-entry-top">
+        <textarea class="qa-q" placeholder="Type or paste the question…" oninput="updateQuestion(${n},${i},'q',this.value)">${q.q||''}</textarea>
+        <div class="qa-result-btns">
+          <button class="qa-rb right${q.result==='right'?' selected-right':''}" onclick="updateQuestion(${n},${i},'result','right');renderSheet(${n})">✓</button>
+          <button class="qa-rb wrong${q.result==='wrong'?' selected-wrong':''}" onclick="updateQuestion(${n},${i},'result','wrong');renderSheet(${n})">✗</button>
+        </div>
+      </div>
+      <div class="qa-bottom">
+        <input class="qa-topic-in" placeholder="Topic (e.g. Africa, Capitals…)" value="${q.topic||''}" oninput="updateQuestion(${n},${i},'topic',this.value)" list="topic-list">
+        <button class="qa-delete" onclick="deleteQuestion(${n},${i})">Remove</button>
+      </div>
+    </div>`).join('')}
+    <datalist id="topic-list">${TOPICS.map(t=>`<option value="${t}">`).join('')}</datalist>
+    <button class="add-q-btn" onclick="addQuestion(${n})">+ Add question</button>`;
+
+  const reviewHTML=`<div class="review-section">
+    <div class="review-tabs">
+      <div class="rtab${mode==='tally'?' active':''}" onclick="setMode(${n},'tally')">Quick tally</div>
+      <div class="rtab${mode==='qa'?' active':''}" onclick="setMode(${n},'qa')">Full Q&amp;A log</div>
+    </div>
+    ${mode==='tally'?tallyHTML:qaHTML}
+    <div class="score-display">
+      <div>
+        <div class="score-display-lbl">Session score</div>
+        <div style="font-size:11px;color:var(--ink3);margin-top:2px">${mode==='tally'&&total>0?'Auto-calculated from tally':'Enter manually (1–100)'}</div>
+        <div class="score-bar-wrap"><div class="score-bar" id="score-bar-${n}" style="width:${score||0}%"></div></div>
+      </div>
+      <div style="display:flex;align-items:center;gap:8px">
+        <div class="stat-n" id="score-display-num-${n}" style="font-size:30px">${score!=null?score:'—'}</div>
+        <input type="number" min="1" max="100" placeholder="1-100" style="width:64px;height:32px;border:1px solid var(--border);border-radius:7px;font-size:13px;font-family:inherit;text-align:center;padding:0 4px" value="${d.score!=null?d.score:''}" oninput="setManualScore(${n},this.value)">
+      </div>
+    </div>
+  </div>`;
+
+  // Prompt
+  const savedPrompt=d.prompt||(day.p||'');
+  const promptHTML=`<div class="sec">
+    <div class="sec-lbl">Claude prompt</div>
+    <textarea class="notes-ta" style="min-height:64px" placeholder="Paste or edit your Claude prompt for this session…" oninput="savePrompt(${n},this.value)">${savedPrompt}</textarea>
+    <div class="prompt-actions">
+      <button class="pact-btn" onclick="copyTxt(${n})">⎘ Copy prompt</button>
+      <button class="pact-btn" onclick="resetPrompt(${n})">↺ Reset to default</button>
+    </div>
+  </div>`;
 
   document.getElementById('sheet-body').innerHTML=`
-    <div class="sheet-day">${isToday?'Today · ':''}Day ${day.d} of 31</div>
+    <div class="sheet-day">${isT?'Today · ':''}Day ${day.d} of 31</div>
     <div class="sheet-title">${day.title}</div>
     ${incHTML}
     <div class="sec">
       <div class="sec-lbl">Check off as you go</div>
-      ${phaseRow('k','K — Knowledge (20 min)',day.k)}
-      ${phaseRow('b','B — Buzzer drill (15 min)',day.b)}
-      ${phaseRow('s','S — Simulation (20 min)',day.s)}
+      ${phRow('k','K — Knowledge (20 min)',day.k)}
+      ${phRow('b','B — Buzzer drill (15 min)',day.b)}
+      ${phRow('s','S — Simulation (20 min)',day.s)}
     </div>
     ${coHTML}
-    ${day.p?`<div class="sec">
-      <div class="sec-lbl">Claude prompt</div>
-      <div class="prompt-box" id="ptxt-${n}">${day.p}</div>
-      <button class="copy-btn" onclick="copyPrompt(${n})">⎘ Copy prompt</button>
-    </div>`:''}
-    <div class="sec">
-      <div class="sec-lbl">Simulation score (0–15)</div>
-      <div class="score-row">
-        <input type="number" class="score-input" min="0" max="15" placeholder="—" value="${d.score||''}" oninput="saveField(${n},'score',this.value)">
-        <span style="font-size:12px;color:var(--ink3)">Higher = buzzed out earlier</span>
-      </div>
-    </div>
+    <div class="sec"><div class="sec-lbl">Review &amp; feedback</div>${reviewHTML}</div>
+    ${promptHTML}
     <div class="sec" style="margin-bottom:0">
       <div class="sec-lbl">Notes &amp; weak spots</div>
-      <textarea class="notes-ta" placeholder="What did you miss? What to review next?" oninput="saveField(${n},'notes',this.value)">${d.notes||''}</textarea>
+      <textarea class="notes-ta" placeholder="What did he miss? What to focus on next?" oninput="saveNotes(${n},this.value)">${d.notes||''}</textarea>
     </div>`;
 }
 
-function copyPrompt(n){
-  const day=DAYS.find(d=>d.d===n);if(!day||!day.p)return;
-  navigator.clipboard.writeText(day.p).then(()=>{
-    // brief visual feedback on whatever button triggered it
-    const btns=document.querySelectorAll('.copy-btn,.today-btn');
-    btns.forEach(b=>{if(b.textContent.includes('Copy')){b.textContent='✓ Copied!';setTimeout(()=>{b.textContent=b.classList.contains('today-btn')?'Copy Claude prompt':'⎘ Copy prompt'},2000);}});
+function copyTxt(n){
+  const d=ds(n);const day=DAYS.find(x=>x.d===n);
+  const txt=d.prompt||(day&&day.p)||'';
+  if(!txt)return;
+  navigator.clipboard.writeText(txt).then(()=>{
+    const btns=[...document.querySelectorAll('.pact-btn,.tbtn')];
+    btns.forEach(b=>{if(b.textContent.includes('Copy')){b.textContent='✓ Copied!';setTimeout(()=>{b.textContent=b.classList.contains('tbtn')?'Copy Claude prompt':'⎘ Copy prompt';},2000);}});
   });
+}
+function resetPrompt(n){const day=DAYS.find(x=>x.d===n);setDs(n,{prompt:day?day.p:''});renderSheet(n);}
+
+// ─── DASHBOARD ───────────────────────────────────────────────────────────────
+let scoreChart=null;
+function renderDashboard(){
+  // Summary stats
+  const scores=NON_REST.map(d=>calcScore(d.d)).filter(v=>v!=null);
+  const allQs=NON_REST.flatMap(d=>(ds(d.d).questions||[]).filter(q=>q.result));
+  const totalRight=NON_REST.reduce((a,d)=>{
+    const dd=ds(d.d);
+    const qaRight=(dd.questions||[]).filter(q=>q.result==='right').length;
+    return a+(qaRight||(dd.right||0));
+  },0);
+  const totalWrong=NON_REST.reduce((a,d)=>{
+    const dd=ds(d.d);
+    const qaWrong=(dd.questions||[]).filter(q=>q.result==='wrong').length;
+    return a+(qaWrong||(dd.wrong||0));
+  },0);
+  const totalQ=totalRight+totalWrong;
+  const best=scores.length?Math.max(...scores):null;
+  document.getElementById('dash-summary').innerHTML=`
+    <div class="dash-stat"><div class="dash-stat-n">${scores.length?Math.round(scores.reduce((a,b)=>a+b,0)/scores.length)+'%':'—'}</div><div class="dash-stat-l">Avg score</div></div>
+    <div class="dash-stat"><div class="dash-stat-n">${best!=null?best+'%':'—'}</div><div class="dash-stat-l">Best session</div></div>
+    <div class="dash-stat"><div class="dash-stat-n">${totalQ>0?Math.round(totalRight/totalQ*100)+'%':'—'}</div><div class="dash-stat-l">Overall accuracy</div></div>
+    <div class="dash-stat"><div class="dash-stat-n">${totalRight}</div><div class="dash-stat-l">Total correct</div></div>
+    <div class="dash-stat"><div class="dash-stat-n">${totalWrong}</div><div class="dash-stat-l">Total missed</div></div>
+    <div class="dash-stat"><div class="dash-stat-n">${totalQ}</div><div class="dash-stat-l">Questions logged</div></div>`;
+
+  // Score trend chart
+  const scoreDays=NON_REST.filter(d=>calcScore(d.d)!=null);
+  const ctx=document.getElementById('score-chart').getContext('2d');
+  if(scoreChart)scoreChart.destroy();
+  if(scoreDays.length===0){
+    document.getElementById('score-chart').parentElement.innerHTML='<div class="empty-state">No scores logged yet — complete some sessions first.</div>';
+  } else {
+    scoreChart=new Chart(ctx,{
+      type:'line',
+      data:{
+        labels:scoreDays.map(d=>'Day '+d.d),
+        datasets:[{
+          label:'Score',data:scoreDays.map(d=>calcScore(d.d)),
+          borderColor:'#1a1a18',backgroundColor:'rgba(26,26,24,0.06)',
+          borderWidth:2,pointRadius:4,pointBackgroundColor:'#1a1a18',tension:.3,fill:true
+        }]
+      },
+      options:{responsive:true,maintainAspectRatio:false,plugins:{legend:{display:false},tooltip:{callbacks:{label:c=>c.raw+'%'}}},scales:{y:{min:0,max:100,ticks:{callback:v=>v+'%'},grid:{color:'rgba(0,0,0,0.05)'}},x:{grid:{display:false}}}}
+    });
+  }
+
+  // Phase accuracy
+  const phAcc=(ph)=>{
+    const days=NON_REST.filter(d=>anyDone(d.d));
+    const done=days.filter(d=>ds(d.d)[ph]).length;
+    return days.length?Math.round(done/days.length*100):0;
+  };
+  document.getElementById('phase-acc').innerHTML=`
+    ${[['k','Knowledge','bar-k'],['b','Buzzer drill','bar-b'],['s','Simulation','bar-s']].map(([ph,lbl,cls])=>{
+      const pct=phAcc(ph);
+      return `<div class="phase-acc-row">
+        <div class="phase-acc-lbl">${lbl}</div>
+        <div class="phase-acc-bar-wrap"><div class="phase-acc-bar ${cls}" style="width:${pct}%"></div></div>
+        <div class="phase-acc-num">${pct}% done</div>
+      </div>`;
+    }).join('')}`;
+
+  // Weak topics from Q&A log
+  const topicStats={};
+  NON_REST.forEach(d=>{
+    (ds(d.d).questions||[]).forEach(q=>{
+      if(!q.result||!q.topic)return;
+      const t=q.topic||'Other';
+      if(!topicStats[t])topicStats[t]={right:0,wrong:0};
+      topicStats[t][q.result==='right'?'right':'wrong']++;
+    });
+  });
+  const topicArr=Object.entries(topicStats).map(([t,v])=>({t,right:v.right,wrong:v.wrong,total:v.right+v.wrong,pct:Math.round(v.wrong/(v.right+v.wrong)*100)})).sort((a,b)=>b.pct-a.pct);
+  const weakEl=document.getElementById('weak-topics');
+  if(topicArr.length===0){
+    weakEl.innerHTML='<div class="empty-state">Log questions with topics in Full Q&A mode to see weak topics here.</div>';
+  } else {
+    weakEl.innerHTML=`<div>${topicArr.map(({t,right,wrong,total,pct})=>`
+      <div class="topic-row">
+        <div class="topic-name">${t}<br><span style="font-size:10px;color:var(--ink3)">${right}✓ ${wrong}✗ (${total} total)</span></div>
+        <div class="topic-bar-wrap"><div class="topic-bar" style="width:${pct}%;background:${pct>=60?'var(--wrong)':pct>=30?'#f59e0b':'var(--right)'}"></div></div>
+        <div class="topic-pct" style="color:${pct>=60?'var(--wrong)':pct>=30?'#b45309':'var(--right)'}">${pct}%</div>
+        <div class="topic-tag ${pct>=60?'weak':pct>=30?'ok':'good'}">${pct>=60?'Weak':pct>=30?'Okay':'Strong'}</div>
+      </div>`).join('')}</div>`;
+  }
+
+  // Full Q log
+  const allLogged=[];
+  NON_REST.forEach(d=>{
+    (ds(d.d).questions||[]).forEach(q=>{if(q.q||q.result)allLogged.push({day:d.d,title:DAYS.find(x=>x.d===d.d).title,...q});});
+  });
+  const qLogEl=document.getElementById('q-log-section');
+  if(allLogged.length===0){
+    qLogEl.innerHTML='<div class="empty-state">No questions logged yet. Use "Full Q&A log" mode inside any day\'s session.</div>';
+  } else {
+    const wrong=allLogged.filter(q=>q.result==='wrong');
+    const right=allLogged.filter(q=>q.result==='right');
+    qLogEl.innerHTML=`
+      <div style="margin-bottom:12px;display:flex;gap:12px;flex-wrap:wrap">
+        <span style="font-size:12px;color:var(--right);font-weight:500">✓ ${right.length} correct</span>
+        <span style="font-size:12px;color:var(--wrong);font-weight:500">✗ ${wrong.length} missed</span>
+        <span style="font-size:12px;color:var(--ink3)">${allLogged.length} total</span>
+      </div>
+      ${wrong.length?`<div style="font-size:11px;font-weight:600;color:var(--wrong);text-transform:uppercase;letter-spacing:.06em;margin-bottom:6px">Questions missed — review these</div>
+      <table class="qlog-table"><thead><tr><th></th><th>Question</th><th>Topic</th><th>Day</th></tr></thead><tbody>
+        ${wrong.map(q=>`<tr><td><div class="q-result q-wrong">✗</div></td><td>${q.q||'(no text)'}</td><td>${q.topic?`<span class="q-topic-chip">${q.topic}</span>`:''}</td><td style="white-space:nowrap">Day ${q.day}</td></tr>`).join('')}
+      </tbody></table>`:''}
+      ${right.length?`<div style="font-size:11px;font-weight:600;color:var(--right);text-transform:uppercase;letter-spacing:.06em;margin:14px 0 6px">Questions answered correctly</div>
+      <table class="qlog-table"><thead><tr><th></th><th>Question</th><th>Topic</th><th>Day</th></tr></thead><tbody>
+        ${right.map(q=>`<tr><td><div class="q-result q-right">✓</div></td><td>${q.q||'(no text)'}</td><td>${q.topic?`<span class="q-topic-chip">${q.topic}</span>`:''}</td><td style="white-space:nowrap">Day ${q.day}</td></tr>`).join('')}
+      </tbody></table>`:''}`;
+  }
 }
 
 // ─── REDRAW ──────────────────────────────────────────────────────────────────
-function redraw(){
-  renderTodayBanner();
-  renderCal();
-  updateStats();
-  updateNudge();
-}
+function redraw(){renderToday();renderCal();updateStats();}
 
 // ─── BOOT ────────────────────────────────────────────────────────────────────
 STATE=lsG();redraw();
