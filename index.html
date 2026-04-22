@@ -3,540 +3,606 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Geography Bee — 31-Day Tracker</title>
+<title>Geo Bee Tracker</title>
 <style>
-@import url('https://fonts.googleapis.com/css2?family=DM+Serif+Display&family=DM+Sans:wght@400;500;600&display=swap');
+@import url('https://fonts.googleapis.com/css2?family=DM+Serif+Display:ital@0;1&family=DM+Sans:wght@400;500&display=swap');
 *,*::before,*::after{box-sizing:border-box;margin:0;padding:0}
-:root{--k:#185FA5;--k-bg:#E6F1FB;--k-txt:#0C447C;--b:#3B6D11;--b-bg:#EAF3DE;--b-txt:#27500A;--s:#854F0B;--s-bg:#FAEEDA;--s-txt:#633806;--gray:#F1EFE8;--gray2:#D3D1C7;--gray3:#888780;--text:#2C2C2A;--text2:#5F5E5A;--text3:#888780;--bg:#FAFAF8;--card:#FFFFFF;--border:rgba(0,0,0,0.1);--radius:10px;--orange:#c2410c;--orange-bg:#fff7ed}
-body{font-family:'DM Sans',sans-serif;background:var(--bg);color:var(--text);min-height:100vh}
-header{background:var(--text);color:white;padding:24px 32px;display:flex;justify-content:space-between;align-items:flex-end;flex-wrap:wrap;gap:12px}
-header h1{font-family:'DM Serif Display',serif;font-size:24px;font-weight:400;margin-bottom:3px}
-header p{font-size:13px;opacity:0.55}
-.sync-badge{font-size:12px;padding:5px 12px;border-radius:99px;border:1px solid rgba(255,255,255,0.25);color:rgba(255,255,255,0.75);display:flex;align-items:center;gap:6px;white-space:nowrap}
-.sync-dot{width:7px;height:7px;border-radius:50%;background:#4ade80}
-.sync-dot.offline{background:#f87171}.sync-dot.syncing{background:#facc15;animation:pulse 1s infinite}
-@keyframes pulse{0%,100%{opacity:1}50%{opacity:.4}}
+:root{
+  --ink:#1a1a18;--ink2:#555551;--ink3:#99998f;
+  --paper:#fafaf7;--card:#ffffff;
+  --k:#1d5fa8;--k-l:#e8f1fb;--k-d:#0c3d72;
+  --b:#2d6e1a;--b-l:#e6f4e0;--b-d:#1a4210;
+  --s:#8a4800;--s-l:#fdf0e0;--s-d:#5a2f00;
+  --today:#1a1a18;--today-txt:#ffffff;
+  --done-bg:#f0faf3;--done-bdr:#7ec8a0;
+  --part-bg:#fffbee;--part-bdr:#f5c842;
+  --co-bg:#fff5ed;--co-bdr:#f0a050;--co-txt:#8a4000;
+  --border:#e8e8e2;--radius:12px;
+}
+body{font-family:'DM Sans',sans-serif;background:var(--paper);color:var(--ink);min-height:100vh}
 
-/* Carryover banner */
-.carryover-bar{background:var(--orange-bg);border-bottom:1px solid #fed7aa;padding:14px 32px;display:flex;align-items:center;justify-content:space-between;gap:12px;flex-wrap:wrap}
-.carryover-bar.hidden{display:none}
-.co-left{display:flex;align-items:center;gap:10px;font-size:14px;font-weight:500;color:var(--orange)}
-.co-items{font-size:13px;color:var(--text2);display:flex;flex-wrap:wrap;gap:8px;margin-top:4px}
-.co-pill{background:white;border:1px solid #fed7aa;border-radius:6px;padding:3px 10px;font-size:12px;color:var(--orange);cursor:pointer}
-.co-pill:hover{background:#fff7ed}
-.co-btn{padding:6px 14px;border-radius:8px;border:1px solid var(--orange);background:var(--orange);color:white;font-size:13px;font-family:inherit;cursor:pointer;white-space:nowrap}
-.co-btn:hover{opacity:.85}
+/* ── HEADER ── */
+.hdr{background:var(--ink);color:#fff;padding:18px 24px 16px;display:flex;justify-content:space-between;align-items:center;gap:12px}
+.hdr-left h1{font-family:'DM Serif Display',serif;font-size:20px;font-weight:400;letter-spacing:-.2px}
+.hdr-left p{font-size:12px;opacity:.5;margin-top:2px}
+.sync{font-size:11px;display:flex;align-items:center;gap:5px;opacity:.7;white-space:nowrap}
+.sync-dot{width:6px;height:6px;border-radius:50%;background:#4ade80;flex-shrink:0}
+.sync-dot.off{background:#f87171}.sync-dot.spin{background:#facc15;animation:p 1s infinite}
+@keyframes p{0%,100%{opacity:1}50%{opacity:.3}}
 
-/* Stats */
-.stats-bar{background:white;border-bottom:1px solid var(--border);padding:14px 32px;display:flex;gap:28px;flex-wrap:wrap;align-items:center}
-.stat{text-align:center}.stat-num{font-size:20px;font-weight:600}.stat-label{font-size:10px;color:var(--text3);text-transform:uppercase;letter-spacing:.06em;margin-top:1px}
-.stat-div{width:1px;height:28px;background:var(--border)}
-.progress-bar-wrap{flex:1;min-width:140px}.progress-label{font-size:10px;color:var(--text3);margin-bottom:4px;text-transform:uppercase;letter-spacing:.06em}
-.progress-track{background:var(--gray);border-radius:99px;height:7px;overflow:hidden}
-.progress-fill{height:100%;border-radius:99px;background:var(--text);transition:width .4s}
+/* ── TODAY BANNER ── */
+.today-banner{background:var(--ink);color:#fff;padding:0 24px 20px}
+.today-card{background:#2a2a26;border-radius:var(--radius);padding:18px 20px}
+.today-label{font-size:10px;letter-spacing:.1em;text-transform:uppercase;opacity:.5;margin-bottom:4px}
+.today-title{font-family:'DM Serif Display',serif;font-size:22px;font-weight:400;margin-bottom:16px;line-height:1.2}
+.phase-checks{display:flex;flex-direction:column;gap:8px}
+.pcheck{display:flex;align-items:center;gap:12px;cursor:pointer;padding:10px 14px;border-radius:9px;border:1px solid rgba(255,255,255,.1);transition:background .15s}
+.pcheck:hover{background:rgba(255,255,255,.06)}
+.pcheck.done-k{background:rgba(29,95,168,.25);border-color:rgba(29,95,168,.5)}
+.pcheck.done-b{background:rgba(45,110,26,.25);border-color:rgba(45,110,26,.5)}
+.pcheck.done-s{background:rgba(138,72,0,.25);border-color:rgba(138,72,0,.5)}
+.pcheck-box{width:22px;height:22px;border-radius:6px;border:2px solid rgba(255,255,255,.3);flex-shrink:0;display:flex;align-items:center;justify-content:center;font-size:12px;transition:all .15s}
+.pcheck-box.ck-k{background:var(--k);border-color:var(--k);color:#fff}
+.pcheck-box.ck-b{background:var(--b);border-color:var(--b);color:#fff}
+.pcheck-box.ck-s{background:var(--s);border-color:var(--s);color:#fff}
+.pcheck-info{flex:1}
+.pcheck-name{font-size:13px;font-weight:500;color:#fff}
+.pcheck-desc{font-size:11px;color:rgba(255,255,255,.45);margin-top:1px;line-height:1.4}
+.pcheck-name.struck{text-decoration:line-through;opacity:.45}
+.today-footer{margin-top:14px;display:flex;gap:8px;flex-wrap:wrap}
+.today-btn{padding:8px 14px;border-radius:8px;font-size:12px;font-family:inherit;cursor:pointer;border:1px solid rgba(255,255,255,.2);background:transparent;color:rgba(255,255,255,.75);transition:all .15s}
+.today-btn:hover{background:rgba(255,255,255,.1)}
+.today-btn.primary{background:#fff;color:var(--ink);border-color:#fff;font-weight:500}
+.today-btn.primary:hover{opacity:.9}
 
-/* Legend */
-.legend-bar{display:flex;gap:16px;flex-wrap:wrap;padding:12px 32px;background:white;border-bottom:1px solid var(--border);font-size:12px;color:var(--text2)}
-.leg{display:flex;align-items:center;gap:6px}.leg-dot{width:9px;height:9px;border-radius:50%}
+/* ── CARRYOVER NUDGE ── */
+.co-nudge{background:var(--co-bg);border-bottom:1px solid var(--co-bdr);padding:12px 24px;display:flex;align-items:center;justify-content:space-between;gap:12px;flex-wrap:wrap}
+.co-nudge.hidden{display:none}
+.co-nudge-txt{font-size:13px;color:var(--co-txt);font-weight:500}
+.co-nudge-sub{font-size:11px;color:var(--co-txt);opacity:.7;margin-top:2px}
+.co-nudge-btn{padding:6px 12px;border-radius:7px;background:var(--co-txt);color:#fff;border:none;font-size:12px;font-family:inherit;cursor:pointer;white-space:nowrap}
 
-/* Calendar */
-main{padding:24px 32px;max-width:1100px}
-.week-block{margin-bottom:24px}
-.week-title{font-size:10px;font-weight:600;color:var(--text3);text-transform:uppercase;letter-spacing:.08em;margin-bottom:8px}
-.week-grid{display:grid;grid-template-columns:repeat(7,minmax(0,1fr));gap:7px}
-.day-card{background:var(--card);border:1px solid var(--border);border-radius:var(--radius);padding:9px;cursor:pointer;transition:border-color .15s,box-shadow .15s;min-height:108px;display:flex;flex-direction:column;position:relative}
-.day-card:hover{border-color:rgba(0,0,0,0.22);box-shadow:0 2px 6px rgba(0,0,0,.05)}
-.day-card.rest{background:var(--gray);cursor:default}.day-card.rest:hover{border-color:var(--border);box-shadow:none}
-.day-card.all-done{background:#F0F9F4;border-color:#A8D5B5}
-.day-card.partial{background:#fffbf0;border-color:#fcd34d}
-.day-card.has-carryover{border-color:#fb923c}
+/* ── STATS ── */
+.stats{display:flex;gap:0;background:#fff;border-bottom:1px solid var(--border)}
+.stat{flex:1;text-align:center;padding:12px 8px;border-right:1px solid var(--border)}
+.stat:last-child{border-right:none}
+.stat-n{font-size:20px;font-weight:500;color:var(--ink)}
+.stat-l{font-size:10px;color:var(--ink3);text-transform:uppercase;letter-spacing:.05em;margin-top:1px}
+.prog-wrap{background:#fff;border-bottom:1px solid var(--border);padding:10px 24px;display:flex;align-items:center;gap:12px}
+.prog-track{flex:1;height:6px;background:var(--border);border-radius:99px;overflow:hidden}
+.prog-fill{height:100%;background:var(--ink);border-radius:99px;transition:width .5s}
+.prog-label{font-size:11px;color:var(--ink3);white-space:nowrap}
 
-.day-top{display:flex;justify-content:space-between;align-items:flex-start;margin-bottom:5px}
-.day-num{font-size:10px;color:var(--text3)}
-.day-flag{font-size:9px;padding:1px 5px;border-radius:4px;font-weight:600}
-.flag-done{background:#dcfce7;color:#166534}
-.flag-partial{background:#fef9c3;color:#854d0e}
-.flag-co{background:#ffedd5;color:#c2410c}
+/* ── CALENDAR ── */
+.cal-wrap{padding:20px 24px 32px}
+.week-hdr{display:grid;grid-template-columns:repeat(7,1fr);gap:5px;margin-bottom:4px}
+.week-hdr span{font-size:9px;text-transform:uppercase;letter-spacing:.07em;color:var(--ink3);text-align:center}
+.week-sep{font-size:10px;font-weight:500;color:var(--ink3);letter-spacing:.06em;text-transform:uppercase;margin:12px 0 6px}
+.week-grid{display:grid;grid-template-columns:repeat(7,1fr);gap:5px;margin-bottom:0}
+.dc{background:var(--card);border:1px solid var(--border);border-radius:9px;padding:7px 6px 6px;cursor:pointer;min-height:72px;display:flex;flex-direction:column;transition:border-color .15s,box-shadow .15s;position:relative}
+.dc:hover{border-color:#aaa;box-shadow:0 2px 6px rgba(0,0,0,.07)}
+.dc.is-today{border:2px solid var(--ink);background:var(--ink);color:#fff}
+.dc.is-rest{background:#f5f5f2;border-color:#ebebea;cursor:default}
+.dc.is-rest:hover{border-color:#ebebea;box-shadow:none}
+.dc.is-done{background:var(--done-bg);border-color:var(--done-bdr)}
+.dc.is-part{background:var(--part-bg);border-color:var(--part-bdr)}
+.dc.is-co{border-color:var(--co-bdr)}
+.dc-num{font-size:10px;color:var(--ink3);margin-bottom:4px}
+.dc.is-today .dc-num{color:rgba(255,255,255,.55)}
+.dc.is-today .dc-dayname{color:rgba(255,255,255,.9)}
+.dc-dayname{font-size:10px;font-weight:500;color:var(--ink);line-height:1.3;flex:1}
+.dc.is-rest .dc-dayname{color:var(--ink3);font-style:italic;font-weight:400}
+.pip-row{display:flex;gap:3px;margin-top:5px;flex-wrap:wrap}
+.pip{width:8px;height:8px;border-radius:50%}
+.pip-k{background:var(--k)}.pip-b{background:var(--b)}.pip-s{background:var(--s)}
+.pip-k-e{background:var(--k-l);border:1px solid #bcd4f0}
+.pip-b-e{background:var(--b-l);border:1px solid #a8d4a0}
+.pip-s-e{background:var(--s-l);border:1px solid #f0c898}
+.co-dot{position:absolute;top:5px;right:5px;width:6px;height:6px;border-radius:50%;background:var(--co-bdr)}
 
-/* Phase checkboxes */
-.phases{display:flex;flex-direction:column;gap:3px;margin:4px 0}
-.phase-row{display:flex;align-items:center;gap:5px;cursor:pointer}
-.phase-cb{width:13px;height:13px;border-radius:3px;border:1.5px solid var(--gray2);flex-shrink:0;display:flex;align-items:center;justify-content:center;font-size:8px;color:transparent}
-.phase-cb.checked-k{background:var(--k);border-color:var(--k);color:white}
-.phase-cb.checked-b{background:var(--b);border-color:var(--b);color:white}
-.phase-cb.checked-s{background:var(--s);border-color:var(--s);color:white}
-.phase-label{font-size:9px;font-weight:600;letter-spacing:.04em}
-.phase-label-k{color:var(--k-txt)}.phase-label-b{color:var(--b-txt)}.phase-label-s{color:var(--s-txt)}
-.phase-label.done-label{text-decoration:line-through;opacity:.5}
+/* ── DETAIL OVERLAY ── */
+.overlay{display:none;position:fixed;inset:0;background:rgba(0,0,0,.45);z-index:200;align-items:flex-end;justify-content:center;padding:0}
+.overlay.open{display:flex}
+.sheet{background:#fff;border-radius:18px 18px 0 0;width:100%;max-width:560px;max-height:92vh;overflow-y:auto;padding:24px 24px 32px;position:relative}
+.sheet-handle{width:36px;height:4px;background:#ddd;border-radius:99px;margin:0 auto 20px}
+.sheet-day{font-size:11px;color:var(--ink3);margin-bottom:3px}
+.sheet-title{font-family:'DM Serif Display',serif;font-size:22px;font-weight:400;margin-bottom:18px;line-height:1.2}
+.sec{margin-bottom:18px}
+.sec-lbl{font-size:10px;font-weight:500;letter-spacing:.08em;text-transform:uppercase;color:var(--ink3);margin-bottom:8px}
+/* Phase rows in sheet */
+.sphase{display:flex;align-items:flex-start;gap:12px;padding:12px 14px;border-radius:10px;border:1px solid var(--border);margin-bottom:8px;cursor:pointer;transition:all .15s}
+.sphase:hover{border-color:#bbb}
+.sphase.sp-done-k{background:var(--k-l);border-color:#9dc4ee}
+.sphase.sp-done-b{background:var(--b-l);border-color:#94d494}
+.sphase.sp-done-s{background:var(--s-l);border-color:#f5c078}
+.sp-box{width:22px;height:22px;border-radius:6px;border:2px solid #ccc;flex-shrink:0;margin-top:1px;display:flex;align-items:center;justify-content:center;font-size:11px;transition:all .15s}
+.sp-box.spck-k{background:var(--k);border-color:var(--k);color:#fff}
+.sp-box.spck-b{background:var(--b);border-color:var(--b);color:#fff}
+.sp-box.spck-s{background:var(--s);border-color:var(--s);color:#fff}
+.sp-txt{flex:1}
+.sp-name{font-size:13px;font-weight:500;margin-bottom:3px}
+.sp-name-k{color:var(--k-d)}.sp-name-b{color:var(--b-d)}.sp-name-s{color:var(--s-d)}
+.sp-desc{font-size:12px;color:var(--ink2);line-height:1.5}
+/* Carryover suggestion */
+.co-box{background:var(--co-bg);border:1px solid var(--co-bdr);border-radius:10px;padding:14px 16px;margin-bottom:18px}
+.co-box-title{font-size:12px;font-weight:500;color:var(--co-txt);margin-bottom:4px}
+.co-box-sub{font-size:12px;color:var(--co-txt);opacity:.8;margin-bottom:10px;line-height:1.5}
+.co-suggestion{display:flex;align-items:center;justify-content:space-between;background:#fff;border:1px solid var(--co-bdr);border-radius:8px;padding:10px 12px;margin-bottom:6px}
+.co-sug-txt{font-size:13px;color:var(--ink)}
+.co-sug-actions{display:flex;gap:6px}
+.co-sug-btn{padding:4px 10px;border-radius:6px;font-size:11px;font-family:inherit;cursor:pointer;border:1px solid var(--co-bdr);background:transparent;color:var(--co-txt);transition:all .15s}
+.co-sug-btn:hover,.co-sug-btn.accepted{background:var(--co-txt);color:#fff;border-color:var(--co-txt)}
+/* Incoming carryover */
+.in-box{background:var(--k-l);border:1px solid #9dc4ee;border-radius:10px;padding:12px 14px;margin-bottom:16px;font-size:12px;color:var(--k-d);line-height:1.5}
+/* Prompt */
+.prompt-box{background:#f5f5f2;border-radius:8px;padding:11px 13px;font-size:12px;color:var(--ink);line-height:1.55;border-left:3px solid #ccc;margin-top:4px}
+.copy-btn{font-size:11px;color:var(--k);background:none;border:none;cursor:pointer;padding:4px 0;font-family:inherit}
+.copy-btn:hover{text-decoration:underline}
+.score-row{display:flex;align-items:center;gap:10px}
+.score-input{width:70px;height:32px;border:1px solid var(--border);border-radius:7px;font-size:14px;font-family:inherit;text-align:center;color:var(--ink);background:#fff}
+.score-input:focus{outline:none;border-color:var(--ink)}
+.notes-ta{width:100%;margin-top:6px;padding:9px 11px;border:1px solid var(--border);border-radius:8px;font-size:13px;font-family:inherit;color:var(--ink);resize:vertical;min-height:60px}
+.notes-ta:focus{outline:none;border-color:var(--ink)}
+.sheet-close{position:absolute;top:20px;right:20px;width:28px;height:28px;border-radius:50%;border:1px solid var(--border);background:var(--paper);cursor:pointer;display:flex;align-items:center;justify-content:center;font-size:13px;color:var(--ink2)}
 
-.day-title{font-size:10px;font-weight:500;color:var(--text);line-height:1.4;flex:1;margin-top:3px}
-.day-rest-label{font-size:10px;color:var(--text3);font-style:italic;flex:1;padding-top:6px}
-.score-chip{font-size:9px;color:var(--s-txt);font-weight:600;margin-top:4px}
-.notes-chip{font-size:9px;color:var(--text3);margin-top:2px}
+/* ── CONFIG ── */
+.cfg{background:#fff;border:1px solid var(--border);border-radius:10px;padding:16px 20px;margin:12px 24px}
+.cfg h3{font-size:13px;font-weight:500;margin-bottom:10px}
+.cfg-row{display:flex;gap:6px;flex-wrap:wrap;margin-bottom:6px}
+.cfg-in{flex:1;min-width:160px;height:34px;border:1px solid var(--border);border-radius:7px;padding:0 10px;font-size:12px;font-family:inherit;background:#fff}
+.cfg-btn{height:34px;padding:0 14px;border-radius:7px;border:1px solid var(--ink);background:var(--ink);color:#fff;font-size:12px;font-family:inherit;cursor:pointer}
+.cfg-btn.sec{background:#fff;color:var(--ink)}
+.cfg-help{font-size:11px;color:var(--ink3);line-height:1.5}
+.setup-bar{background:var(--k);color:#fff;padding:10px 24px;font-size:13px;display:flex;align-items:center;gap:8px;flex-wrap:wrap}
+.setup-bar a{color:#bde0ff}.setup-bar.hidden{display:none}
 
-/* Detail panel */
-.detail-overlay{display:none;position:fixed;inset:0;background:rgba(0,0,0,0.4);z-index:100;align-items:center;justify-content:center;padding:16px}
-.detail-overlay.open{display:flex}
-.detail-panel{background:white;border-radius:16px;padding:26px;max-width:580px;width:100%;max-height:92vh;overflow-y:auto;position:relative}
-.detail-close{position:absolute;top:18px;right:18px;width:26px;height:26px;border-radius:50%;border:1px solid var(--border);background:var(--bg);cursor:pointer;display:flex;align-items:center;justify-content:center;font-size:13px;color:var(--text2)}
-.detail-close:hover{background:var(--gray)}
-.detail-day-num{font-size:11px;color:var(--text3);margin-bottom:3px}
-.detail-title{font-family:'DM Serif Display',serif;font-size:21px;font-weight:400;margin-bottom:18px}
-.detail-section{margin-bottom:14px}
-.section-label{font-size:11px;font-weight:600;letter-spacing:.05em;text-transform:uppercase;margin-bottom:6px;display:flex;align-items:center;gap:8px}
-.section-body{font-size:13px;color:var(--text2);line-height:1.6}
-
-/* Phase completion toggles inside detail */
-.phase-toggle-row{display:flex;align-items:flex-start;gap:10px;padding:10px 12px;border-radius:8px;border:1px solid var(--border);margin-bottom:8px;cursor:pointer;transition:all .15s}
-.phase-toggle-row:hover{border-color:var(--gray2)}
-.phase-toggle-row.done-k{background:var(--k-bg);border-color:#93c5fd}
-.phase-toggle-row.done-b{background:var(--b-bg);border-color:#86efac}
-.phase-toggle-row.done-s{background:var(--s-bg);border-color:#fcd34d}
-.ptog-check{width:20px;height:20px;border-radius:5px;border:2px solid var(--gray2);flex-shrink:0;margin-top:1px;display:flex;align-items:center;justify-content:center;font-size:11px;color:transparent;transition:all .15s}
-.ptog-check.ck{color:white}
-.ck-k{background:var(--k);border-color:var(--k)}.ck-b{background:var(--b);border-color:var(--b)}.ck-s{background:var(--s);border-color:var(--s)}
-.ptog-content{flex:1}
-.ptog-title{font-size:12px;font-weight:600;margin-bottom:2px}
-.ptog-body{font-size:12px;color:var(--text2);line-height:1.5}
-.ptog-title-k{color:var(--k-txt)}.ptog-title-b{color:var(--b-txt)}.ptog-title-s{color:var(--s-txt)}
-
-/* Carryover schedule modal */
-.co-schedule{background:var(--orange-bg);border:1px solid #fed7aa;border-radius:10px;padding:14px 16px;margin-top:10px;display:none}
-.co-schedule.open{display:block}
-.co-schedule-title{font-size:12px;font-weight:600;color:var(--orange);margin-bottom:8px}
-.co-day-btns{display:flex;flex-wrap:wrap;gap:6px}
-.co-day-btn{padding:4px 10px;border-radius:6px;border:1px solid #fed7aa;background:white;font-size:12px;color:var(--text2);cursor:pointer;font-family:inherit}
-.co-day-btn:hover{background:var(--orange);color:white;border-color:var(--orange)}
-.co-day-btn.assigned{background:var(--orange);color:white;border-color:var(--orange)}
-
-.prompt-box{background:var(--gray);border-radius:8px;padding:11px 13px;font-size:12px;color:var(--text);line-height:1.5;border-left:3px solid var(--text3);margin-top:4px}
-.copy-btn{display:inline-flex;align-items:center;gap:4px;margin-top:6px;padding:4px 10px;border:1px solid var(--border);border-radius:6px;font-size:11px;font-family:inherit;cursor:pointer;background:white;color:var(--text2)}
-.copy-btn:hover{background:var(--gray)}
-.score-row-detail{display:flex;align-items:center;gap:10px}
-.score-input{width:70px;height:30px;border:1px solid var(--gray2);border-radius:7px;font-size:13px;font-family:inherit;text-align:center;color:var(--text);background:transparent;padding:0 4px}
-.score-input:focus{outline:none;border-color:var(--text)}
-.notes-input{width:100%;margin-top:6px;padding:8px 10px;border:1px solid var(--gray2);border-radius:8px;font-size:12px;font-family:inherit;color:var(--text);resize:vertical;min-height:56px}
-.notes-input:focus{outline:none;border-color:var(--text)}
-
-/* Config */
-.config-panel{background:white;border:1px solid var(--border);border-radius:10px;padding:18px 22px;margin:14px 32px;font-size:14px}
-.config-panel h3{font-size:14px;font-weight:500;margin-bottom:10px}
-.config-row{display:flex;gap:7px;align-items:center;flex-wrap:wrap;margin-bottom:6px}
-.config-input{flex:1;min-width:180px;height:34px;border:1px solid var(--gray2);border-radius:7px;padding:0 10px;font-size:12px;font-family:inherit}
-.config-btn{height:34px;padding:0 14px;border:1px solid var(--text);border-radius:7px;background:var(--text);color:white;font-size:12px;font-family:inherit;cursor:pointer}
-.config-btn.sec{background:white;color:var(--text)}
-.config-help{font-size:11px;color:var(--text3);margin-top:4px}
-.setup-banner{background:#185FA5;color:white;padding:12px 32px;font-size:13px;display:flex;align-items:center;gap:10px;flex-wrap:wrap}
-.setup-banner a{color:#93c5fd;text-decoration:underline}.setup-banner.hidden{display:none}
-
-@media(max-width:700px){header,.stats-bar,.legend-bar,main,.config-panel,.carryover-bar{padding-left:14px;padding-right:14px}.week-grid{grid-template-columns:repeat(4,1fr)}.day-card{min-height:90px}}
+@media(min-width:560px){.overlay{align-items:center;padding:20px}.sheet{border-radius:18px;max-height:88vh}}
+@media(max-width:500px){.hdr,.today-banner,.cal-wrap,.cfg{padding-left:14px;padding-right:14px}.co-nudge{padding:10px 14px}.stats .stat{padding:10px 4px}}
 </style>
 </head>
 <body>
 
-<header>
+<!-- HEADER -->
+<div class="hdr">
+  <div class="hdr-left">
+    <h1>Geo Bee Nationals</h1>
+    <p>31-Day Prep Tracker &nbsp;·&nbsp; Orlando</p>
+  </div>
+  <div class="sync"><div class="sync-dot" id="sdot"></div><span id="slbl">Connecting…</span></div>
+</div>
+
+<div class="setup-bar" id="setup-bar">
+  ⚙ <strong>Setup:</strong> Add Firebase config to enable sync.
+  <a href="https://console.firebase.google.com/" target="_blank">Firebase Console →</a>
+</div>
+<div class="cfg" id="cfg-panel">
+  <h3>Firebase — one-time setup</h3>
+  <div class="cfg-row">
+    <input class="cfg-in" id="ci-key" placeholder="apiKey"/>
+    <input class="cfg-in" id="ci-pid" placeholder="projectId"/>
+  </div>
+  <div class="cfg-row">
+    <input class="cfg-in" id="ci-aid" placeholder="appId"/>
+    <button class="cfg-btn" onclick="saveCfg()">Connect &amp; sync</button>
+    <button class="cfg-btn sec" onclick="dismissCfg()">Offline only</button>
+  </div>
+  <div class="cfg-help">Project Settings → Your apps → Web app → SDK config. Copy apiKey, projectId, appId.</div>
+</div>
+
+<!-- TODAY BANNER (rendered by JS) -->
+<div id="today-banner"></div>
+
+<!-- CARRYOVER NUDGE -->
+<div class="co-nudge hidden" id="co-nudge">
   <div>
-    <h1>Geography Bee Nationals — 31-Day Tracker</h1>
-    <p>Orlando Nationals · Tap a day to log which phases you completed · Unfinished phases carry over automatically</p>
+    <div class="co-nudge-txt" id="co-nudge-txt"></div>
+    <div class="co-nudge-sub">Tap a day to reschedule missed phases</div>
   </div>
-  <div class="sync-badge" id="sync-badge"><div class="sync-dot" id="sync-dot"></div><span id="sync-label">Connecting…</span></div>
-</header>
-
-<div class="setup-banner" id="setup-banner">
-  ⚙️ <strong>Setup needed:</strong> Add your Firebase config below.
-  <a href="https://console.firebase.google.com/" target="_blank">Open Firebase Console →</a>
+  <button class="co-nudge-btn" onclick="openTodayDetail()">View today →</button>
 </div>
 
-<div class="config-panel" id="config-panel">
-  <h3>Firebase Setup (one-time)</h3>
-  <div class="config-row">
-    <input class="config-input" id="cfg-apikey" placeholder="apiKey"/>
-    <input class="config-input" id="cfg-projectid" placeholder="projectId"/>
-  </div>
-  <div class="config-row">
-    <input class="config-input" id="cfg-appid" placeholder="appId"/>
-    <button class="config-btn" onclick="saveConfig()">Connect</button>
-    <button class="config-btn sec" onclick="dismissConfig()">Use offline only</button>
-  </div>
-  <div class="config-help">Project Settings → Your apps → Web → SDK config. Copy apiKey, projectId, appId.</div>
+<!-- STATS -->
+<div class="stats">
+  <div class="stat"><div class="stat-n" id="sn-done">0</div><div class="stat-l">Days done</div></div>
+  <div class="stat"><div class="stat-n" id="sn-part">0</div><div class="stat-l">Partial</div></div>
+  <div class="stat"><div class="stat-n" id="sn-co">0</div><div class="stat-l">Carrying over</div></div>
+  <div class="stat"><div class="stat-n" id="sn-avg">—</div><div class="stat-l">Avg score</div></div>
+</div>
+<div class="prog-wrap">
+  <div class="prog-track"><div class="prog-fill" id="prog" style="width:0%"></div></div>
+  <div class="prog-label" id="prog-lbl">0% phases done</div>
 </div>
 
-<!-- Carryover banner -->
-<div class="carryover-bar hidden" id="carryover-bar">
-  <div>
-    <div class="co-left">⚠ Unfinished phases need rescheduling</div>
-    <div class="co-items" id="co-items"></div>
+<!-- CALENDAR -->
+<div class="cal-wrap">
+  <div class="week-hdr">
+    <span>Sun</span><span>Mon</span><span>Tue</span><span>Wed</span><span>Thu</span><span>Fri</span><span>Sat</span>
   </div>
-  <button class="co-btn" onclick="openCarryoverPlanner()">Plan catch-up →</button>
+  <div id="cal"></div>
 </div>
 
-<div class="legend-bar">
-  <div class="leg"><div class="leg-dot" style="background:var(--k)"></div>K = Knowledge (20 min)</div>
-  <div class="leg"><div class="leg-dot" style="background:var(--b)"></div>B = Buzzer (15 min)</div>
-  <div class="leg"><div class="leg-dot" style="background:var(--s)"></div>S = Simulation (20 min)</div>
-  <div class="leg" style="margin-left:auto;color:var(--gray3);font-size:11px">🟡 partial &nbsp; 🟢 all done &nbsp; 🟠 has carryover</div>
-</div>
-
-<div class="stats-bar">
-  <div class="stat"><div class="stat-num" id="stat-done">0</div><div class="stat-label">Days done</div></div>
-  <div class="stat-div"></div>
-  <div class="stat"><div class="stat-num" id="stat-part">0</div><div class="stat-label">Partial</div></div>
-  <div class="stat-div"></div>
-  <div class="stat"><div class="stat-num" id="stat-co">0</div><div class="stat-label">Carrying over</div></div>
-  <div class="stat-div"></div>
-  <div class="stat"><div class="stat-num" id="stat-streak">0</div><div class="stat-label">Streak</div></div>
-  <div class="stat-div"></div>
-  <div class="stat"><div class="stat-num" id="stat-avg">—</div><div class="stat-label">Avg score</div></div>
-  <div class="stat-div"></div>
-  <div class="progress-bar-wrap">
-    <div class="progress-label">Phases completed</div>
-    <div class="progress-track"><div class="progress-fill" id="progress-fill" style="width:0%"></div></div>
+<!-- DETAIL SHEET -->
+<div class="overlay" id="overlay" onclick="maybeClose(event)">
+  <div class="sheet">
+    <div class="sheet-handle"></div>
+    <button class="sheet-close" onclick="closeSheet()">✕</button>
+    <div id="sheet-body"></div>
   </div>
 </div>
 
-<main id="main"></main>
-
-<!-- Detail overlay -->
-<div class="detail-overlay" id="overlay" onclick="maybeClose(event)">
-  <div class="detail-panel"><button class="detail-close" onclick="closeDetail()">✕</button><div id="detail-content"></div></div>
-</div>
-
-<!-- Firebase -->
 <script src="https://www.gstatic.com/firebasejs/10.12.0/firebase-app-compat.js"></script>
 <script src="https://www.gstatic.com/firebasejs/10.12.0/firebase-firestore-compat.js"></script>
 <script>
-// ─── Day data ────────────────────────────────────────────────────────────────
+// ─── DATA ────────────────────────────────────────────────────────────────────
 const DAYS=[
-{d:1,title:"Diagnostic + continents",k:"Work through GeographyBeeCourse.docx beginner section. Flag every topic where you feel shaky.",buzz:"Read 5 questions aloud from any round, pausing after each clue.",sim:"Score yourself on 2019 EMS Finals Q1-5. Record which topics you got right and wrong.",prompt:"Quiz me on continent and ocean geography at IAC nationals level — pyramidal format. Start with the hardest clue."},
-{d:2,title:"Physical features",k:"GeographyBeeCourse.docx physical features section. Mountains, rivers, deserts, plateaus, capes, gulfs.",buzz:"Interrupt drill with a parent: they read mid-sentence, you buzz when you know.",sim:"Review 2022 MS Round 1 Q1-5. Note the power clues.",prompt:"Give me 5 pyramidal questions on rivers and mountain ranges. After each answer tell me what the earliest power clue was."},
-{d:3,title:"Africa + buzzer basics",k:"2021 Round 1: Study Kalahari, Gabon, Ho Chi Minh question structures.",buzz:"Track your early vs late buzz rate on 10 questions.",sim:"Full timed run of 2020 MS Nationals Round 1.",prompt:"Quiz me on African geography — 8 pyramidal questions at nationals difficulty."},
-{d:4,title:"Southeast Asia",k:"2022 Round 6: Luzon, Niger Delta, Lapland clues. Build single-word trigger associations.",buzz:"Interrupt practice with parent reading — no pausing allowed.",sim:"Score 2021 Round 1 Q6-10. Tally hits/misses by region.",prompt:"Give me 8 pyramidal questions on Southeast Asian island nations and capitals."},
-{d:5,title:"Americas + South America",k:"2022 Round 6: Manaus/Amazon clues. 2019 Finals Q3 (Salinas). River systems in South America.",buzz:"Buzz-out simulation: race to 8 correct in 30 questions.",sim:"Full timed 2021 MS Nationals Round 2.",prompt:"Quiz me on South American geography — 8 pyramidal questions."},
-{d:6,title:"Europe deep dive",k:"2021 Round 2: Norway, St Lawrence River, Adriatic Sea clues.",buzz:"Use 2022 Round 1 questions. Aim to buzz on clue 1 for at least 3 questions.",sim:"2022 Round 2 timed. Real bonus point scoring.",prompt:"Give me 8 pyramidal tossups on European geography."},
+{d:1,title:"Diagnostic + continents",k:"Work through GeographyBeeCourse.docx beginner section. Flag every topic where you feel shaky.",b:"Read 5 questions aloud from any round, pausing after each clue. Say the answer as soon as you know it.",s:"Score yourself on 2019 EMS Finals Q1-5. Record which topics you got right and wrong.",p:"Quiz me on continent and ocean geography at IAC nationals level — pyramidal format, hard clue first."},
+{d:2,title:"Physical features",k:"GeographyBeeCourse.docx physical features section. Mountains, rivers, deserts, plateaus, capes, gulfs.",b:"Interrupt drill with a parent: they read mid-sentence, you buzz when you know.",s:"Review 2022 MS Round 1 Q1-5. Note the power clue for each answer.",p:"Give me 5 pyramidal questions on rivers and mountain ranges. After each answer tell me the earliest power clue."},
+{d:3,title:"Africa + buzzer basics",k:"2021 Round 1: Study Kalahari, Gabon, Ho Chi Minh question structures. What clues appear early vs late?",b:"Track your early vs late buzz rate on 10 questions. Clue 1? Clue 2? Giveaway?",s:"Full timed run of 2020 MS Nationals Round 1.",p:"Quiz me on African geography — 8 pyramidal questions at nationals difficulty."},
+{d:4,title:"Southeast Asia",k:"2022 Round 6: Luzon, Niger Delta, Lapland clues. Build single-word trigger associations.",b:"Interrupt practice — parent reads with no pausing. Buzz mid-sentence.",s:"Score 2021 Round 1 Q6-10. Tally hits/misses by region.",p:"Give me 8 pyramidal questions on Southeast Asian island nations and capitals."},
+{d:5,title:"Americas + South America",k:"2022 Round 6: Manaus/Amazon clues. 2019 Finals Q3 (Salinas). Study South American river systems.",b:"Buzz-out sim: race to 8 correct in 30 questions. Track bonus points earned.",s:"Full timed 2021 MS Nationals Round 2.",p:"Quiz me on South American geography — 8 pyramidal questions."},
+{d:6,title:"Europe deep dive",k:"2021 Round 2: Norway, St Lawrence River, Adriatic Sea clues. Scandinavian and Balkan focus.",b:"Use 2022 Round 1 questions. Aim to buzz on clue 1 for at least 3 questions.",s:"2022 Round 2 timed. Real bonus point scoring.",p:"Give me 8 pyramidal tossups on European geography."},
 {d:7,rest:true},
-{d:8,title:"Middle East + Central Asia",k:"2022 Round 6 Q4 (Herat). 2020 Round 1 Q4 (Kurds). Build a mental map of the region.",buzz:"Clue-by-clue: identify which specific word triggers the answer.",sim:"2022 Round 3 timed.",prompt:"Give me 8 pyramidal questions on Middle Eastern and Central Asian geography."},
-{d:9,title:"Oceans + bodies of water",k:"2021 Round 1: Bering Sea. 2021 Round 3: Aegean Sea. Study straits, gulfs, bays, seas worldwide.",buzz:"Interrupt 10 questions from 2021 Round 3 — parent reads, no pausing.",sim:"Score 2022 Round 4. Classify misses by region.",prompt:"Quiz me on seas, bays, straits, and oceanic geography — 8 pyramidal questions."},
-{d:10,title:"Himalaya + South Asia",k:"2021 Round 2: Sri Lanka, Bhutan. 2022 Round 4 Q10 (Kangchenjunga).",buzz:"Buzz-out race: 8 correct, track bonus points. Aim 13+.",sim:"2021 Round 1 full timed run.",prompt:"Give me 8 pyramidal tossups on Himalayan peaks and South Asian geography."},
-{d:11,title:"US geography",k:"GeographyBeeCourse.docx + 2022 Round 1 Q4 (Pensacola). Rivers, mountain ranges, state capitals.",buzz:"Interrupt drill on US questions — aim for clue 2 buzz.",sim:"2022 Round 5 timed.",prompt:"Quiz me on US geography — 8 pyramidal questions."},
-{d:12,title:"Current events geography",k:"Read The Economist or BBC World for 20 min. Flag 5 stories with geographic significance.",buzz:"Turn 3 news stories into pyramidal questions. Drill with a parent.",sim:"2019 EMS Round 2 timed.",prompt:"Summarize 5 recent geopolitical events with geographic significance. Write a pyramidal tossup for each."},
-{d:13,title:"Islands + archipelagos",k:"2019 Finals: Aleutians, Basque, Gotland. 2021 Round 2: Macau.",buzz:"Rank clues 1, 2, 3 by knowledge required. Identify trigger words.",sim:"2022 Round 6 timed. Track early vs late buzzes.",prompt:"Give me 8 pyramidal questions on island nations and archipelagos."},
+{d:8,title:"Middle East + Central Asia",k:"2022 Round 6 Q4 (Herat). 2020 Round 1 Q4 (Kurds). Build a mental map of the region.",b:"Clue-by-clue: identify the exact word that triggers each answer.",s:"2022 Round 3 timed.",p:"Give me 8 pyramidal questions on Middle Eastern and Central Asian geography."},
+{d:9,title:"Oceans + bodies of water",k:"2021 Round 1: Bering Sea. 2021 Round 3: Aegean Sea. Study straits, gulfs, bays, seas worldwide.",b:"Interrupt 10 questions from 2021 Round 3 — parent reads, no pausing.",s:"Score 2022 Round 4. Classify misses by region.",p:"Quiz me on seas, bays, straits, oceanic geography — 8 pyramidal questions."},
+{d:10,title:"Himalaya + South Asia",k:"2021 Round 2: Sri Lanka, Bhutan. 2022 Round 4 Q10 (Kangchenjunga). Major Himalayan peaks.",b:"Buzz-out race: 8 correct, track bonus points. Aim for 13+.",s:"2021 Round 1 full timed run.",p:"Give me 8 pyramidal tossups on Himalayan peaks and South Asian geography."},
+{d:11,title:"US geography",k:"GeographyBeeCourse.docx + 2022 Round 1 Q4 (Pensacola). Rivers, mountain ranges, state capitals.",b:"Interrupt drill on US questions — aim for clue 2 buzz.",s:"2022 Round 5 timed.",p:"Quiz me on US geography — rivers, mountain ranges, state capitals — 8 pyramidal questions."},
+{d:12,title:"Current events geography",k:"Read The Economist or BBC World for 20 min. Flag 5 stories with geographic significance.",b:"Turn 3 news stories into pyramidal questions. Drill with a parent.",s:"2019 EMS Round 2 timed.",p:"Summarize 5 recent geopolitical events with geographic significance. Write a pyramidal tossup for each."},
+{d:13,title:"Islands + archipelagos",k:"2019 Finals: Aleutians, Basque, Gotland. 2021 Round 2: Macau. Major archipelagos and countries.",b:"Rank clues 1, 2, 3 by knowledge required. Identify trigger words.",s:"2022 Round 6 timed. Track early vs late buzzes.",p:"Give me 8 pyramidal questions on island nations and archipelagos."},
 {d:14,rest:true},
-{d:15,title:"Deserts + arid regions",k:"2021 Round 3: Gobi, Kalahari. Desert borders — what countries does each touch?",buzz:"10-question interrupt drill. Count early buzzes.",sim:"2021 Round 2 full timed.",prompt:"Give me 8 pyramidal questions on world deserts."},
-{d:16,title:"African Great Lakes + rivers",k:"2021 Round 3: Lake Malawi. 2023-24 EMS Bowl Finals: Pearl River, Kara Sea.",buzz:"Buzz-out race with real bonus scoring. Aim 13+ pts.",sim:"2022 Finals timed. Track which clue triggers each buzz.",prompt:"Quiz me on African lakes and rivers — 8 pyramidal tossups."},
-{d:17,title:"Capitals deep drill",k:"IAC Study Guide: National + Regional Capitals. Focus Africa, Oceania, Central Asia.",buzz:"Rapid-fire: parent says country, you say capital. Then reverse.",sim:"2019 EMS Round 1 timed.",prompt:"Give me 10 capital questions embedded in pyramidal tossups."},
-{d:18,title:"East + Southeast Asia",k:"2022 Round 4 Q2 (Narita). 2021 Round 1: Ho Chi Minh clues.",buzz:"Interrupt 15 questions. Count clue-1 buzzes.",sim:"2020 Round 1 full timed.",prompt:"Give me 8 pyramidal questions on East and Southeast Asian geography."},
-{d:19,title:"Geopolitical + current events",k:"Read one long-form piece on an ongoing border dispute.",buzz:"Turn 3 current events into pyramidal questions and drill.",sim:"2022 Round 1 timed. Aim for personal best bonus points.",prompt:"Create 8 pyramidal questions about geography tied to current geopolitical situations."},
-{d:20,title:"Landlocked countries + borders",k:"Build a list of landlocked countries with neighbors. Double-landlocked: Liechtenstein, Uzbekistan.",buzz:"Border chain drill: all neighbors of a country in 10 seconds.",sim:"2021 Round 3 full timed.",prompt:"Quiz me on landlocked countries and their neighbors — 8 pyramidal questions."},
+{d:15,title:"Deserts + arid regions",k:"2021 Round 3: Gobi, Kalahari. Which countries does each desert touch?",b:"10-question interrupt drill. Count early buzzes.",s:"2021 Round 2 full timed.",p:"Give me 8 pyramidal questions on world deserts."},
+{d:16,title:"African Great Lakes + rivers",k:"2021 Round 3: Lake Malawi. 2023-24 EMS Bowl Finals: Pearl River, Kara Sea.",b:"Buzz-out race with real bonus scoring. Aim for 13+ pts.",s:"2022 Finals timed. Track which clue triggers each buzz.",p:"Quiz me on African lakes and rivers — 8 pyramidal tossups."},
+{d:17,title:"Capitals deep drill",k:"IAC Study Guide: National + Regional Capitals. Focus on Africa, Oceania, Central Asia.",b:"Rapid-fire: parent says country, you say capital. Then reverse.",s:"2019 EMS Round 1 timed.",p:"Give me 10 capital questions embedded in pyramidal tossups."},
+{d:18,title:"East + Southeast Asia",k:"2022 Round 4 Q2 (Narita). 2021 Round 1: Ho Chi Minh clues. East Asian capitals and rivers.",b:"Interrupt 15 questions. Count clue-1 buzzes.",s:"2020 Round 1 full timed.",p:"Give me 8 pyramidal questions on East and Southeast Asian geography."},
+{d:19,title:"Geopolitical + current events",k:"Read one long-form piece on an ongoing border dispute.",b:"Turn 3 current events into pyramidal questions and drill together.",s:"2022 Round 1 timed. Aim for personal best bonus points.",p:"Create 8 pyramidal questions about geography tied to current geopolitical situations."},
+{d:20,title:"Landlocked countries + borders",k:"List all landlocked countries with neighbors. Double-landlocked: Liechtenstein, Uzbekistan.",b:"Border chain drill: all neighbors of a country in 10 seconds.",s:"2021 Round 3 full timed.",p:"Quiz me on landlocked countries and their neighbors — 8 pyramidal questions."},
 {d:21,rest:true},
-{d:22,title:"Physical geography review",k:"Revisit top 3 weak spots from Days 1-20. Read their Wikipedia intros.",buzz:"Speed round: 20 questions, no pausing, max interrupts.",sim:"2022 Round 4 timed.",prompt:"I'm weak on [topic]. Give me 10 pyramidal questions on that topic."},
-{d:23,title:"Repeat topic patterns",k:"2023-24 EMS Bowl Finals (Geo bee 1.pdf): which topics appear? What repeats from 2022?",buzz:"Power clue list: write first clue of every correct answer.",sim:"2019 EMS Finals full timed. Compare to Day 1.",prompt:"What are the most repeated topic clusters in IAC Geography Bee nationals?"},
-{d:24,title:"Maps + physical features",k:"Seterra map drill: rivers, mountain ranges, borders. Focus Africa and Southeast Asia.",buzz:"15-question drill — interrupt on EVERY question, build the reflex.",sim:"2022 Round 6 full timed.",prompt:"Give me 8 pyramidal questions where the answer is a physical feature."},
-{d:25,title:"Mock nationals set 1",k:"Deep review of 3 misses from simulation. Wikipedia intro + one extra fact each.",buzz:"Which questions did you buzz too late? What clue should have triggered you?",sim:"Full 2022 MS Nationals: Rounds 1+2. Real scoring, timed.",prompt:"I missed questions on [topics]. Give me 5 pyramidal questions on each weak area."},
-{d:26,title:"Mock nationals set 2",k:"Deep Wikipedia read on 2 answers you missed today.",buzz:"Clue-trigger log: write the single word that should trigger each missed answer.",sim:"Full 2022 MS Nationals: Rounds 3+4. Timed.",prompt:"Help me build a power-clue cheat sheet for [country/place]."},
-{d:27,title:"Mock nationals set 3",k:"2021 MS Nationals Rounds 1-3 topic list. What appeared in 2021 AND 2022?",buzz:"Interrupt drill using today's simulation questions.",sim:"Full 2022 MS Nationals: Rounds 5+6. Timed.",prompt:""},
+{d:22,title:"Physical geography review",k:"Revisit top 3 weak spots from Days 1-20. Read their Wikipedia intros.",b:"Speed round: 20 questions, no pausing, max interrupts.",s:"2022 Round 4 timed.",p:"I'm weak on [topic]. Give me 10 pyramidal questions on that topic."},
+{d:23,title:"Repeat topic patterns",k:"2023-24 EMS Bowl Finals (Geo bee 1.pdf): which topics appear? What repeats from 2022?",b:"Power clue list: write first clue of every correct answer.",s:"2019 EMS Finals full timed. Compare score to Day 1.",p:"What are the most repeated topic clusters in IAC Geography Bee nationals?"},
+{d:24,title:"Maps + physical features",k:"Seterra map drill: rivers, mountain ranges, borders. Africa and Southeast Asia.",b:"15-question drill — interrupt on EVERY question. Build the reflex.",s:"2022 Round 6 full timed.",p:"Give me 8 pyramidal questions where the answer is a physical feature."},
+{d:25,title:"Mock nationals set 1",k:"Deep review of 3 misses from simulation. Wikipedia intro + one extra fact each.",b:"Which questions did you buzz too late? What clue should have triggered you?",s:"Full 2022 MS Nationals: Rounds 1+2. Real scoring, timed.",p:"I missed questions on [topics]. Give me 5 pyramidal questions on each weak area."},
+{d:26,title:"Mock nationals set 2",k:"Deep Wikipedia read on 2 answers you missed today.",b:"Clue-trigger log: write the single word that should trigger each missed answer.",s:"Full 2022 MS Nationals: Rounds 3+4. Timed.",p:"Help me build a power-clue cheat sheet for [country/place]."},
+{d:27,title:"Mock nationals set 3",k:"2021 Nationals Rounds 1-3 topic list. What appeared in both 2021 and 2022?",b:"Interrupt drill using today's simulation questions.",s:"Full 2022 MS Nationals: Rounds 5+6. Timed.",p:""},
 {d:28,rest:true},
-{d:29,title:"Remediation sprint",k:"Target top 3 weak areas from all mock rounds.",buzz:"10-question interrupt drill on weak topics only.",sim:"2021 Finals timed. Compare to Day 25.",prompt:"I keep missing [topic]. Give me 10 pyramidal questions starting with hard clues."},
-{d:30,title:"Full simulation",k:"Light review of power-clue cheat sheet only. No new material.",buzz:"5-question warm-up, focusing on early clue triggering.",sim:"2022 MS Finals + 2023-24 EMS Bowl Finals. Full timed.",prompt:""},
-{d:31,title:"Day before — confidence day",k:"Power-clue cheat sheet for 15 min only. No new geography.",buzz:"5 easy warm-up questions for rhythm. Stop there.",sim:"5 questions from 2019 Finals for confidence — stop after 5.",prompt:"Give me 5 easy then 5 medium geography questions at nationals level. Warm-up only."},
+{d:29,title:"Remediation sprint",k:"Target top 3 weak areas from all mock rounds.",b:"10-question interrupt drill on weak topics only.",s:"2021 Finals timed. Compare to Day 25.",p:"I keep missing [topic]. Give me 10 pyramidal questions starting with hard clues."},
+{d:30,title:"Full simulation",k:"Light review of power-clue cheat sheet only. No new material.",b:"5-question warm-up, early clue triggering only.",s:"2022 MS Finals + 2023-24 EMS Bowl Finals. Full timed.",p:""},
+{d:31,title:"Day before — confidence day",k:"Power-clue cheat sheet for 15 min only. No new geography.",b:"5 easy warm-up questions for rhythm. Stop there.",s:"5 questions from 2019 Finals for confidence — stop after 5.",p:"Give me 5 easy then 5 medium geography questions. Warm-up only."},
 ];
-const WK=["Week 1 — Apr 19","Week 2 — Apr 26","Week 3 — May 3","Week 4 — May 10","Week 5 — May 17"];
+const WK_LABELS=["Week 1 — Apr 19","Week 2 — Apr 26","Week 3 — May 3","Week 4 — May 10","Week 5 — May 17"];
 const NON_REST=DAYS.filter(d=>!d.rest);
+const TODAY_NUM=1; // Day 1 = Apr 20. Change this daily or compute from date.
 
-// ─── State ────────────────────────────────────────────────────────────────────
-// STATE[dayNum] = { k:bool, b:bool, s:bool, score:str, notes:str, coAssigned:{k:dayNum,...} }
-let STATE={};
-let db=null, unsub=null, CONFIGURED=false;
-
-function lsGet(){try{return JSON.parse(localStorage.getItem('geobee31_v3')||'{}')}catch{return{}}}
-function lsSet(s){localStorage.setItem('geobee31_v3',JSON.stringify(s))}
-function cfgGet(){try{return JSON.parse(localStorage.getItem('geobee31_cfg')||'{}')}catch{return{}}}
-function cfgSet(c){localStorage.setItem('geobee31_cfg',JSON.stringify(c))}
-
-// ─── Firebase ─────────────────────────────────────────────────────────────────
-function initFirebase(cfg){
-  try{if(firebase.apps.length)firebase.apps[0].delete().then(()=>_init(cfg)).catch(()=>_init(cfg));else _init(cfg);}catch{setSyncStatus('offline');}
+// Auto-compute today's day number based on start date Apr 20 2026
+function computeToday(){
+  const start=new Date('2026-04-20');
+  const now=new Date();
+  const diff=Math.floor((now-start)/(1000*60*60*24));
+  const n=diff+1;
+  return Math.max(1,Math.min(31,n));
 }
-function _init(cfg){
+const TDAY=computeToday();
+
+// ─── STATE ───────────────────────────────────────────────────────────────────
+// STATE['d'+n] = {k,b,s: bool, score:str, notes:str, co:{k:dayN,b:dayN,s:dayN}}
+let STATE={};
+let db=null,unsub=null,CFGD=false;
+
+function lsG(){try{return JSON.parse(localStorage.getItem('gb_v4')||'{}')}catch{return{}}}
+function lsS(s){localStorage.setItem('gb_v4',JSON.stringify(s))}
+function cfgG(){try{return JSON.parse(localStorage.getItem('gb_cfg')||'{}')}catch{return{}}}
+function cfgS(c){localStorage.setItem('gb_cfg',JSON.stringify(c))}
+
+// ─── FIREBASE ────────────────────────────────────────────────────────────────
+function initFB(cfg){
+  try{
+    if(firebase.apps.length)firebase.apps[0].delete().then(()=>_fb(cfg)).catch(()=>_fb(cfg));
+    else _fb(cfg);
+  }catch{sync('off')}
+}
+function _fb(cfg){
   try{
     firebase.initializeApp(cfg);
-    db=firebase.firestore();
-    setSyncStatus('syncing');
+    db=firebase.firestore();sync('spin');
     if(unsub)unsub();
     unsub=db.collection('geobee').doc('tracker').onSnapshot(snap=>{
-      STATE=snap.exists?snap.data():lsGet();
+      STATE=snap.exists?snap.data():lsG();
       if(!snap.exists)db.collection('geobee').doc('tracker').set(STATE);
-      lsSet(STATE);
-      render();updateStats();updateCarryoverBanner();
-      setSyncStatus('online');
-    },err=>{setSyncStatus('offline');STATE=lsGet();render();updateStats();updateCarryoverBanner();});
-    CONFIGURED=true;
-    document.getElementById('config-panel').style.display='none';
-    document.getElementById('setup-banner').classList.add('hidden');
-  }catch(e){setSyncStatus('offline');}
+      lsS(STATE);redraw();sync('on');
+    },()=>{sync('off');STATE=lsG();redraw();});
+    CFGD=true;
+    document.getElementById('cfg-panel').style.display='none';
+    document.getElementById('setup-bar').classList.add('hidden');
+  }catch(e){sync('off')}
 }
-function setSyncStatus(s){
-  document.getElementById('sync-dot').className='sync-dot'+(s==='online'?'':s==='syncing'?' syncing':' offline');
-  document.getElementById('sync-label').textContent=s==='online'?'Synced':s==='syncing'?'Syncing…':'Offline';
+function sync(s){
+  document.getElementById('sdot').className='sync-dot'+(s==='on'?'':s==='spin'?' spin':' off');
+  document.getElementById('slbl').textContent=s==='on'?'Synced':s==='spin'?'Syncing…':'Offline';
 }
 function persist(updates){
-  Object.assign(STATE,updates);
-  lsSet(STATE);
-  if(db&&CONFIGURED){
-    setSyncStatus('syncing');
-    db.collection('geobee').doc('tracker').set(STATE,{merge:true}).then(()=>setSyncStatus('online')).catch(()=>setSyncStatus('offline'));
-  }
+  Object.assign(STATE,updates);lsS(STATE);
+  if(db&&CFGD){sync('spin');db.collection('geobee').doc('tracker').set(STATE,{merge:true}).then(()=>sync('on')).catch(()=>sync('off'));}
 }
 
-// ─── Config UI ────────────────────────────────────────────────────────────────
-function saveConfig(){
-  const apiKey=document.getElementById('cfg-apikey').value.trim();
-  const projectId=document.getElementById('cfg-projectid').value.trim();
-  const appId=document.getElementById('cfg-appid').value.trim();
-  if(!apiKey||!projectId||!appId){alert('Please fill in all three fields.');return;}
-  const cfg={apiKey,projectId,appId,authDomain:projectId+'.firebaseapp.com',storageBucket:projectId+'.appspot.com',messagingSenderId:'000000000000'};
-  cfgSet(cfg);initFirebase(cfg);
+// ─── CONFIG ──────────────────────────────────────────────────────────────────
+function saveCfg(){
+  const k=document.getElementById('ci-key').value.trim();
+  const p=document.getElementById('ci-pid').value.trim();
+  const a=document.getElementById('ci-aid').value.trim();
+  if(!k||!p||!a){alert('Fill in all three fields.');return;}
+  const cfg={apiKey:k,projectId:p,appId:a,authDomain:p+'.firebaseapp.com',storageBucket:p+'.appspot.com',messagingSenderId:'000000000000'};
+  cfgS(cfg);initFB(cfg);
 }
-function dismissConfig(){
-  document.getElementById('config-panel').style.display='none';
-  document.getElementById('setup-banner').classList.add('hidden');
-  STATE=lsGet();render();updateStats();updateCarryoverBanner();setSyncStatus('offline');
+function dismissCfg(){
+  document.getElementById('cfg-panel').style.display='none';
+  document.getElementById('setup-bar').classList.add('hidden');
+  STATE=lsG();redraw();sync('off');
 }
 
-// ─── Phase helpers ────────────────────────────────────────────────────────────
-function dayState(n){return STATE['day'+n]||{k:false,b:false,s:false,score:'',notes:'',co:{}}}
-function setDayState(n,obj){const cur=dayState(n);const next=Object.assign({},cur,obj);persist({['day'+n]:next});}
-
-function phasesDone(n){const ds=dayState(n);return[ds.k?'k':null,ds.b?'b':null,ds.s?'s':null].filter(Boolean)}
-function phasesLeft(n){const ds=dayState(n);return[ds.k?null:'k',ds.b?null:'b',ds.s?null:'s'].filter(Boolean)}
-function allDone(n){const ds=dayState(n);return ds.k&&ds.b&&ds.s}
-function anyDone(n){const ds=dayState(n);return ds.k||ds.b||ds.s}
-
-// ─── Carryover logic ─────────────────────────────────────────────────────────
-function getCarryovers(){
-  // Returns array of {fromDay, phases:[]} for days that have incomplete phases
-  const result=[];
-  NON_REST.forEach(day=>{
-    const left=phasesLeft(day.d);
-    if(left.length>0&&anyDone(day.d)){
-      // Only flag days that are "past" — user has started them
-      result.push({fromDay:day.d,title:day.title,phases:left});
-    }
+// ─── STATE HELPERS ───────────────────────────────────────────────────────────
+function ds(n){return STATE['d'+n]||{k:false,b:false,s:false,score:'',notes:'',co:{}}}
+function setDs(n,obj){const cur=ds(n);persist({['d'+n]:Object.assign({},cur,obj)})}
+function allDone(n){const d=ds(n);return d.k&&d.b&&d.s}
+function anyDone(n){const d=ds(n);return d.k||d.b||d.s}
+function leftPhases(n){const d=ds(n);return ['k','b','s'].filter(p=>!d[p])}
+function hasCarryover(n){return Object.keys(ds(n).co||{}).length>0}
+function getUnplannedCarryovers(){
+  // Days that have been started but have unfinished phases with no co assigned
+  return NON_REST.filter(day=>{
+    if(!anyDone(day.d))return false;
+    const left=leftPhases(day.d);
+    if(left.length===0)return false;
+    const co=ds(day.d).co||{};
+    return left.some(p=>!co[p]); // at least one unplanned
   });
-  return result;
 }
-
-function updateCarryoverBanner(){
-  const cos=getCarryovers();
-  const bar=document.getElementById('carryover-bar');
-  const items=document.getElementById('co-items');
-  if(cos.length===0){bar.classList.add('hidden');return;}
-  bar.classList.remove('hidden');
-  items.innerHTML=cos.map(c=>`<span class="co-pill" onclick="openDetail(${c.fromDay})">Day ${c.fromDay}: ${c.phases.map(p=>p.toUpperCase()).join('+')} missed</span>`).join('');
+function nextAvailableDays(fromDay,count=5){
+  return NON_REST.filter(d=>d.d>fromDay&&d.d<=31).slice(0,count);
 }
-
-// ─── Stats ────────────────────────────────────────────────────────────────────
-function updateStats(){
-  const allPhases=NON_REST.length*3;
-  let doneDays=0,partDays=0,coCount=0,completedPhases=0;
+function incomingFor(n){
+  const inc=[];
   NON_REST.forEach(d=>{
-    if(allDone(d.d))doneDays++;
-    else if(anyDone(d.d))partDays++;
-    const left=phasesLeft(d.d);
-    if(left.length>0&&anyDone(d.d))coCount+=left.length;
-    completedPhases+=phasesDone(d.d).length;
+    const co=ds(d.d).co||{};
+    const phases=Object.entries(co).filter(([,v])=>v===n).map(([k])=>k.toUpperCase());
+    if(phases.length)inc.push({fromDay:d.d,phases,title:DAYS.find(x=>x.d===d.d).title});
   });
-  document.getElementById('stat-done').textContent=doneDays;
-  document.getElementById('stat-part').textContent=partDays;
-  document.getElementById('stat-co').textContent=coCount;
-  document.getElementById('progress-fill').style.width=Math.round(completedPhases/allPhases*100)+'%';
-  let streak=0;
-  for(let i=DAYS.length-1;i>=0;i--){if(DAYS[i].rest)continue;if(allDone(DAYS[i].d))streak++;else break;}
-  document.getElementById('stat-streak').textContent=streak;
-  const scores=NON_REST.map(d=>parseFloat(dayState(d.d).score)).filter(v=>!isNaN(v));
-  document.getElementById('stat-avg').textContent=scores.length?(scores.reduce((a,b)=>a+b,0)/scores.length).toFixed(1):'—';
+  return inc;
 }
 
-// ─── Carryover planner modal ──────────────────────────────────────────────────
-function openCarryoverPlanner(){
-  const cos=getCarryovers();
-  if(cos.length===0)return;
-  // Open detail of first unfinished day
-  openDetail(cos[0].fromDay);
+// ─── TOGGLE PHASE ────────────────────────────────────────────────────────────
+function togglePhase(n,phase){
+  const cur=ds(n);
+  setDs(n,{[phase]:!cur[phase]});
+  redraw();
+  // Re-render detail if open
+  if(document.getElementById('overlay').classList.contains('open')&&activeDay===n)renderSheet(n);
+}
+function assignCO(fromDay,phase,toDay){
+  const cur=ds(fromDay);
+  const co=Object.assign({},cur.co||{});
+  co[phase]=toDay;
+  setDs(fromDay,{co});
+  redraw();
+  if(activeDay===fromDay)renderSheet(fromDay);
+}
+function saveField(n,field,val){setDs(n,{[field]:val});if(field==='score')updateStats();}
+
+// ─── STATS ───────────────────────────────────────────────────────────────────
+function updateStats(){
+  const total=NON_REST.length*3;
+  let done=0,part=0,coCount=0,phases=0;
+  NON_REST.forEach(d=>{
+    if(allDone(d.d))done++;
+    else if(anyDone(d.d))part++;
+    const left=leftPhases(d.d);
+    if(anyDone(d.d)&&left.length)coCount+=left.length;
+    phases+=(3-left.length);
+  });
+  document.getElementById('sn-done').textContent=done;
+  document.getElementById('sn-part').textContent=part;
+  document.getElementById('sn-co').textContent=coCount;
+  const pct=Math.round(phases/total*100);
+  document.getElementById('prog').style.width=pct+'%';
+  document.getElementById('prog-lbl').textContent=pct+'% phases done';
+  const scores=NON_REST.map(d=>parseFloat(ds(d.d).score)).filter(v=>!isNaN(v));
+  document.getElementById('sn-avg').textContent=scores.length?(scores.reduce((a,b)=>a+b,0)/scores.length).toFixed(1):'—';
 }
 
-// ─── Detail panel ─────────────────────────────────────────────────────────────
+// ─── CARRYOVER NUDGE ─────────────────────────────────────────────────────────
+function updateNudge(){
+  const unplanned=getUnplannedCarryovers();
+  const nudge=document.getElementById('co-nudge');
+  if(unplanned.length===0){nudge.classList.add('hidden');return;}
+  nudge.classList.remove('hidden');
+  const phases=unplanned.reduce((a,d)=>a+leftPhases(d.d).filter(p=>!(ds(d.d).co||{})[p]).length,0);
+  document.getElementById('co-nudge-txt').textContent=`${phases} phase${phases>1?'s':''} from ${unplanned.length} day${unplanned.length>1?'s':''} still need rescheduling`;
+}
+
+// ─── TODAY BANNER ────────────────────────────────────────────────────────────
+function renderTodayBanner(){
+  const day=DAYS.find(d=>d.d===TDAY);
+  const el=document.getElementById('today-banner');
+  if(!day||day.rest){el.innerHTML='';return;}
+  const d=ds(TDAY);
+  const phase=(ph,label,desc)=>`
+    <div class="pcheck${d[ph]?' done-'+ph:''}" onclick="togglePhase(${TDAY},'${ph}')">
+      <div class="pcheck-box${d[ph]?' ck-'+ph:''}">${d[ph]?'✓':''}</div>
+      <div class="pcheck-info">
+        <div class="pcheck-name${d[ph]?' struck':''}">${label}</div>
+        <div class="pcheck-desc">${desc}</div>
+      </div>
+    </div>`;
+  el.innerHTML=`<div class="today-banner">
+    <div class="today-card">
+      <div class="today-label">Today · Day ${TDAY}</div>
+      <div class="today-title">${day.title}</div>
+      <div class="phase-checks">
+        ${phase('k','K — Knowledge (20 min)',day.k)}
+        ${phase('b','B — Buzzer drill (15 min)',day.b)}
+        ${phase('s','S — Simulation (20 min)',day.s)}
+      </div>
+      <div class="today-footer">
+        <button class="today-btn primary" onclick="openSheet(${TDAY})">Full details &amp; notes</button>
+        ${day.p?`<button class="today-btn" onclick="copyPrompt(${TDAY})">Copy Claude prompt</button>`:''}
+      </div>
+    </div>
+  </div>`;
+}
+
+// ─── CALENDAR ────────────────────────────────────────────────────────────────
+function renderCal(){
+  const cal=document.getElementById('cal');let html='';
+  for(let w=0;w<5;w++){
+    html+=`<div class="week-sep">${WK_LABELS[w]}</div><div class="week-grid">`;
+    for(let di=0;di<7;di++){
+      const idx=w*7+di;
+      if(idx>=DAYS.length){html+='<div></div>';continue;}
+      const day=DAYS[idx];
+      if(day.rest){
+        html+=`<div class="dc is-rest"><div class="dc-num">${day.d}</div><div class="dc-dayname">Rest</div></div>`;
+        continue;
+      }
+      const d=ds(day.d);
+      const left=leftPhases(day.d);
+      const done=allDone(day.d);
+      const part=anyDone(day.d)&&!done;
+      const isToday=day.d===TDAY;
+      const hasCO=hasCarryover(day.d);
+      const hasInc=incomingFor(day.d).length>0;
+      let cls='dc';
+      if(isToday)cls+=' is-today';
+      else if(done)cls+=' is-done';
+      else if(part)cls+=' is-part';
+      if(hasCO||hasInc)cls+=' is-co';
+
+      // Pips: filled = done, empty = not
+      const pip=ph=>d[ph]?`<div class="pip pip-${ph}"></div>`:`<div class="pip pip-${ph}-e"></div>`;
+
+      html+=`<div class="${cls}" onclick="openSheet(${day.d})">
+        ${hasCO?'<div class="co-dot"></div>':''}
+        <div class="dc-num">${day.d}</div>
+        <div class="dc-dayname">${day.title.length>22?day.title.slice(0,20)+'…':day.title}</div>
+        <div class="pip-row">${pip('k')}${pip('b')}${pip('s')}</div>
+      </div>`;
+    }
+    html+='</div>';
+  }
+  cal.innerHTML=html;
+}
+
+// ─── SHEET ───────────────────────────────────────────────────────────────────
 let activeDay=null;
-function openDetail(n){
-  const day=DAYS.find(d=>d.d===n);if(!day||day.rest)return;
-  activeDay=n;
-  renderDetail(n);
-  document.getElementById('overlay').classList.add('open');
-}
-function renderDetail(n){
-  const day=DAYS.find(d=>d.d===n);
-  const ds=dayState(n);
-  const cos=getCarryovers().filter(c=>c.fromDay!==n);// other days carrying over
-  const futureDays=NON_REST.filter(d=>d.d>n&&d.d<=31);
+function openSheet(n){activeDay=n;renderSheet(n);document.getElementById('overlay').classList.add('open');}
+function openTodayDetail(){openSheet(TDAY);}
+function closeSheet(){document.getElementById('overlay').classList.remove('open');activeDay=null;}
+function maybeClose(e){if(e.target===document.getElementById('overlay'))closeSheet();}
 
-  // Phases
-  const phaseHTML=(phase,label,colorClass,body)=>{
-    const checked=ds[phase];
-    const rowClass=checked?`done-${phase}`:'';
-    const cbClass=checked?`ck ck-${phase}`:'';
-    return `<div class="phase-toggle-row ${rowClass}" onclick="togglePhase(${n},'${phase}')">
-      <div class="ptog-check ${cbClass}">${checked?'✓':''}</div>
-      <div class="ptog-content">
-        <div class="ptog-title ptog-title-${phase}">${label}</div>
-        <div class="ptog-body">${body}</div>
+function renderSheet(n){
+  const day=DAYS.find(d=>d.d===n);if(!day||day.rest)return;
+  const d=ds(n);
+  const left=leftPhases(n);
+  const incoming=incomingFor(n);
+  const isToday=n===TDAY;
+
+  // Phase rows
+  const phaseRow=(ph,label,desc)=>{
+    const done=d[ph];
+    return `<div class="sphase${done?' sp-done-'+ph:''}" onclick="togglePhase(${n},'${ph}')">
+      <div class="sp-box${done?' spck-'+ph:''}">${done?'✓':''}</div>
+      <div class="sp-txt">
+        <div class="sp-name sp-name-${ph}">${label}</div>
+        <div class="sp-desc">${desc}</div>
       </div>
     </div>`;
   };
 
-  // Carryover section — show if any phases incomplete and day has been started
-  const leftPhases=phasesLeft(n);
-  const hasStarted=anyDone(n);
+  // Carryover suggestions — only show for days that have been started with unfinished phases
   let coHTML='';
-  if(leftPhases.length>0&&hasStarted){
-    const assignedCo=ds.co||{};
-    const futureOptions=futureDays.slice(0,10);
-    coHTML=`<div class="detail-section">
-      <div class="section-label" style="color:var(--orange)">📋 Schedule missed phases</div>
-      <div class="section-body" style="margin-bottom:8px">You didn't complete: <strong>${leftPhases.map(p=>p.toUpperCase()).join(', ')}</strong>. Pick a future day to carry them over:</div>
-      <div class="co-day-btns" id="co-btns">
-        ${futureOptions.map(fd=>{
-          const assigned=Object.values(assignedCo).includes(fd.d);
-          return `<button class="co-day-btn${assigned?' assigned':''}" onclick="assignCarryover(${n},'${leftPhases.join(',')}',${fd.d})">Day ${fd.d}</button>`;
-        }).join('')}
-      </div>
-      ${Object.keys(assignedCo).length>0?`<div style="font-size:11px;color:var(--orange);margin-top:8px">✓ Carried over to Day ${Object.values(assignedCo).join(', ')}</div>`:''}
-    </div>`;
-  } else if(leftPhases.length>0&&!hasStarted){
-    coHTML='';// Not started yet, no carryover needed
-  }
-
-  // Incoming carryovers for this day
-  let incomingHTML='';
-  const incoming=[];
-  NON_REST.forEach(d=>{
-    const dds=dayState(d.d);
-    if(dds.co&&Object.values(dds.co).includes(n)){
-      const phases=Object.entries(dds.co).filter(([,v])=>v===n).map(([k])=>k.toUpperCase());
-      incoming.push(`Day ${d.d} ${phases.join('+')}`);
+  if(anyDone(n)&&left.length>0){
+    const co=d.co||{};
+    const unplanned=left.filter(p=>!co[p]);
+    const planned=left.filter(p=>co[p]);
+    let sugHTML='';
+    if(unplanned.length>0){
+      const nextDays=nextAvailableDays(n,6);
+      unplanned.forEach(ph=>{
+        sugHTML+=`<div class="co-suggestion">
+          <div class="co-sug-txt">Move <strong>${ph.toUpperCase()}</strong> to…</div>
+          <div class="co-sug-actions">
+            ${nextDays.map(fd=>`<button class="co-sug-btn${co[ph]===fd.d?' accepted':''}" onclick="assignCO(${n},'${ph}',${fd.d})">Day ${fd.d}</button>`).join('')}
+          </div>
+        </div>`;
+      });
     }
-  });
-  if(incoming.length>0){
-    incomingHTML=`<div class="detail-section">
-      <div class="section-label" style="color:var(--k)">📥 Carrying in from other days</div>
-      <div class="section-body">${incoming.join(', ')} — make sure to fit these in today's session.</div>
+    if(planned.length>0){
+      sugHTML+=planned.map(ph=>`<div style="font-size:12px;color:var(--co-txt);padding:4px 0">✓ <strong>${ph.toUpperCase()}</strong> carried over to Day ${co[ph]}</div>`).join('');
+    }
+    coHTML=`<div class="co-box">
+      <div class="co-box-title">⚠ Some phases not done</div>
+      <div class="co-box-sub">Pick a day to carry over each missed phase — we'll remind you when you get there.</div>
+      ${sugHTML}
     </div>`;
   }
 
-  document.getElementById('detail-content').innerHTML=`
-    <div class="detail-day-num">Day ${day.d}</div>
-    <div class="detail-title">${day.title}</div>
-    ${incomingHTML}
-    <div class="detail-section">
-      <div class="section-label">Tap to mark complete</div>
-      ${phaseHTML('k','K — Knowledge (20 min)', 'k', day.k)}
-      ${phaseHTML('b','B — Buzzer drill (15 min)', 'b', day.buzz)}
-      ${phaseHTML('s','S — Simulation (20 min)', 's', day.sim)}
+  // Incoming carryovers
+  let incHTML='';
+  if(incoming.length>0){
+    incHTML=`<div class="in-box">📥 <strong>Carrying in today:</strong> ${incoming.map(i=>`${i.phases.join('+')} from Day ${i.fromDay}`).join(', ')} — make sure to fit these in.</div>`;
+  }
+
+  document.getElementById('sheet-body').innerHTML=`
+    <div class="sheet-day">${isToday?'Today · ':''}Day ${day.d} of 31</div>
+    <div class="sheet-title">${day.title}</div>
+    ${incHTML}
+    <div class="sec">
+      <div class="sec-lbl">Check off as you go</div>
+      ${phaseRow('k','K — Knowledge (20 min)',day.k)}
+      ${phaseRow('b','B — Buzzer drill (15 min)',day.b)}
+      ${phaseRow('s','S — Simulation (20 min)',day.s)}
     </div>
     ${coHTML}
-    ${day.prompt?`<div class="detail-section"><div class="section-label">Claude prompt</div><div class="prompt-box" id="ptxt">${day.prompt}</div><button class="copy-btn" onclick="copyP()">⎘ Copy</button></div>`:''}
-    <div class="detail-section">
-      <div class="section-label">Simulation score (0–15)</div>
-      <input type="number" class="score-input" placeholder="0–15" min="0" max="15" value="${ds.score||''}" oninput="saveField(${n},'score',this.value)">
+    ${day.p?`<div class="sec">
+      <div class="sec-lbl">Claude prompt</div>
+      <div class="prompt-box" id="ptxt-${n}">${day.p}</div>
+      <button class="copy-btn" onclick="copyPrompt(${n})">⎘ Copy prompt</button>
+    </div>`:''}
+    <div class="sec">
+      <div class="sec-lbl">Simulation score (0–15)</div>
+      <div class="score-row">
+        <input type="number" class="score-input" min="0" max="15" placeholder="—" value="${d.score||''}" oninput="saveField(${n},'score',this.value)">
+        <span style="font-size:12px;color:var(--ink3)">Higher = buzzed out earlier</span>
+      </div>
     </div>
-    <div class="detail-section" style="margin-bottom:0">
-      <div class="section-label">Notes / weak spots</div>
-      <textarea class="notes-input" placeholder="What did you miss? What to review next?" oninput="saveField(${n},'notes',this.value)">${ds.notes||''}</textarea>
+    <div class="sec" style="margin-bottom:0">
+      <div class="sec-lbl">Notes &amp; weak spots</div>
+      <textarea class="notes-ta" placeholder="What did you miss? What to review next?" oninput="saveField(${n},'notes',this.value)">${d.notes||''}</textarea>
     </div>`;
 }
 
-function togglePhase(n,phase){
-  const cur=dayState(n);
-  setDayState(n,{[phase]:!cur[phase]});
-  render();updateStats();updateCarryoverBanner();
-  if(activeDay===n)renderDetail(n);
-}
-function assignCarryover(fromDay,phasesStr,toDay){
-  const cur=dayState(fromDay);
-  const co=cur.co||{};
-  const phases=phasesStr.split(',');
-  phases.forEach(p=>{co[p]=toDay;});
-  setDayState(fromDay,{co});
-  render();updateStats();updateCarryoverBanner();
-  if(activeDay===fromDay)renderDetail(fromDay);
-}
-function saveField(n,field,val){
-  setDayState(n,{[field]:val});
-  if(field==='score')updateStats();
-}
-function copyP(){
-  const t=document.getElementById('ptxt');if(!t)return;
-  navigator.clipboard.writeText(t.textContent).then(()=>{
-    const b=document.querySelector('.copy-btn');if(b){b.textContent='✓ Copied';setTimeout(()=>b.textContent='⎘ Copy',2000);}
+function copyPrompt(n){
+  const day=DAYS.find(d=>d.d===n);if(!day||!day.p)return;
+  navigator.clipboard.writeText(day.p).then(()=>{
+    // brief visual feedback on whatever button triggered it
+    const btns=document.querySelectorAll('.copy-btn,.today-btn');
+    btns.forEach(b=>{if(b.textContent.includes('Copy')){b.textContent='✓ Copied!';setTimeout(()=>{b.textContent=b.classList.contains('today-btn')?'Copy Claude prompt':'⎘ Copy prompt'},2000);}});
   });
 }
-function closeDetail(){document.getElementById('overlay').classList.remove('open');activeDay=null;}
-function maybeClose(e){if(e.target===document.getElementById('overlay'))closeDetail();}
 
-// ─── Render calendar ──────────────────────────────────────────────────────────
-function render(){
-  const main=document.getElementById('main');let html='';
-  for(let w=0;w<5;w++){
-    html+=`<div class="week-block"><div class="week-title">${WK[w]}</div><div class="week-grid">`;
-    for(let d=0;d<7;d++){
-      const idx=w*7+d;if(idx>=DAYS.length){html+='<div></div>';continue;}
-      const day=DAYS[idx];
-      if(day.rest){html+=`<div class="day-card rest"><div class="day-top"><div class="day-num">Day ${day.d}</div></div><div class="day-rest-label">Rest</div></div>`;continue;}
-      const ds=dayState(day.d);
-      const done=allDone(day.d);
-      const partial=anyDone(day.d)&&!done;
-      const hasCo=Object.keys(ds.co||{}).length>0;
-      const hasIncoming=NON_REST.some(od=>{const ods=dayState(od.d);return ods.co&&Object.values(ods.co).includes(day.d);});
-      let cardClass='day-card';
-      if(done)cardClass+=' all-done';
-      else if(partial)cardClass+=' partial';
-      if(hasCo||hasIncoming)cardClass+=' has-carryover';
-
-      // Phase mini-checkboxes
-      const pcb=(p,cls)=>`<div class="phase-row" onclick="event.stopPropagation();togglePhase(${day.d},'${p}')">
-        <div class="phase-cb${ds[p]?' checked-'+p:''}>${ds[p]?'✓':''}</div>
-        <span class="phase-label phase-label-${p}${ds[p]?' done-label':''}">${p.toUpperCase()}</span>
-      </div>`;
-
-      // Flag
-      let flag='';
-      if(done)flag='<span class="day-flag flag-done">done</span>';
-      else if(partial)flag='<span class="day-flag flag-partial">partial</span>';
-      else if(hasIncoming)flag='<span class="day-flag flag-co">+carryover</span>';
-
-      html+=`<div class="${cardClass}" onclick="openDetail(${day.d})">
-        <div class="day-top"><div class="day-num">Day ${day.d}</div>${flag}</div>
-        <div class="phases">
-          ${pcb('k')} ${pcb('b')} ${pcb('s')}
-        </div>
-        <div class="day-title">${day.title}</div>
-        ${ds.score?`<div class="score-chip">Score: ${ds.score}</div>`:''}
-        ${ds.notes?`<div class="notes-chip">✎ notes</div>`:''}
-      </div>`;
-    }
-    html+='</div></div>';
-  }
-  main.innerHTML=html;
+// ─── REDRAW ──────────────────────────────────────────────────────────────────
+function redraw(){
+  renderTodayBanner();
+  renderCal();
+  updateStats();
+  updateNudge();
 }
 
-// ─── Boot ─────────────────────────────────────────────────────────────────────
-STATE=lsGet();
-render();updateStats();updateCarryoverBanner();
-const saved=cfgGet();
+// ─── BOOT ────────────────────────────────────────────────────────────────────
+STATE=lsG();redraw();
+const saved=cfgG();
 if(saved.apiKey&&saved.projectId&&saved.appId){
-  document.getElementById('cfg-apikey').value=saved.apiKey;
-  document.getElementById('cfg-projectid').value=saved.projectId;
-  document.getElementById('cfg-appid').value=saved.appId;
-  initFirebase(saved);
-}else{setSyncStatus('offline');}
+  document.getElementById('ci-key').value=saved.apiKey;
+  document.getElementById('ci-pid').value=saved.projectId;
+  document.getElementById('ci-aid').value=saved.appId;
+  initFB(saved);
+}else{sync('off');}
 </script>
 </body>
 </html>
