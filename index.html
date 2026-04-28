@@ -329,6 +329,7 @@ body{font-family:'DM Sans',sans-serif;background:var(--paper);color:var(--ink);m
 <!-- DASHBOARD PAGE -->
 <div class="page" id="page-dashboard">
   <div class="dash-wrap">
+    <div id="gc-sync-banner" style="display:none;background:#e8f1fb;border:1px solid #9dc4ee;border-radius:10px;padding:12px 16px;margin-bottom:20px;display:flex;align-items:center;gap:12px;flex-wrap:wrap;"></div>
     <div class="dash-section">
       <div class="dash-grid" id="dash-summary"></div>
     </div>
@@ -435,6 +436,7 @@ function _fb(cfg){
     CFGD=true;
     document.getElementById('cfg-panel').style.display='none';
     document.getElementById('setup-bar').classList.add('hidden');
+    subscribeGeoChallengeSessions();
   }catch{sync('off')}
 }
 function sync(s){
@@ -767,6 +769,26 @@ function resetPrompt(n){const day=DAYS.find(x=>x.d===n);setDs(n,{prompt:day?day.
 // ─── DASHBOARD ───────────────────────────────────────────────────────────────
 let scoreChart=null;
 function renderDashboard(){
+  // GeoChallenge sync indicator
+  const gcAllQs = getGcSyncStatus();
+  const gcRight = gcAllQs.filter(q => q.result === 'right').length;
+  const gcWrong = gcAllQs.filter(q => q.result === 'wrong').length;
+  const gcBanner = document.getElementById('gc-sync-banner');
+  if (gcBanner) {
+    if (gcAllQs.length > 0) {
+      gcBanner.style.display = 'flex';
+      gcBanner.innerHTML = `
+        <span style="font-size:14px;">🎮</span>
+        <div style="flex:1">
+          <div style="font-size:12px;font-weight:500;color:#0c3d72;">GeoChallenge results synced</div>
+          <div style="font-size:11px;color:#555551;margin-top:1px;">${gcAllQs.length} questions logged automatically · ${gcRight} correct · ${gcWrong} missed</div>
+        </div>
+        <div style="font-size:11px;color:#16a34a;font-weight:500;">● Live</div>`;
+    } else {
+      gcBanner.style.display = 'none';
+    }
+  }
+
   // Summary stats
   const scores=NON_REST.map(d=>calcScore(d.d)).filter(v=>v!=null);
   const allQs=NON_REST.flatMap(d=>(ds(d.d).questions||[]).filter(q=>q.result));
@@ -877,6 +899,109 @@ function renderDashboard(){
         ${right.map(q=>`<tr><td><div class="q-result q-right">✓</div></td><td>${q.q||'(no text)'}</td><td>${q.topic?`<span class="q-topic-chip">${q.topic}</span>`:''}</td><td style="white-space:nowrap">Day ${q.day}</td></tr>`).join('')}
       </tbody></table>`:''}`;
   }
+}
+
+
+// ─── GEOCHALLENGE BRIDGE LISTENER ─────────────────────────────────────────
+// Listens for results pushed by GeoChallenge and merges them into the tracker
+let gcBridgeUnsub = null;
+let gcLastSeen = {};  // track which session entries we've already merged
+
+function subscribeGeoChallengeSessions() {
+  if (!db || !CFGD) return;
+  if (gcBridgeUnsub) gcBridgeUnsub();
+
+  // GeoChallenge writes to geobee/tracker with day keys like d1, d2 etc.
+  // It merges questions into STATE['d'+n].questions with source:'geochallenge'
+  // The tracker already reads this same document — so results auto-appear
+  // BUT we need to make sure the dashboard shows them and stats update.
+  // We subscribe to the same doc and look for geochallenge-sourced questions.
+  gcBridgeUnsub = db.collection('geobee').doc('tracker').onSnapshot(snap => {
+    if (!snap.exists) return;
+    const data = snap.data();
+    let newFound = false;
+
+    // Check each day for new geochallenge questions we haven't seen
+    Object.keys(data).forEach(key => {
+      if (!key.startsWith('d')) return;
+      const dayData = data[key];
+      const qs = dayData.questions || [];
+      const gcQs = qs.filter(q => q.source === 'geochallenge');
+
+      if (!gcLastSeen[key]) gcLastSeen[key] = 0;
+      const newGcQs = gcQs.slice(gcLastSeen[key]);
+
+      if (newGcQs.length > 0) {
+        gcLastSeen[key] = gcQs.length;
+        newFound = true;
+
+        // Show a toast for each new result synced in
+        newGcQs.forEach(q => {
+          const icon = q.result === 'right' ? '✓' : '✗';
+          const color = q.result === 'right' ? 'green' : 'red';
+          showBridgeToast(icon, q.q, q.result, q.topic);
+        });
+      }
+    });
+
+    if (newFound) {
+      // Merge the full state and re-render
+      Object.assign(STATE, data);
+      lsS(STATE);
+      redraw();
+      if (document.getElementById('page-dashboard').classList.contains('active')) {
+        renderDashboard();
+      }
+    }
+  }, err => {
+    console.warn('GeoChallenge bridge listener error:', err);
+  });
+}
+
+function showBridgeToast(icon, question, result, topic) {
+  // Show a non-blocking notification that a result came in from GeoChallenge
+  const existing = document.getElementById('gc-bridge-toast');
+  if (existing) existing.remove();
+
+  const el = document.createElement('div');
+  el.id = 'gc-bridge-toast';
+  el.style.cssText = `
+    position:fixed;bottom:24px;right:24px;z-index:999;
+    background:${result === 'right' ? '#f0faf3' : '#fff5f5'};
+    border:1px solid ${result === 'right' ? '#7ec8a0' : '#fca5a5'};
+    border-radius:12px;padding:12px 16px;max-width:300px;
+    box-shadow:0 4px 16px rgba(0,0,0,0.12);font-family:'DM Sans',sans-serif;
+    animation:slideInRight .3s ease;
+  `;
+  el.innerHTML = `
+    <div style="font-size:11px;font-weight:600;text-transform:uppercase;letter-spacing:.06em;color:${result === 'right' ? '#16a34a' : '#dc2626'};margin-bottom:4px;">
+      📊 GeoChallenge ${icon} ${result === 'right' ? 'Correct' : 'Missed'}
+    </div>
+    <div style="font-size:12px;color:#555551;line-height:1.4;">${(question||'').slice(0,80)}${question && question.length > 80 ? '…' : ''}</div>
+    ${topic ? `<div style="margin-top:5px;"><span style="font-size:10px;background:#e8f1fb;color:#0c3d72;padding:2px 7px;border-radius:10px;">${topic}</span></div>` : ''}
+    <div style="font-size:10px;color:#99998f;margin-top:5px;">Synced to today's Q&A log →</div>
+  `;
+  document.body.appendChild(el);
+
+  // Add animation if not already in styles
+  if (!document.getElementById('bridge-toast-style')) {
+    const style = document.createElement('style');
+    style.id = 'bridge-toast-style';
+    style.textContent = `@keyframes slideInRight{from{opacity:0;transform:translateX(20px)}to{opacity:1;transform:translateX(0)}}`;
+    document.head.appendChild(style);
+  }
+
+  setTimeout(() => el.remove(), 4000);
+}
+
+// Also add a visual indicator on the dashboard showing GeoChallenge sync status
+function getGcSyncStatus() {
+  const allGcQs = [];
+  NON_REST.forEach(d => {
+    const qs = (ds(d.d).questions || []).filter(q => q.source === 'geochallenge');
+    allGcQs.push(...qs);
+  });
+  return allGcQs;
 }
 
 // ─── REDRAW ──────────────────────────────────────────────────────────────────
