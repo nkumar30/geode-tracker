@@ -71,6 +71,17 @@ body{font-family:'DM Sans',sans-serif;background:var(--paper);color:var(--ink);m
 .co-nudge-txt{font-size:13px;color:var(--co-txt);font-weight:500}
 .co-nudge-sub{font-size:11px;color:var(--co-txt);opacity:.7;margin-top:1px}
 .co-btn{padding:6px 12px;border-radius:7px;background:var(--co-txt);color:#fff;border:none;font-size:12px;font-family:inherit;cursor:pointer}
+.co-dismiss{background:none;border:none;color:var(--co-txt);opacity:.55;font-size:16px;cursor:pointer;padding:2px 4px;line-height:1;flex-shrink:0}
+.co-dismiss:hover{opacity:1}
+
+/* TODAY COLLAPSED STRIP */
+.today-collapsed-strip{margin:12px 24px 0;background:var(--ink);color:#fff;border-radius:10px;padding:10px 16px;display:flex;align-items:center;justify-content:space-between;gap:12px}
+.today-collapsed-strip span{font-size:13px;opacity:.8}
+.today-expand-btn{background:rgba(255,255,255,.15);border:none;color:#fff;font-size:12px;font-family:inherit;padding:5px 11px;border-radius:7px;cursor:pointer}
+.today-expand-btn:hover{background:rgba(255,255,255,.25)}
+.today-close-btn{position:absolute;top:14px;right:14px;background:none;border:none;color:rgba(255,255,255,.45);font-size:16px;cursor:pointer;line-height:1;padding:2px}
+.today-close-btn:hover{color:#fff}
+.today-card{position:relative}
 
 /* STATS ROW */
 .stats{display:flex;background:#fff;border-bottom:1px solid var(--border)}
@@ -299,7 +310,10 @@ body{font-family:'DM Sans',sans-serif;background:var(--paper);color:var(--ink);m
 
 <div class="co-nudge hidden" id="co-nudge">
   <div><div class="co-nudge-txt" id="co-nudge-txt"></div><div class="co-nudge-sub">Open the day to reschedule</div></div>
-  <button class="co-btn" onclick="openSheet(TDAY)">View today →</button>
+  <div style="display:flex;align-items:center;gap:8px">
+    <button class="co-btn" onclick="openSheet(TDAY)">View today →</button>
+    <button class="co-dismiss" onclick="dismissNudge()" title="Dismiss">✕</button>
+  </div>
 </div>
 
 <div class="tabs">
@@ -551,6 +565,18 @@ function updateStats(){
   document.getElementById('sn-avg').textContent=scores.length?Math.round(scores.reduce((a,b)=>a+b,0)/scores.length)+'%':'—';
   updateNudge();
 }
+let nudgeDismissCount = -1;
+function dismissNudge(){
+  const nudge=document.getElementById('co-nudge');
+  nudge.classList.add('hidden');
+  // record current count so nudge only re-shows if MORE phases become unscheduled
+  const unplanned=NON_REST.filter(d=>{
+    if(!anyDone(d.d))return false;
+    const left=leftPhases(d.d);const co=ds(d.d).co||{};
+    return left.some(p=>!co[p]);
+  });
+  nudgeDismissCount=unplanned.reduce((a,d)=>a+leftPhases(d.d).filter(p=>!(ds(d.d).co||{})[p]).length,0);
+}
 function updateNudge(){
   const unplanned=NON_REST.filter(d=>{
     if(!anyDone(d.d))return false;
@@ -558,9 +584,11 @@ function updateNudge(){
     return left.some(p=>!co[p]);
   });
   const nudge=document.getElementById('co-nudge');
-  if(!unplanned.length){nudge.classList.add('hidden');return;}
-  nudge.classList.remove('hidden');
+  if(!unplanned.length){nudge.classList.add('hidden');nudgeDismissCount=-1;return;}
   const ct=unplanned.reduce((a,d)=>a+leftPhases(d.d).filter(p=>!(ds(d.d).co||{})[p]).length,0);
+  if(ct<=nudgeDismissCount){return;}
+  nudgeDismissCount=-1;
+  nudge.classList.remove('hidden');
   document.getElementById('co-nudge-txt').textContent=`${ct} unscheduled phase${ct>1?'s':''} across ${unplanned.length} day${unplanned.length>1?'s':''}`;
 }
 
@@ -574,16 +602,28 @@ function showPage(pg){
 }
 
 // ─── TODAY SECTION ───────────────────────────────────────────────────────────
+let todayCollapsed = false;
+function collapseToday(){todayCollapsed=true;renderToday();}
+function expandToday(){todayCollapsed=false;renderToday();}
 function renderToday(){
   const day=DAYS.find(d=>d.d===TDAY);
   const el=document.getElementById('today-section');
   if(!day||day.rest){el.innerHTML='';return;}
   const d=ds(TDAY);
+  const done=d.k&&d.b&&d.s;
+  if(todayCollapsed){
+    el.innerHTML=`<div class="today-collapsed-strip">
+      <span>${done?'✓ Today complete':'Today · Day '+TDAY+' of 31'}</span>
+      <button class="today-expand-btn" onclick="expandToday()">Show</button>
+    </div>`;
+    return;
+  }
   const ph=(ph,label,desc)=>`<div class="pcheck${d[ph]?' done-'+ph:''}" onclick="togglePhase(${TDAY},'${ph}')">
     <div class="pcheck-box${d[ph]?' ck-'+ph:''}">${d[ph]?'✓':''}</div>
     <div class="pcheck-info"><div class="pcheck-name${d[ph]?' struck':''}">${label}</div><div class="pcheck-desc">${desc}</div></div>
   </div>`;
   el.innerHTML=`<div class="today-wrap"><div class="today-card">
+    <button class="today-close-btn" onclick="collapseToday()" title="Close">✕</button>
     <div class="today-label">Today · Day ${TDAY} of 31</div>
     <div class="today-title">${day.title}</div>
     <div class="phase-checks">${ph('k','K — Knowledge (20 min)',day.k)}${ph('b','B — Buzzer drill (15 min)',day.b)}${ph('s','S — Simulation (20 min)',day.s)}</div>
@@ -592,6 +632,7 @@ function renderToday(){
       ${day.p?`<button class="tbtn" onclick="copyTxt(${TDAY})">Copy Claude prompt</button>`:''}
     </div>
   </div></div>`;
+  if(done){todayCollapsed=true;setTimeout(()=>renderToday(),600);}
 }
 
 // ─── CALENDAR ────────────────────────────────────────────────────────────────
