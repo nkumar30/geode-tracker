@@ -4,7 +4,6 @@
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>Geo Bee Tracker</title>
-<script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/4.4.1/chart.umd.min.js"></script>
 <style>
 @import url('https://fonts.googleapis.com/css2?family=DM+Serif+Display:ital@0;1&family=DM+Sans:wght@400;500;600&display=swap');
 *,*::before,*::after{box-sizing:border-box;margin:0;padding:0}
@@ -52,11 +51,9 @@ body{font-family:'DM Sans',sans-serif;background:var(--paper);color:var(--ink);m
 .pcheck:hover{background:rgba(255,255,255,.07)}
 .pcheck.done-k{background:rgba(29,95,168,.28);border-color:rgba(29,95,168,.55)}
 .pcheck.done-b{background:rgba(45,110,26,.28);border-color:rgba(45,110,26,.55)}
-.pcheck.done-s{background:rgba(138,72,0,.28);border-color:rgba(138,72,0,.55)}
 .pcheck-box{width:22px;height:22px;border-radius:6px;border:2px solid rgba(255,255,255,.3);flex-shrink:0;display:flex;align-items:center;justify-content:center;font-size:11px;transition:all .15s}
 .pcheck-box.ck-k{background:var(--k);border-color:var(--k);color:#fff}
 .pcheck-box.ck-b{background:var(--b);border-color:var(--b);color:#fff}
-.pcheck-box.ck-s{background:var(--s);border-color:var(--s);color:#fff}
 .pcheck-info{flex:1}.pcheck-name{font-size:13px;font-weight:500;color:#fff}
 .pcheck-name.struck{text-decoration:line-through;opacity:.4}
 .pcheck-desc{font-size:11px;color:rgba(255,255,255,.4);margin-top:1px;line-height:1.4}
@@ -115,56 +112,11 @@ body{font-family:'DM Sans',sans-serif;background:var(--paper);color:var(--ink);m
 .dc.is-rest .dc-name{color:var(--ink3);font-style:italic;font-weight:400}
 .pip-row{display:flex;gap:3px;margin-top:4px}
 .pip{width:7px;height:7px;border-radius:50%}
-.pip-k{background:var(--k)}.pip-b{background:var(--b)}.pip-s{background:var(--s)}
+.pip-k{background:var(--k)}.pip-b{background:var(--b)}
 .pip-ke{background:var(--k-l);border:1px solid #bcd4f0}
 .pip-be{background:var(--b-l);border:1px solid #a8d4a0}
-.pip-se{background:var(--s-l);border:1px solid #f0c898}
 .score-badge{position:absolute;bottom:5px;right:6px;font-size:9px;font-weight:600;color:var(--ink3)}
 .co-dot{position:absolute;top:4px;right:4px;width:6px;height:6px;border-radius:50%;background:var(--co-bdr)}
-
-/* ── DASHBOARD PAGE ── */
-.dash-wrap{padding:20px 24px}
-.dash-section{margin-bottom:28px}
-.dash-title{font-size:13px;font-weight:600;color:var(--ink);margin-bottom:12px;display:flex;align-items:center;gap:8px}
-.dash-title span{font-size:16px}
-.chart-card{background:#fff;border:1px solid var(--border);border-radius:12px;padding:16px;position:relative}
-.chart-container{position:relative;height:180px}
-
-/* Stats grid */
-.dash-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:10px;margin-bottom:16px}
-.dash-stat{background:#fff;border:1px solid var(--border);border-radius:10px;padding:14px;text-align:center}
-.dash-stat-n{font-size:24px;font-weight:600;color:var(--ink)}
-.dash-stat-l{font-size:10px;color:var(--ink3);text-transform:uppercase;letter-spacing:.05em;margin-top:2px}
-
-/* Weak topics */
-.topic-row{display:flex;align-items:center;gap:10px;padding:8px 0;border-bottom:1px solid var(--border)}
-.topic-row:last-child{border-bottom:none}
-.topic-name{font-size:13px;color:var(--ink);flex:1}
-.topic-bar-wrap{width:120px;height:8px;background:var(--border);border-radius:99px;overflow:hidden;flex-shrink:0}
-.topic-bar{height:100%;border-radius:99px;background:var(--wrong)}
-.topic-pct{font-size:11px;color:var(--wrong);font-weight:500;width:32px;text-align:right;flex-shrink:0}
-.topic-tag{font-size:9px;padding:2px 6px;border-radius:4px;font-weight:600}
-.topic-tag.weak{background:var(--wrong-l);color:var(--wrong)}
-.topic-tag.ok{background:#fef9c3;color:#854d0e}
-.topic-tag.good{background:var(--right-l);color:var(--right)}
-
-/* Phase accuracy */
-.phase-acc-row{display:flex;align-items:center;gap:12px;margin-bottom:8px}
-.phase-acc-lbl{font-size:12px;font-weight:500;width:80px;flex-shrink:0}
-.phase-acc-bar-wrap{flex:1;height:10px;background:var(--border);border-radius:99px;overflow:hidden}
-.phase-acc-bar{height:100%;border-radius:99px;transition:width .5s}
-.bar-k{background:var(--k)}.bar-b{background:var(--b)}.bar-s{background:var(--s)}
-.phase-acc-num{font-size:11px;color:var(--ink3);width:40px;text-align:right;flex-shrink:0}
-
-/* Q log in dashboard */
-.qlog-table{width:100%;border-collapse:collapse}
-.qlog-table th{font-size:10px;text-transform:uppercase;letter-spacing:.06em;color:var(--ink3);text-align:left;padding:6px 8px;border-bottom:1px solid var(--border)}
-.qlog-table td{font-size:12px;padding:8px;border-bottom:1px solid var(--border);color:var(--ink2);vertical-align:top}
-.qlog-table tr:last-child td{border-bottom:none}
-.q-result{display:inline-flex;align-items:center;justify-content:center;width:22px;height:22px;border-radius:50%;font-size:10px;font-weight:700}
-.q-right{background:var(--right-l);color:var(--right)}
-.q-wrong{background:var(--wrong-l);color:var(--wrong)}
-.q-topic-chip{font-size:10px;padding:2px 6px;border-radius:4px;background:var(--k-l);color:var(--k-d);display:inline-block;margin-top:3px}
 
 /* ── SHEET OVERLAY ── */
 .overlay{display:none;position:fixed;inset:0;background:rgba(0,0,0,.45);z-index:200;align-items:flex-end;justify-content:center;padding:0}
@@ -184,14 +136,12 @@ body{font-family:'DM Sans',sans-serif;background:var(--paper);color:var(--ink);m
 .sphase:hover{border-color:#bbb}
 .sphase.sp-k{background:var(--k-l);border-color:#9dc4ee}
 .sphase.sp-b{background:var(--b-l);border-color:#94d494}
-.sphase.sp-s{background:var(--s-l);border-color:#f5c078}
 .sp-box{width:21px;height:21px;border-radius:6px;border:2px solid #ccc;flex-shrink:0;margin-top:1px;display:flex;align-items:center;justify-content:center;font-size:10px;transition:all .15s}
 .spck-k{background:var(--k);border-color:var(--k);color:#fff}
 .spck-b{background:var(--b);border-color:var(--b);color:#fff}
-.spck-s{background:var(--s);border-color:var(--s);color:#fff}
 .sp-txt{flex:1}
 .sp-name{font-size:13px;font-weight:500;margin-bottom:3px}
-.sp-name-k{color:var(--k-d)}.sp-name-b{color:var(--b-d)}.sp-name-s{color:var(--s-d)}
+.sp-name-k{color:var(--k-d)}.sp-name-b{color:var(--b-d)}
 .sp-desc{font-size:12px;color:var(--ink2);line-height:1.5}
 
 /* Carryover in sheet */
@@ -277,10 +227,15 @@ body{font-family:'DM Sans',sans-serif;background:var(--paper);color:var(--ink);m
 .setup-bar a{color:#bde0ff;text-decoration:underline}.setup-bar.hidden{display:none}
 
 .empty-state{text-align:center;padding:32px 20px;color:var(--ink3);font-size:14px}
+.phase-divider{margin:20px 0 4px;padding:10px 16px;background:linear-gradient(135deg,#0c3d72,#1d5fa8);color:#fff;border-radius:10px;font-size:13px;font-weight:600;letter-spacing:.02em;display:flex;align-items:center;gap:8px}
+.dc.is-intl{border:1px solid #c8dff8;background:#f4f9ff}
+.dc.is-intl .dc-num{color:#1d5fa8}
+.dc.is-today.is-intl{background:#1d5fa8;border-color:#1d5fa8}
+.dc.is-today.is-intl .dc-num,.dc.is-today.is-intl .dc-name{color:#fff}
 .btn-link{background:none;border:none;color:var(--k);font-size:13px;cursor:pointer;font-family:inherit;text-decoration:underline;padding:0}
 
 @media(min-width:600px){.overlay{align-items:center;padding:20px}.sheet{border-radius:18px;max-height:90vh}}
-@media(max-width:500px){.hdr,.today-wrap,.cal-wrap,.cfg,.dash-wrap{padding-left:14px;padding-right:14px}.co-nudge{padding:10px 14px}.dash-grid{grid-template-columns:repeat(2,1fr)}}
+@media(max-width:500px){.hdr,.today-wrap,.cal-wrap,.cfg{padding-left:14px;padding-right:14px}.co-nudge{padding:10px 14px}}
 </style>
 </head>
 <body>
@@ -316,10 +271,6 @@ body{font-family:'DM Sans',sans-serif;background:var(--paper);color:var(--ink);m
   </div>
 </div>
 
-<div class="tabs">
-  <div class="tab active" onclick="showPage('tracker')" id="tab-tracker"><span class="tab-icon">📅</span>Tracker</div>
-  <div class="tab" onclick="showPage('dashboard')" id="tab-dashboard"><span class="tab-icon">📊</span>Dashboard</div>
-</div>
 
 <!-- TRACKER PAGE -->
 <div class="page active" id="page-tracker">
@@ -337,32 +288,6 @@ body{font-family:'DM Sans',sans-serif;background:var(--paper);color:var(--ink);m
   <div class="cal-wrap">
     <div class="week-hdr"><span>Sun</span><span>Mon</span><span>Tue</span><span>Wed</span><span>Thu</span><span>Fri</span><span>Sat</span></div>
     <div id="cal"></div>
-  </div>
-</div>
-
-<!-- DASHBOARD PAGE -->
-<div class="page" id="page-dashboard">
-  <div class="dash-wrap">
-    <div id="gc-sync-banner" style="display:none;background:#e8f1fb;border:1px solid #9dc4ee;border-radius:10px;padding:12px 16px;margin-bottom:20px;display:flex;align-items:center;gap:12px;flex-wrap:wrap;"></div>
-    <div class="dash-section">
-      <div class="dash-grid" id="dash-summary"></div>
-    </div>
-    <div class="dash-section">
-      <div class="dash-title"><span>📈</span> Score trend (1–100)</div>
-      <div class="chart-card"><div class="chart-container"><canvas id="score-chart"></canvas></div></div>
-    </div>
-    <div class="dash-section">
-      <div class="dash-title"><span>🎯</span> Phase accuracy</div>
-      <div class="chart-card" id="phase-acc"></div>
-    </div>
-    <div class="dash-section">
-      <div class="dash-title"><span>🗺</span> Weak topics (by miss rate)</div>
-      <div class="chart-card" id="weak-topics"></div>
-    </div>
-    <div class="dash-section">
-      <div class="dash-title"><span>📝</span> Full question log</div>
-      <div class="chart-card" id="q-log-section"></div>
-    </div>
   </div>
 </div>
 
@@ -411,16 +336,49 @@ const DAYS=[
 {d:29,title:"Remediation sprint",k:"Target top 3 weak areas from all mock rounds.",b:"10-question interrupt drill on weak topics only.",s:"2021 Finals timed. Compare to Day 25.",p:"I keep missing [topic]. Give me 10 pyramidal questions starting with hard clues."},
 {d:30,title:"Full simulation",k:"Light review of power-clue cheat sheet only. No new material.",b:"5-question warm-up, early clue triggering only.",s:"2022 MS Finals + 2023-24 EMS Bowl Finals. Full timed.",p:""},
 {d:31,title:"Day before — confidence day",k:"Power-clue cheat sheet 15 min only. No new geography.",b:"5 easy warm-up questions for rhythm.",s:"5 questions from 2019 Finals for confidence — stop after 5.",p:"Give me 5 easy then 5 medium geography questions. Warm-up only."},
+// ── INTERNATIONAL PHASE ──────────────────────────────────────────────────────
+{d:32,title:"Intl orientation + hardest capitals",k:"Study capitals of Oceania + microstates: Ngerulmud (Palau), Palikir (Micronesia), Yaren (Nauru), Funafuti (Tuvalu). Review IGC Battery Part 1 structure.",b:"Rapid-fire: 20 obscure capital cities. Parent reads country, you answer, then swap.",s:"IGC 2022 Battery Part 1 Q1–10 timed.",p:"Quiz me on the hardest world capitals — Pacific islands, microstates, tiny Caribbean nations. 10 pyramidal questions, hard clue first."},
+{d:33,title:"Oceania + Pacific deep dive",k:"Countries and island groups of the Pacific. Melanesia vs Polynesia vs Micronesia — which nations belong to each. Major islands of PNG, Fiji, Solomon Islands.",b:"Map drill: place 15 Pacific nations on a blank-map mental image. Check yourself against an atlas.",s:"IGC 2022 Battery Part 1 Q11–20 timed.",p:"Give me 10 pyramidal questions on Pacific island nations — geography, capitals, and sub-regions. International-level difficulty."},
+{d:34,title:"Obscure island nations",k:"Indian Ocean islands: Comoros, Maldives, Seychelles, Mauritius, Réunion — geography and neighbors. Caribbean micro-states: St Kitts, Dominica, Grenada, Antigua.",b:"Interrupt drill on 10 island-nation questions at international difficulty.",s:"IGC 2022 Battery Part 2 Q1–10 timed.",p:"Quiz me on Indian Ocean and Caribbean island nations — 10 pyramidal tossups at international bee difficulty."},
+{d:35,rest:true},
+{d:36,title:"Africa advanced geography",k:"African river systems: Nile tributaries (Blue Nile, Atbara), Congo basin, Zambezi, Niger delta. Regional capitals vs national capitals. Great Rift Valley lakes.",b:"Africa blank-map drill: place 20 countries from memory, check borders.",s:"IGC 2022 Battery Part 2 Q11–20 timed.",p:"Give me 10 hard pyramidal questions on African physical and political geography — tributary rivers, regional cities, rift-valley lakes."},
+{d:37,title:"Central Asia + Caucasus",k:"The '-Stans': Fergana Valley, Aral Sea shrinkage, Pamir Mountains, Silk Road cities (Samarkand, Bukhara). Caucasus: geography of South Ossetia, Nagorno-Karabakh, Lesser Caucasus range.",b:"10-question drill on Central Asian and Caucasian geography — no pausing.",s:"IGC 2022 Battery Part 3 Q1–10 timed.",p:"Quiz me on Central Asian and Caucasian geography — 10 pyramidal tossups. Include Fergana, Pamir, Aral Sea, Silk Road cities."},
+{d:38,title:"Climate zones + biomes",k:"Köppen climate classification: where is each zone on the map? Taiga, tundra, savanna, steppe, Mediterranean. Monsoon zones across Asia and West Africa.",b:"Given a city, name its climate zone. Given a biome, name 3 countries it spans.",s:"IGC 2022 Battery Part 3 Q11–20 timed.",p:"Give me 10 pyramidal questions where the answer involves climate zones, biomes, or physical environment. International difficulty."},
+{d:39,title:"South America advanced",k:"Andean sub-regions: altiplano, páramo, selva. Major Amazon tributaries: Madeira, Tapajós, Xingu. Patagonia, Atacama, Gran Chaco geography.",b:"10-question interrupt drill on South American geography — no pausing.",s:"IGC 2022 Battery Part 4 Q1–10 timed.",p:"Quiz me on advanced South American geography — 10 pyramidal questions covering Andean sub-regions, Amazon tributaries, and less-known cities."},
+{d:40,title:"Physical geography extremes",k:"Longest rivers by continent, deepest lakes (Baikal, Tanganyika, Crater), highest peaks per continent, driest places. Superlatives matter at internationals.",b:"Speed round: 20 superlative questions. Parent asks 'longest river in X?' — answer instantly.",s:"IGC 2022 Battery Part 4 Q11–20 timed.",p:"Give me 10 questions on geographic superlatives — longest, deepest, highest, driest. Pyramidal format, hard clue first."},
+{d:41,title:"European micro-states + borders",k:"Andorra, San Marino, Monaco, Liechtenstein, Vatican — exact neighbors, geography, heads of state. All European border disputes and enclaves.",b:"European borders drill: name every neighbor of Germany, France, Italy, Poland, and Serbia.",s:"Score yourself on any 20 questions from IGC 2022 Parts 1–4. Real timed scoring.",p:"Give me 10 pyramidal questions on European micro-states, exclave territories, and complex borders."},
+{d:42,rest:true},
+{d:43,title:"Rivers + watersheds advanced",k:"Major river systems and their watersheds. Rivers crossing multiple countries: Danube (10 countries), Mekong (6), Congo, Niger. Key dams and reservoirs.",b:"River-source drill: parent names a river, you name source and the sea/lake it empties into.",s:"Full timed run of IGC 2022 Part 1.",p:"Give me 10 pyramidal questions on river systems worldwide — tributaries, sources, and cross-border rivers."},
+{d:44,title:"Mountains + passes advanced",k:"Ranges beyond Himalayas: Hindu Kush, Karakoram (K2), Zagros, Atlas, Drakensberg, Rwenzori. Major mountain passes: Khyber, Brenner, Simplon.",b:"Mountain quiz: 10 ranges in 5 min — country, highest peak, one key nearby city.",s:"Full timed run of IGC 2022 Part 2.",p:"Quiz me on mountain ranges worldwide — 10 pyramidal tossups covering Hindu Kush, Karakoram, Zagros, Atlas, and Drakensberg."},
+{d:45,title:"Geopolitics + disputed territories",k:"Western Sahara, Kashmir (Line of Control), Crimea, Taiwan Strait, South China Sea disputes (Spratly Islands, Paracel Islands). Understand geography of each.",b:"Disputed territory flash drill: 10 regions — name claimants and physical location in 20 sec each.",s:"Full timed run of IGC 2022 Part 3.",p:"Give me 10 pyramidal questions about geopolitically significant or disputed territories and their geography."},
+{d:46,title:"IGC format practice — Part 1",k:"Review IGC 2022 Battery Part 1 PDF answer explanations. Study any answers you missed. Note topic clusters.",b:"Re-do Part 1 under stricter time pressure — 1 minute per question max.",s:"Full timed Part 1 with bonus-point scoring.",p:"I'm preparing for IGC internationals. Give me 15 multiple-choice geography questions in IGC battery style — political and physical geography mixed."},
+{d:47,title:"IGC format practice — Part 2",k:"Review IGC 2022 Battery Part 2 PDF explanations. Flag topic clusters where you're weakest.",b:"Interrupt drill: convert Part 2 questions to pyramidal format and drill with a parent.",s:"Full timed Part 2 with strict scoring.",p:"Give me 15 IGC-style multiple-choice questions on physical geography: rivers, mountains, lakes, and deserts worldwide."},
+{d:48,title:"Capitals rapid-fire sprint",k:"All 195 world capitals — focus on Africa, Oceania, and Caribbean. Use Seterra or flashcards. Aim to get 185+ correct.",b:"Full capital speed drill: 50 countries in 5 minutes. Parent reads, you answer.",s:"Full timed Part 3 of IGC 2022.",p:"Give me 20 capital city questions embedded in short pyramidal clues. Focus on Pacific, African, and Caribbean nations."},
+{d:49,rest:true},
+{d:50,title:"Southeast + East Asia deep",k:"Philippine archipelago and Indonesian islands — which sea borders which? Mekong tributaries, Yellow River, Pearl River delta.",b:"10-question interrupt drill on Southeast and East Asian geography.",s:"Full timed Part 4 of IGC 2022.",p:"Give me 10 hard pyramidal questions on East and Southeast Asian geography — islands, rivers, seas, and capitals."},
+{d:51,title:"Middle East + North Africa advanced",k:"Levant rivers: Litani, Orontes, Jordan. MENA coastal features: Gulf of Aqaba, Strait of Hormuz, Suez geography, Sinai Peninsula.",b:"MENA blank-map drill: 20 countries and key features from memory.",s:"Full timed run of IGC Part 1 again — compare score to Day 46.",p:"Give me 10 pyramidal questions on Middle Eastern and North African geography — rivers, straits, seas, and cities."},
+{d:52,title:"Historical geography + renamed places",k:"Renamed capitals and countries: Nur-Sultan↔Astana (Kazakhstan), Eswatini (Swaziland), Cabo Verde, Myanmar (Burma), Timor-Leste. Former colonial geography of Africa.",b:"Name game: old name → new name drill. 15 pairs in 3 minutes.",s:"Full IGC 2022 Parts 1+2 timed back-to-back.",p:"Give me 10 pyramidal questions involving renamed places, former colonial territories, or historically significant geographic changes."},
+{d:53,title:"Mock international set 1",k:"Deep review of 3 misses from last week's IGC simulations. Wikipedia + one extra fact each.",b:"Which questions triggered late? Write the single earliest power clue for each miss.",s:"Full IGC 2022 Battery Parts 1+2 timed. Real scoring.",p:"I missed questions on [topics]. Give me 5 hard pyramidal questions on each weak international topic."},
+{d:54,title:"Mock international set 2",k:"Study 2 topics where accuracy is below 60% from your Q&A log.",b:"Clue-trigger log: for each miss, write the one word that should have triggered the answer.",s:"Full IGC 2022 Battery Parts 3+4 timed. Real scoring.",p:"Help me build a power-clue cheat sheet for [obscure geography topic] at international bee level."},
+{d:55,title:"Mock international set 3",k:"Topic overlap check: what appeared in both Parts 1–2 AND Parts 3–4 of IGC 2022?",b:"Interrupt drill using today's simulation questions — no pausing allowed.",s:"Full IGC 2022 all 4 parts back-to-back. Track total score.",p:"What topic clusters repeat most in IGC Geography Bee internationals? Give me 2 hard pyramidal questions per cluster."},
+{d:56,rest:true},
+{d:57,title:"Remediation sprint",k:"Target top 3 weak topics from all mock rounds. Wikipedia deep-read + 3 key facts each.",b:"10-question interrupt drill on weak topics only.",s:"IGC Parts 1+3 again timed. Compare score to Day 53.",p:"I keep missing [topic]. Give me 10 pyramidal questions on it at IGC difficulty, hard clue first."},
+{d:58,title:"Full international simulation",k:"Light review of power-clue cheat sheet only. No new material.",b:"5-question warm-up, early clue triggering only.",s:"Full IGC 2022 all 4 parts under real conditions. Strict scoring.",p:"Simulate a full IGC geography bee round — 20 pyramidal questions at international difficulty. Hard clue first, full depth."},
+{d:59,title:"Tiebreaker + speed drill",k:"Sudden-death tiebreaker format: fastest correct answer wins. Practice instant recall of capitals, rivers, and mountains.",b:"Speed round: 30 questions, 20 seconds each. No hesitation allowed.",s:"Any 20 questions from IGC 2022 under 15 seconds per question. Track how many you interrupt.",p:"Give me 20 rapid-fire geography questions at international level — one clue only, designed for instant buzz."},
+{d:60,title:"Power clue mastery",k:"Build final power-clue cheat sheet from all IGC practice. Top 30 answers and their earliest trigger clue.",b:"Interrupt drill using only power clues — no context, just the trigger word.",s:"Full IGC Part 2 + Part 4 timed. Aim for personal best.",p:"Give me 10 pyramidal tossups where the answer can be triggered at clue 1. Show me the power clue pattern for each."},
+{d:61,title:"Review + light simulation",k:"Power-clue cheat sheet 20 min only. Revisit top 5 miss topics with one fresh fact each.",b:"10 easy warm-up questions for rhythm and confidence.",s:"15 questions from IGC 2022 mixed parts — stop after 15.",p:"Give me 5 medium then 5 hard geography questions at international level to build up confidence before the competition."},
+{d:62,title:"Day before — confidence day",k:"Power-clue cheat sheet 10 min only. No new geography.",b:"5 easy questions for rhythm only.",s:"5 questions from any IGC part — stop after 5. Pure confidence.",p:"Give me 5 confidence-building geography questions — international level but topics I'm strong in."},
 ];
 
-const WK_LABELS=["Week 1 — Apr 19","Week 2 — Apr 26","Week 3 — May 3","Week 4 — May 10","Week 5 — May 17"];
+const WK_LABELS=["Week 1 — Apr 19","Week 2 — Apr 26","Week 3 — May 3","Week 4 — May 10","Week 5 — May 17","Week 6 — May 24","Week 7 — May 31","Week 8 — Jun 7","Week 9 — Jun 14"];
 const NON_REST=DAYS.filter(d=>!d.rest);
-const TOPICS=["Africa","Americas","Asia-East","Asia-South","Asia-Southeast","Capitals","Central Asia","Current Events","Deserts","Europe","Islands","Landlocked","Middle East","Mountains","Oceans & Water","Physical Features","US Geography","Other"];
+const TOTAL_DAYS=62;
+const TOPICS=["Africa","Americas","Asia-East","Asia-South","Asia-Southeast","Capitals","Central Asia","Current Events","Deserts","Disputed Territories","Europe","Historical Geography","Islands","Landlocked","Middle East","Mountains","Oceans & Water","Oceania","Physical Extremes","Physical Features","US Geography","Other"];
 
 function computeToday(){
   const start=new Date('2026-04-20');
   const diff=Math.floor((new Date()-start)/(864e5));
-  return Math.max(1,Math.min(31,diff+1));
+  return Math.max(1,Math.min(TOTAL_DAYS,diff+1));
 }
 const TDAY=computeToday();
 
@@ -450,7 +408,6 @@ function _fb(cfg){
     CFGD=true;
     document.getElementById('cfg-panel').style.display='none';
     document.getElementById('setup-bar').classList.add('hidden');
-    subscribeGeoChallengeSessions();
   }catch{sync('off')}
 }
 function sync(s){
@@ -474,12 +431,12 @@ function dismissCfg(){
 }
 
 // ─── STATE HELPERS ───────────────────────────────────────────────────────────
-function ds(n){return STATE['d'+n]||{k:false,b:false,s:false,score:null,notes:'',co:{},mode:'tally',right:0,wrong:0,questions:[],prompt:''}}
+function ds(n){return STATE['d'+n]||{k:false,b:false,score:null,notes:'',co:{},mode:'tally',right:0,wrong:0,questions:[],prompt:''}}
 function setDs(n,obj){const cur=ds(n);persist({['d'+n]:Object.assign({},cur,obj)})}
-function allDone(n){const d=ds(n);return d.k&&d.b&&d.s}
-function anyDone(n){const d=ds(n);return d.k||d.b||d.s}
-function leftPhases(n){const d=ds(n);return['k','b','s'].filter(p=>!d[p])}
-function nextDays(from,ct=6){return NON_REST.filter(d=>d.d>from&&d.d<=31).slice(0,ct)}
+function allDone(n){const d=ds(n);return d.k&&d.b}
+function anyDone(n){const d=ds(n);return d.k||d.b}
+function leftPhases(n){const d=ds(n);return['k','b'].filter(p=>!d[p])}
+function nextDays(from,ct=6){return NON_REST.filter(d=>d.d>from&&d.d<=TOTAL_DAYS).slice(0,ct)}
 function incomingFor(n){
   const inc=[];
   NON_REST.forEach(d=>{const co=ds(d.d).co||{};const ps=Object.entries(co).filter(([,v])=>v===n).map(([k])=>k.toUpperCase());if(ps.length)inc.push({fromDay:d.d,phases:ps});});
@@ -547,13 +504,13 @@ function updateReviewDisplay(n){
 
 // ─── STATS ───────────────────────────────────────────────────────────────────
 function updateStats(){
-  const total=NON_REST.length*3;
+  const total=NON_REST.length*2;
   let done=0,part=0,coC=0,phases=0;
   NON_REST.forEach(d=>{
     if(allDone(d.d))done++;else if(anyDone(d.d))part++;
     const left=leftPhases(d.d);
     if(anyDone(d.d)&&left.length)coC+=left.filter(p=>!(ds(d.d).co||{})[p]).length;
-    phases+=(3-left.length);
+    phases+=(2-left.length);
   });
   document.getElementById('sn-done').textContent=done;
   document.getElementById('sn-part').textContent=part;
@@ -592,14 +549,6 @@ function updateNudge(){
   document.getElementById('co-nudge-txt').textContent=`${ct} unscheduled phase${ct>1?'s':''} across ${unplanned.length} day${unplanned.length>1?'s':''}`;
 }
 
-// ─── PAGE SWITCH ─────────────────────────────────────────────────────────────
-function showPage(pg){
-  document.querySelectorAll('.page').forEach(p=>p.classList.remove('active'));
-  document.querySelectorAll('.tab').forEach(t=>t.classList.remove('active'));
-  document.getElementById('page-'+pg).classList.add('active');
-  document.getElementById('tab-'+pg).classList.add('active');
-  if(pg==='dashboard')renderDashboard();
-}
 
 // ─── TODAY SECTION ───────────────────────────────────────────────────────────
 let todayCollapsed = false;
@@ -610,10 +559,10 @@ function renderToday(){
   const el=document.getElementById('today-section');
   if(!day||day.rest){el.innerHTML='';return;}
   const d=ds(TDAY);
-  const done=d.k&&d.b&&d.s;
+  const done=d.k&&d.b;
   if(todayCollapsed){
     el.innerHTML=`<div class="today-collapsed-strip">
-      <span>${done?'✓ Today complete':'Today · Day '+TDAY+' of 31'}</span>
+      <span>${done?'✓ Today complete':'Today · Day '+TDAY+' of '+TOTAL_DAYS+(TDAY>31?' · 🌍':'')}</span>
       <button class="today-expand-btn" onclick="expandToday()">Show</button>
     </div>`;
     return;
@@ -624,9 +573,9 @@ function renderToday(){
   </div>`;
   el.innerHTML=`<div class="today-wrap"><div class="today-card">
     <button class="today-close-btn" onclick="collapseToday()" title="Close">✕</button>
-    <div class="today-label">Today · Day ${TDAY} of 31</div>
+    <div class="today-label">Today · Day ${TDAY} of ${TOTAL_DAYS}${TDAY>31?' · 🌍 Internationals':''}</div>
     <div class="today-title">${day.title}</div>
-    <div class="phase-checks">${ph('k','K — Knowledge (20 min)',day.k)}${ph('b','B — Buzzer drill (15 min)',day.b)}${ph('s','S — Simulation (20 min)',day.s)}</div>
+    <div class="phase-checks">${ph('k','K — Study + Sim (40 min)',day.k+(day.s?'  ·  Sim: '+day.s:''))}${ph('b','B — Buzzer drill (15 min)',day.b)}</div>
     <div class="today-btns">
       <button class="tbtn primary" onclick="openSheet(${TDAY})">Session details &amp; review</button>
       ${day.p?`<button class="tbtn" onclick="copyTxt(${TDAY})">Copy Claude prompt</button>`:''}
@@ -638,8 +587,15 @@ function renderToday(){
 // ─── CALENDAR ────────────────────────────────────────────────────────────────
 function renderCal(){
   const cal=document.getElementById('cal');let html='';
-  for(let w=0;w<5;w++){
-    html+=`<div class="week-sep">${WK_LABELS[w]}</div><div class="week-grid">`;
+  const totalWeeks=Math.ceil(DAYS.length/7);
+  let intlBannerShown=false;
+  for(let w=0;w<totalWeeks;w++){
+    const weekDays=DAYS.slice(w*7,w*7+7);
+    if(!intlBannerShown&&weekDays.some(d=>d&&d.d===32)){
+      html+=`<div class="phase-divider">🌍 International Phase — NatGeo GeoBee Internationals</div>`;
+      intlBannerShown=true;
+    }
+    html+=`<div class="week-sep">${WK_LABELS[w]||''}</div><div class="week-grid">`;
     for(let di=0;di<7;di++){
       const idx=w*7+di;if(idx>=DAYS.length){html+='<div></div>';continue;}
       const day=DAYS[idx];
@@ -648,14 +604,15 @@ function renderCal(){
       const done=allDone(day.d),part=anyDone(day.d)&&!done;
       const isT=day.d===TDAY;
       const hasCO=Object.keys(d.co||{}).length>0||incomingFor(day.d).length>0;
-      let cls='dc'+(isT?' is-today':done?' is-done':part?' is-part':'')+(hasCO?' is-co':'');
+      const isIntl=day.d>31;
+      let cls='dc'+(isT?' is-today':done?' is-done':part?' is-part':'')+(hasCO?' is-co':'')+(isIntl?' is-intl':'');
       const pip=ph=>d[ph]?`<div class="pip pip-${ph}"></div>`:`<div class="pip pip-${ph}e"></div>`;
       const sc=calcScore(day.d);
       html+=`<div class="${cls}" onclick="openSheet(${day.d})">
         ${hasCO&&!isT?'<div class="co-dot"></div>':''}
         <div class="dc-num">${day.d}</div>
         <div class="dc-name">${day.title.length>22?day.title.slice(0,20)+'…':day.title}</div>
-        <div class="pip-row">${pip('k')}${pip('b')}${pip('s')}</div>
+        <div class="pip-row">${pip('k')}${pip('b')}</div>
         ${sc!=null?`<div class="score-badge">${sc}%</div>`:''}
       </div>`;
     }
@@ -778,14 +735,13 @@ function renderSheet(n){
   </div>`;
 
   document.getElementById('sheet-body').innerHTML=`
-    <div class="sheet-day">${isT?'Today · ':''}Day ${day.d} of 31</div>
+    <div class="sheet-day">${isT?'Today · ':''}Day ${day.d} of ${TOTAL_DAYS}${day.d>31?' · 🌍 Internationals':''}</div>
     <div class="sheet-title">${day.title}</div>
     ${incHTML}
     <div class="sec">
       <div class="sec-lbl">Check off as you go</div>
-      ${phRow('k','K — Knowledge (20 min)',day.k)}
+      ${phRow('k','K — Study + Sim (40 min)',day.k+(day.s?'  ·  Sim: '+day.s:''))}
       ${phRow('b','B — Buzzer drill (15 min)',day.b)}
-      ${phRow('s','S — Simulation (20 min)',day.s)}
     </div>
     ${coHTML}
     <div class="sec"><div class="sec-lbl">Review &amp; feedback</div>${reviewHTML}</div>
@@ -806,244 +762,6 @@ function copyTxt(n){
   });
 }
 function resetPrompt(n){const day=DAYS.find(x=>x.d===n);setDs(n,{prompt:day?day.p:''});renderSheet(n);}
-
-// ─── DASHBOARD ───────────────────────────────────────────────────────────────
-let scoreChart=null;
-function renderDashboard(){
-  // GeoChallenge sync indicator
-  const gcAllQs = getGcSyncStatus();
-  const gcRight = gcAllQs.filter(q => q.result === 'right').length;
-  const gcWrong = gcAllQs.filter(q => q.result === 'wrong').length;
-  const gcBanner = document.getElementById('gc-sync-banner');
-  if (gcBanner) {
-    if (gcAllQs.length > 0) {
-      gcBanner.style.display = 'flex';
-      gcBanner.innerHTML = `
-        <span style="font-size:14px;">🎮</span>
-        <div style="flex:1">
-          <div style="font-size:12px;font-weight:500;color:#0c3d72;">GeoChallenge results synced</div>
-          <div style="font-size:11px;color:#555551;margin-top:1px;">${gcAllQs.length} questions logged automatically · ${gcRight} correct · ${gcWrong} missed</div>
-        </div>
-        <div style="font-size:11px;color:#16a34a;font-weight:500;">● Live</div>`;
-    } else {
-      gcBanner.style.display = 'none';
-    }
-  }
-
-  // Summary stats
-  const scores=NON_REST.map(d=>calcScore(d.d)).filter(v=>v!=null);
-  const allQs=NON_REST.flatMap(d=>(ds(d.d).questions||[]).filter(q=>q.result));
-  const totalRight=NON_REST.reduce((a,d)=>{
-    const dd=ds(d.d);
-    const qaRight=(dd.questions||[]).filter(q=>q.result==='right').length;
-    return a+(qaRight||(dd.right||0));
-  },0);
-  const totalWrong=NON_REST.reduce((a,d)=>{
-    const dd=ds(d.d);
-    const qaWrong=(dd.questions||[]).filter(q=>q.result==='wrong').length;
-    return a+(qaWrong||(dd.wrong||0));
-  },0);
-  const totalQ=totalRight+totalWrong;
-  const best=scores.length?Math.max(...scores):null;
-  document.getElementById('dash-summary').innerHTML=`
-    <div class="dash-stat"><div class="dash-stat-n">${scores.length?Math.round(scores.reduce((a,b)=>a+b,0)/scores.length)+'%':'—'}</div><div class="dash-stat-l">Avg score</div></div>
-    <div class="dash-stat"><div class="dash-stat-n">${best!=null?best+'%':'—'}</div><div class="dash-stat-l">Best session</div></div>
-    <div class="dash-stat"><div class="dash-stat-n">${totalQ>0?Math.round(totalRight/totalQ*100)+'%':'—'}</div><div class="dash-stat-l">Overall accuracy</div></div>
-    <div class="dash-stat"><div class="dash-stat-n">${totalRight}</div><div class="dash-stat-l">Total correct</div></div>
-    <div class="dash-stat"><div class="dash-stat-n">${totalWrong}</div><div class="dash-stat-l">Total missed</div></div>
-    <div class="dash-stat"><div class="dash-stat-n">${totalQ}</div><div class="dash-stat-l">Questions logged</div></div>`;
-
-  // Score trend chart
-  const scoreDays=NON_REST.filter(d=>calcScore(d.d)!=null);
-  const ctx=document.getElementById('score-chart').getContext('2d');
-  if(scoreChart)scoreChart.destroy();
-  if(scoreDays.length===0){
-    document.getElementById('score-chart').parentElement.innerHTML='<div class="empty-state">No scores logged yet — complete some sessions first.</div>';
-  } else {
-    scoreChart=new Chart(ctx,{
-      type:'line',
-      data:{
-        labels:scoreDays.map(d=>'Day '+d.d),
-        datasets:[{
-          label:'Score',data:scoreDays.map(d=>calcScore(d.d)),
-          borderColor:'#1a1a18',backgroundColor:'rgba(26,26,24,0.06)',
-          borderWidth:2,pointRadius:4,pointBackgroundColor:'#1a1a18',tension:.3,fill:true
-        }]
-      },
-      options:{responsive:true,maintainAspectRatio:false,plugins:{legend:{display:false},tooltip:{callbacks:{label:c=>c.raw+'%'}}},scales:{y:{min:0,max:100,ticks:{callback:v=>v+'%'},grid:{color:'rgba(0,0,0,0.05)'}},x:{grid:{display:false}}}}
-    });
-  }
-
-  // Phase accuracy
-  const phAcc=(ph)=>{
-    const days=NON_REST.filter(d=>anyDone(d.d));
-    const done=days.filter(d=>ds(d.d)[ph]).length;
-    return days.length?Math.round(done/days.length*100):0;
-  };
-  document.getElementById('phase-acc').innerHTML=`
-    ${[['k','Knowledge','bar-k'],['b','Buzzer drill','bar-b'],['s','Simulation','bar-s']].map(([ph,lbl,cls])=>{
-      const pct=phAcc(ph);
-      return `<div class="phase-acc-row">
-        <div class="phase-acc-lbl">${lbl}</div>
-        <div class="phase-acc-bar-wrap"><div class="phase-acc-bar ${cls}" style="width:${pct}%"></div></div>
-        <div class="phase-acc-num">${pct}% done</div>
-      </div>`;
-    }).join('')}`;
-
-  // Weak topics from Q&A log
-  const topicStats={};
-  NON_REST.forEach(d=>{
-    (ds(d.d).questions||[]).forEach(q=>{
-      if(!q.result||!q.topic)return;
-      const t=q.topic||'Other';
-      if(!topicStats[t])topicStats[t]={right:0,wrong:0};
-      topicStats[t][q.result==='right'?'right':'wrong']++;
-    });
-  });
-  const topicArr=Object.entries(topicStats).map(([t,v])=>({t,right:v.right,wrong:v.wrong,total:v.right+v.wrong,pct:Math.round(v.wrong/(v.right+v.wrong)*100)})).sort((a,b)=>b.pct-a.pct);
-  const weakEl=document.getElementById('weak-topics');
-  if(topicArr.length===0){
-    weakEl.innerHTML='<div class="empty-state">Log questions with topics in Full Q&A mode to see weak topics here.</div>';
-  } else {
-    weakEl.innerHTML=`<div>${topicArr.map(({t,right,wrong,total,pct})=>`
-      <div class="topic-row">
-        <div class="topic-name">${t}<br><span style="font-size:10px;color:var(--ink3)">${right}✓ ${wrong}✗ (${total} total)</span></div>
-        <div class="topic-bar-wrap"><div class="topic-bar" style="width:${pct}%;background:${pct>=60?'var(--wrong)':pct>=30?'#f59e0b':'var(--right)'}"></div></div>
-        <div class="topic-pct" style="color:${pct>=60?'var(--wrong)':pct>=30?'#b45309':'var(--right)'}">${pct}%</div>
-        <div class="topic-tag ${pct>=60?'weak':pct>=30?'ok':'good'}">${pct>=60?'Weak':pct>=30?'Okay':'Strong'}</div>
-      </div>`).join('')}</div>`;
-  }
-
-  // Full Q log
-  const allLogged=[];
-  NON_REST.forEach(d=>{
-    (ds(d.d).questions||[]).forEach(q=>{if(q.q||q.result)allLogged.push({day:d.d,title:DAYS.find(x=>x.d===d.d).title,...q});});
-  });
-  const qLogEl=document.getElementById('q-log-section');
-  if(allLogged.length===0){
-    qLogEl.innerHTML='<div class="empty-state">No questions logged yet. Use "Full Q&A log" mode inside any day\'s session.</div>';
-  } else {
-    const wrong=allLogged.filter(q=>q.result==='wrong');
-    const right=allLogged.filter(q=>q.result==='right');
-    qLogEl.innerHTML=`
-      <div style="margin-bottom:12px;display:flex;gap:12px;flex-wrap:wrap">
-        <span style="font-size:12px;color:var(--right);font-weight:500">✓ ${right.length} correct</span>
-        <span style="font-size:12px;color:var(--wrong);font-weight:500">✗ ${wrong.length} missed</span>
-        <span style="font-size:12px;color:var(--ink3)">${allLogged.length} total</span>
-      </div>
-      ${wrong.length?`<div style="font-size:11px;font-weight:600;color:var(--wrong);text-transform:uppercase;letter-spacing:.06em;margin-bottom:6px">Questions missed — review these</div>
-      <table class="qlog-table"><thead><tr><th></th><th>Question</th><th>Topic</th><th>Day</th></tr></thead><tbody>
-        ${wrong.map(q=>`<tr><td><div class="q-result q-wrong">✗</div></td><td>${q.q||'(no text)'}</td><td>${q.topic?`<span class="q-topic-chip">${q.topic}</span>`:''}</td><td style="white-space:nowrap">Day ${q.day}</td></tr>`).join('')}
-      </tbody></table>`:''}
-      ${right.length?`<div style="font-size:11px;font-weight:600;color:var(--right);text-transform:uppercase;letter-spacing:.06em;margin:14px 0 6px">Questions answered correctly</div>
-      <table class="qlog-table"><thead><tr><th></th><th>Question</th><th>Topic</th><th>Day</th></tr></thead><tbody>
-        ${right.map(q=>`<tr><td><div class="q-result q-right">✓</div></td><td>${q.q||'(no text)'}</td><td>${q.topic?`<span class="q-topic-chip">${q.topic}</span>`:''}</td><td style="white-space:nowrap">Day ${q.day}</td></tr>`).join('')}
-      </tbody></table>`:''}`;
-  }
-}
-
-
-// ─── GEOCHALLENGE BRIDGE LISTENER ─────────────────────────────────────────
-// Listens for results pushed by GeoChallenge and merges them into the tracker
-let gcBridgeUnsub = null;
-let gcLastSeen = {};  // track which session entries we've already merged
-
-function subscribeGeoChallengeSessions() {
-  if (!db || !CFGD) return;
-  if (gcBridgeUnsub) gcBridgeUnsub();
-
-  // GeoChallenge writes to geobee/tracker with day keys like d1, d2 etc.
-  // It merges questions into STATE['d'+n].questions with source:'geochallenge'
-  // The tracker already reads this same document — so results auto-appear
-  // BUT we need to make sure the dashboard shows them and stats update.
-  // We subscribe to the same doc and look for geochallenge-sourced questions.
-  gcBridgeUnsub = db.collection('geobee').doc('tracker').onSnapshot(snap => {
-    if (!snap.exists) return;
-    const data = snap.data();
-    let newFound = false;
-
-    // Check each day for new geochallenge questions we haven't seen
-    Object.keys(data).forEach(key => {
-      if (!key.startsWith('d')) return;
-      const dayData = data[key];
-      const qs = dayData.questions || [];
-      const gcQs = qs.filter(q => q.source === 'geochallenge');
-
-      if (!gcLastSeen[key]) gcLastSeen[key] = 0;
-      const newGcQs = gcQs.slice(gcLastSeen[key]);
-
-      if (newGcQs.length > 0) {
-        gcLastSeen[key] = gcQs.length;
-        newFound = true;
-
-        // Show a toast for each new result synced in
-        newGcQs.forEach(q => {
-          const icon = q.result === 'right' ? '✓' : '✗';
-          const color = q.result === 'right' ? 'green' : 'red';
-          showBridgeToast(icon, q.q, q.result, q.topic);
-        });
-      }
-    });
-
-    if (newFound) {
-      // Merge the full state and re-render
-      Object.assign(STATE, data);
-      lsS(STATE);
-      redraw();
-      if (document.getElementById('page-dashboard').classList.contains('active')) {
-        renderDashboard();
-      }
-    }
-  }, err => {
-    console.warn('GeoChallenge bridge listener error:', err);
-  });
-}
-
-function showBridgeToast(icon, question, result, topic) {
-  // Show a non-blocking notification that a result came in from GeoChallenge
-  const existing = document.getElementById('gc-bridge-toast');
-  if (existing) existing.remove();
-
-  const el = document.createElement('div');
-  el.id = 'gc-bridge-toast';
-  el.style.cssText = `
-    position:fixed;bottom:24px;right:24px;z-index:999;
-    background:${result === 'right' ? '#f0faf3' : '#fff5f5'};
-    border:1px solid ${result === 'right' ? '#7ec8a0' : '#fca5a5'};
-    border-radius:12px;padding:12px 16px;max-width:300px;
-    box-shadow:0 4px 16px rgba(0,0,0,0.12);font-family:'DM Sans',sans-serif;
-    animation:slideInRight .3s ease;
-  `;
-  el.innerHTML = `
-    <div style="font-size:11px;font-weight:600;text-transform:uppercase;letter-spacing:.06em;color:${result === 'right' ? '#16a34a' : '#dc2626'};margin-bottom:4px;">
-      📊 GeoChallenge ${icon} ${result === 'right' ? 'Correct' : 'Missed'}
-    </div>
-    <div style="font-size:12px;color:#555551;line-height:1.4;">${(question||'').slice(0,80)}${question && question.length > 80 ? '…' : ''}</div>
-    ${topic ? `<div style="margin-top:5px;"><span style="font-size:10px;background:#e8f1fb;color:#0c3d72;padding:2px 7px;border-radius:10px;">${topic}</span></div>` : ''}
-    <div style="font-size:10px;color:#99998f;margin-top:5px;">Synced to today's Q&A log →</div>
-  `;
-  document.body.appendChild(el);
-
-  // Add animation if not already in styles
-  if (!document.getElementById('bridge-toast-style')) {
-    const style = document.createElement('style');
-    style.id = 'bridge-toast-style';
-    style.textContent = `@keyframes slideInRight{from{opacity:0;transform:translateX(20px)}to{opacity:1;transform:translateX(0)}}`;
-    document.head.appendChild(style);
-  }
-
-  setTimeout(() => el.remove(), 4000);
-}
-
-// Also add a visual indicator on the dashboard showing GeoChallenge sync status
-function getGcSyncStatus() {
-  const allGcQs = [];
-  NON_REST.forEach(d => {
-    const qs = (ds(d.d).questions || []).filter(q => q.source === 'geochallenge');
-    allGcQs.push(...qs);
-  });
-  return allGcQs;
-}
 
 // ─── REDRAW ──────────────────────────────────────────────────────────────────
 function redraw(){renderToday();renderCal();updateStats();}
