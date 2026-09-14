@@ -1,1 +1,939 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<title>Red Set 2026-27 — Interactive Study Quiz</title>
+<style>
+  :root {
+    --gold: #c9a227;
+    --gold-light: #e8d488;
+    --lapis: #1f3a5f;
+    --lapis-dark: #0f2038;
+    --card-bg: #fffdf7;
+    --ink: #1a2332;
+    --muted: #6b7686;
+    --correct: #2e7d4f;
+    --incorrect: #b23a3a;
+  }
+  * { box-sizing: border-box; }
+  body {
+    margin: 0;
+    font-family: 'Georgia', 'Times New Roman', serif;
+    background: radial-gradient(circle at top, var(--lapis) 0%, var(--lapis-dark) 70%);
+    color: var(--ink);
+    min-height: 100vh;
+    padding: 24px 16px 60px;
+  }
+  .wrap { max-width: 760px; margin: 0 auto; }
+  header { text-align: center; color: var(--gold-light); margin-bottom: 18px; }
+  header h1 { margin: 0; font-size: 1.55rem; }
+  header p { color: #cdd7e6; font-size: 0.9rem; margin: 6px 0 0; }
 
+  .picker {
+    background: var(--card-bg);
+    border-radius: 14px;
+    padding: 22px 22px 26px;
+    box-shadow: 0 8px 30px rgba(0,0,0,0.4);
+  }
+  .picker h2 { margin-top: 0; color: var(--lapis); font-size: 1.15rem; }
+  .cat-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(200px, 1fr));
+    gap: 10px;
+    margin: 16px 0 20px;
+  }
+  .cat-btn {
+    text-align: left;
+    background: #f4f1e7;
+    border: 2px solid transparent;
+    border-radius: 10px;
+    padding: 12px 14px;
+    cursor: pointer;
+    font-family: inherit;
+    font-size: 0.92rem;
+    color: var(--ink);
+  }
+  .cat-btn .count { display: block; font-size: 0.75rem; color: var(--muted); margin-top: 3px; }
+  .cat-btn:hover { border-color: var(--gold); }
+  .cat-btn.selected { border-color: var(--lapis); background: #e7ecf3; }
+  .start-btn {
+    width: 100%;
+    padding: 13px;
+    font-size: 1rem;
+    border: none;
+    border-radius: 10px;
+    background: var(--lapis);
+    color: white;
+    cursor: pointer;
+    font-family: inherit;
+  }
+  .start-btn:disabled { opacity: 0.5; cursor: default; }
+
+  .card {
+    background: var(--card-bg);
+    border-radius: 14px;
+    padding: 24px 24px 22px;
+    box-shadow: 0 8px 30px rgba(0,0,0,0.4);
+  }
+  .ridge-wrap { margin-bottom: 14px; }
+  .ridge-svg { width: 100%; height: 34px; display: block; }
+  .meta-row { display: flex; justify-content: space-between; align-items: center; margin-bottom: 8px; }
+  .qnum { font-size: 0.85rem; color: var(--muted); }
+  .catpill { background: var(--lapis); color: white; padding: 3px 10px; border-radius: 20px; font-size: 0.75rem; }
+  .clues-shown { font-size: 1.12rem; line-height: 1.65; min-height: 90px; margin: 10px 0 14px; }
+  .clues-shown .clue-line { margin-bottom: 6px; }
+  .clues-shown .clue-line:first-child { color: var(--ink); }
+  .btn-row { display: flex; gap: 10px; flex-wrap: wrap; margin-top: 8px; }
+  button.action {
+    font-family: inherit;
+    font-size: 0.92rem;
+    padding: 9px 15px;
+    border-radius: 8px;
+    border: none;
+    cursor: pointer;
+    background: var(--lapis);
+    color: white;
+  }
+  button.action.secondary { background: #e7e7e7; color: var(--ink); }
+  button.action.gold { background: var(--gold); color: #2a2200; }
+  button.action:disabled { opacity: 0.45; cursor: default; }
+  .answer-box {
+    width: 100%;
+    padding: 10px 12px;
+    font-size: 1rem;
+    border-radius: 8px;
+    border: 1px solid #ccc;
+    font-family: inherit;
+    margin-top: 14px;
+  }
+  .reveal-block {
+    margin-top: 16px;
+    padding: 14px 16px;
+    background: #f4f1e7;
+    border-left: 4px solid var(--gold);
+    border-radius: 6px;
+    display: none;
+  }
+  .reveal-block.show { display: block; }
+  .reveal-block .answer-line { font-weight: bold; font-size: 1.15rem; margin-top: 4px; }
+  .grade-row { margin-top: 12px; display: flex; gap: 10px; }
+  .grade-row button.correct { background: var(--correct); color: white; }
+  .grade-row button.incorrect { background: var(--incorrect); color: white; }
+
+  .review-panel {
+    background: var(--card-bg);
+    border-radius: 14px;
+    padding: 26px 24px;
+    box-shadow: 0 8px 30px rgba(0,0,0,0.4);
+  }
+  .review-panel h2 { color: var(--lapis); margin-top: 0; text-align: center; }
+  .score-line { text-align: center; font-size: 1.3rem; color: var(--lapis); margin-bottom: 18px; }
+  .review-item {
+    padding: 10px 12px;
+    border-radius: 8px;
+    margin-bottom: 8px;
+    background: #f4f1e7;
+    display: flex;
+    justify-content: space-between;
+    gap: 10px;
+    font-size: 0.9rem;
+  }
+  .review-item.wrong { border-left: 4px solid var(--incorrect); }
+  .review-item.right { border-left: 4px solid var(--correct); }
+  .review-item .ans { font-weight: bold; }
+  .restart-btn {
+    width: 100%;
+    margin-top: 18px;
+    padding: 12px;
+    font-size: 1rem;
+    border: none;
+    border-radius: 10px;
+    background: var(--lapis);
+    color: white;
+    cursor: pointer;
+    font-family: inherit;
+  }
+  .hidden { display: none; }
+  .source-note { color: #aebbcf; font-size: 0.75rem; text-align: center; margin-top: 20px; }
+</style>
+</head>
+<body>
+<div class="wrap">
+  <header>
+    <h1>Geography Bee Study Quiz</h1>
+    <p>Red Set 2026-27 — pick a region to drill</p>
+  </header>
+
+  <div id="pickerScreen" class="picker">
+    <h2>Choose a region</h2>
+    <div class="cat-grid" id="catGrid"></div>
+    <button class="start-btn" id="startBtn" disabled>Start quiz</button>
+  </div>
+
+  <div id="quizScreen" class="card hidden">
+    <div class="ridge-wrap">
+      <svg class="ridge-svg" id="ridgeSvg" viewBox="0 0 600 34" preserveAspectRatio="none"></svg>
+    </div>
+    <div class="meta-row">
+      <span class="qnum" id="qnum"></span>
+      <span class="catpill" id="catpill"></span>
+    </div>
+    <div class="clues-shown" id="cluesShown"></div>
+
+    <input type="text" id="answerBox" class="answer-box" placeholder="Type your answer, then hit Reveal...">
+
+    <div class="btn-row">
+      <button class="action secondary" id="hintBtn">Show next clue</button>
+      <button class="action gold" id="revealBtn">Reveal answer</button>
+    </div>
+
+    <div class="reveal-block" id="revealBlock">
+      <div>Correct answer:</div>
+      <div class="answer-line" id="answerLine"></div>
+      <div class="grade-row">
+        <button class="action correct" id="markCorrect">I got it right</button>
+        <button class="action incorrect" id="markIncorrect">I got it wrong</button>
+      </div>
+    </div>
+
+    <div class="btn-row" id="nextRow" style="display:none;">
+      <button class="action" id="nextBtn">Next question →</button>
+    </div>
+  </div>
+
+  <div id="reviewScreen" class="review-panel hidden">
+    <h2>Round complete</h2>
+    <div class="score-line" id="scoreLine"></div>
+    <div id="reviewList"></div>
+    <button class="restart-btn" id="restartBtn">Pick another region</button>
+  </div>
+
+  <p class="source-note">64 pyramidal tossups built from the 2026-27 Regional Tournament Study Guide (Red Question Set) — every numbered fact and every "Terms for Further Study" entry.</p>
+</div>
+
+<script>
+const allQuestions = [
+  {
+    category: "African Geography",
+    clues: [
+      "This river passes through the \"Niger Bend\" near Timbuktu before flowing southeast into a delta on the Gulf of Guinea, joined at Lokoja by its main tributary, the Benue.",
+      "It lends its name to two different West African nations.",
+      "For ten points, name this river, the third-longest in Africa, which shares its name with Niger and Nigeria.",
+    ],
+    answer: "Niger River"
+  },
+  {
+    category: "African Geography",
+    clues: [
+      "This mountain's three volcanic cones — Kibo, Mawenzi, and Shira — were first summited together in 1889 by Hans Meyer and Ludwig Purtscheller.",
+      "Its glaciers atop the Kibo cone have retreated dramatically due to climate change.",
+      "Located near the town of Moshi, this dormant stratovolcano is one of the \"Seven Summits.\" For ten points, name this tallest mountain in Africa, found in Tanzania.",
+    ],
+    answer: "Mount Kilimanjaro"
+  },
+  {
+    category: "African Geography",
+    clues: [
+      "This semi-arid transitional zone stretches from Senegal to Sudan just south of a great desert, and has faced worsening desertification and the rise of extremist groups like Boko Haram.",
+      "For ten points, name this ecological belt bordering the southern edge of the Sahara.",
+    ],
+    answer: "Sahel"
+  },
+  {
+    category: "African Geography",
+    clues: [
+      "This term describes resources like tantalum, tin, tungsten, and gold extracted in war zones — often the Democratic Republic of the Congo — to fund armed militias, and which frequently end up inside smartphones.",
+      "For ten points, give this term for minerals whose trade finances armed conflict.",
+    ],
+    answer: "conflict minerals"
+  },
+  {
+    category: "African Geography",
+    clues: [
+      "This country occupies the Horn of Africa and boasts the longest mainland coastline on the continent, along the Gulf of Aden and Indian Ocean.",
+      "It has struggled with piracy and clan-based statelessness since its central government fell in 1991.",
+      "For ten points, name this country whose capital is Mogadishu.",
+    ],
+    answer: "Somalia"
+  },
+  {
+    category: "African Geography",
+    clues: [
+      "This lake in northern Kenya is the world's largest permanent desert lake and largest alkaline lake; hominid fossils unearthed near its shores have been crucial to human evolutionary research.",
+      "For ten points, name this lake sometimes nicknamed the \"Jade Sea.\"",
+    ],
+    answer: "Lake Turkana"
+  },
+  {
+    category: "African Geography",
+    clues: [
+      "This rainforest fills the Congo Basin across several Central African nations and is the world's second-largest contiguous tropical rainforest after the Amazon.",
+      "For ten points, name this rainforest centered on the Democratic Republic of the Congo.",
+    ],
+    answer: "Congo rainforest"
+  },
+  {
+    category: "Asian Geography",
+    clues: [
+      "This country's Luzon and Mindanao are its two largest of over 7,000 islands; ceded by Spain to the U.S. after the Spanish-American War, it gained independence in 1946 and is frequently struck by typhoons.",
+      "For ten points, name this Southeast Asian archipelago whose capital, on Manila Bay, is Manila.",
+    ],
+    answer: "Philippines"
+  },
+  {
+    category: "Asian Geography",
+    clues: [
+      "This river winds through the Three Gorges, site of the world's largest hydroelectric dam by capacity, and passes Wuhan before emptying into the East China Sea near Shanghai.",
+      "For ten points, name this longest river in China and in Asia.",
+    ],
+    answer: "Yangtze River"
+  },
+  {
+    category: "Asian Geography",
+    clues: [
+      "This city's canals, or khlongs, once earned it comparisons to Venice; it houses the Grand Palace and the temple Wat Arun along a river whose delta it occupies.",
+      "That river, the Chao Phraya, empties into the Gulf of Thailand just south of this city.",
+      "For ten points, name this capital of Thailand.",
+    ],
+    answer: "Bangkok"
+  },
+  {
+    category: "Asian Geography",
+    clues: [
+      "This city's Old City is split into Muslim, Christian, Armenian, and Jewish quarters and holds the Western Wall, the Church of the Holy Sepulchre, and the Dome of the Rock.",
+      "Sacred to Judaism, Christianity, and Islam alike, it is claimed as a capital by both Israelis and Palestinians.",
+      "For ten points, name this holy city.",
+    ],
+    answer: "Jerusalem"
+  },
+  {
+    category: "Asian Geography",
+    clues: [
+      "This island is split among the Malaysian states of Sabah and Sarawak, the sultanate of Brunei, and — for most of its area — Indonesia, which calls its portion Kalimantan and is relocating its capital there, to Nusantara.",
+      "For ten points, name this large Southeast Asian island shared by three countries.",
+    ],
+    answer: "Borneo"
+  },
+  {
+    category: "Asian Geography",
+    clues: [
+      "This city, formerly Constantinople and Byzantium, straddles two continents across the Bosporus and once held the Hagia Sophia, which has served as cathedral, mosque, and museum in turn.",
+      "For ten points, name this largest city of Turkey, though not its capital, which is Ankara.",
+    ],
+    answer: "Istanbul"
+  },
+  {
+    category: "Asian Geography",
+    clues: [
+      "This city sits on the Najd plateau in the interior of its country and has boomed with oil wealth, sprouting skyscrapers like the Kingdom Centre Tower.",
+      "For ten points, name this capital of Saudi Arabia.",
+    ],
+    answer: "Riyadh"
+  },
+  {
+    category: "Asian Geography",
+    clues: [
+      "This river rises in China's Yunnan province, flows through Hanoi, and empties into the Gulf of Tonkin.",
+      "For ten points, name this river of northern Vietnam, not to be confused with the river bordering Texas and Oklahoma.",
+    ],
+    answer: "Red River (Sông Hồng, Vietnam)"
+  },
+  {
+    category: "Asian Geography",
+    clues: [
+      "This Japanese city on Osaka Bay is known for its castle, its Dotonbori entertainment district, and its street food; it is Japan's third-largest city, in the Kansai region.",
+      "For ten points, name this city near Kyoto and Kobe.",
+    ],
+    answer: "Osaka"
+  },
+  {
+    category: "Asian Geography",
+    clues: [
+      "This narrow waterway links the Persian Gulf to the Gulf of Oman and is bordered by Iran and Oman; it is one of the world's most vital oil-shipping chokepoints.",
+      "For ten points, name this strait.",
+    ],
+    answer: "Strait of Hormuz"
+  },
+  {
+    category: "Asian Geography",
+    clues: [
+      "This mountain pass through the Hindu Kush connects Afghanistan and Pakistan near Peshawar, and has served for centuries as a key invasion and trade route between South and Central Asia.",
+      "For ten points, name this famous pass.",
+    ],
+    answer: "Khyber Pass"
+  },
+  {
+    category: "Asian Geography",
+    clues: [
+      "This former settlement in Hong Kong was an ungoverned enclave known for extreme population density before its demolition in the mid-1990s; it is now a public park.",
+      "For ten points, name this former \"city within a city.\"",
+    ],
+    answer: "Kowloon Walled City"
+  },
+  {
+    category: "Asian Geography",
+    clues: [
+      "This mountain straddles the border of Nepal and India's Sikkim state and is the third-highest peak on Earth.",
+      "For ten points, name this Himalayan giant.",
+    ],
+    answer: "Kangchenjunga"
+  },
+  {
+    category: "Australia & Oceania Geography",
+    clues: [
+      "This structure stretches over 2,300 kilometers off the coast of Queensland and is visible from space; built by billions of tiny coral polyps, it has suffered repeated mass bleaching from rising sea temperatures.",
+      "For ten points, name this largest living structure on Earth, off Australia's coast.",
+    ],
+    answer: "Great Barrier Reef"
+  },
+  {
+    category: "Australia & Oceania Geography",
+    clues: [
+      "This continent contains the Transantarctic Mountains and is almost entirely buried beneath an ice sheet holding most of Earth's fresh water; an international treaty bans military activity and mineral extraction there.",
+      "For ten points, name this southernmost, coldest continent, home to research bases like McMurdo Station.",
+    ],
+    answer: "Antarctica"
+  },
+  {
+    category: "Australia & Oceania Geography",
+    clues: [
+      "This country's North and South Islands are separated by the Cook Strait, and its indigenous Maori people signed a founding treaty with the British Crown at a town called Waitangi.",
+      "For ten points, name this southernmost country of Oceania, whose capital is Wellington.",
+    ],
+    answer: "New Zealand"
+  },
+  {
+    category: "Australia & Oceania Geography",
+    clues: [
+      "This Pacific region includes island groups such as the Marshall Islands, Palau, and the Federated States within it, and its Greek-derived name means \"small islands.\" For ten points, name this Oceanic region, distinct from Melanesia and Polynesia.",
+    ],
+    answer: "Micronesia"
+  },
+  {
+    category: "Australia & Oceania Geography",
+    clues: [
+      "This town on New Zealand's North Island hosted the 1840 signing of a founding treaty between the British Crown and Maori chiefs.",
+      "For ten points, name this treaty site that established British sovereignty over New Zealand.",
+    ],
+    answer: "Waitangi"
+  },
+  {
+    category: "Australia & Oceania Geography",
+    clues: [
+      "This American research base is the largest human community in Antarctica and sits on Ross Island.",
+      "For ten points, name this station, the hub of U.S.",
+      "Antarctic operations.",
+    ],
+    answer: "McMurdo Station"
+  },
+  {
+    category: "European Geography",
+    clues: [
+      "This strait links the Sea of Marmara to a northern sea and is spanned by bridges joining a city's European and Asian sides; with the Dardanelles, it forms the Turkish Straits.",
+      "For ten points, name this strait dividing Istanbul, and Europe from Asia.",
+    ],
+    answer: "Bosporus (Strait)"
+  },
+  {
+    category: "European Geography",
+    clues: [
+      "This river flows through four European capitals — Vienna, Bratislava, Budapest, and Belgrade — more than any river on Earth, before emptying into the Black Sea through a Romanian delta.",
+      "For ten points, name this longest river entirely within Europe.",
+    ],
+    answer: "Danube River"
+  },
+  {
+    category: "European Geography",
+    clues: [
+      "This city, built on seven hills, contains an independent city-state within its limits and boasts ancient sites like the Colosseum and the coin-strewn Trevi Fountain.",
+      "For ten points, name this capital of Italy, home to Vatican City.",
+    ],
+    answer: "Rome"
+  },
+  {
+    category: "European Geography",
+    clues: [
+      "This sea is bordered by Crimea, a peninsula annexed from Ukraine by Russia in 2014, and possesses a famously anoxic, hydrogen-sulfide-rich deep layer.",
+      "For ten points, name this sea connected to the Sea of Marmara via the Bosporus.",
+    ],
+    answer: "Black Sea"
+  },
+  {
+    category: "European Geography",
+    clues: [
+      "This island lies off the \"toe\" of Italy's boot and is separated from the mainland by the Strait of Messina; it hosts Mount Etna, one of the world's most active volcanoes.",
+      "For ten points, name this largest island in the Mediterranean Sea.",
+    ],
+    answer: "Sicily"
+  },
+  {
+    category: "European Geography",
+    clues: [
+      "This peninsula is cut off from the rest of Europe by the Pyrenees and contains the microstate of Andorra as well as the British territory of Gibraltar along its edges.",
+      "For ten points, name this peninsula home to Spain and Portugal.",
+    ],
+    answer: "Iberian Peninsula"
+  },
+  {
+    category: "European Geography",
+    clues: [
+      "This medieval fortress overlooks a fjord and now contains a mausoleum for national royalty as well as sites of Nazi-era executions during World War II.",
+      "For ten points, name this fortress in Oslo, capital of Norway.",
+    ],
+    answer: "Akershus Fortress"
+  },
+  {
+    category: "European Geography",
+    clues: [
+      "This agreement allows passport-free travel across most European Union states plus a few non-EU nations like Norway and Switzerland, and takes its name from a Luxembourgish town.",
+      "For ten points, name this European free-movement zone.",
+    ],
+    answer: "Schengen Area"
+  },
+  {
+    category: "European Geography",
+    clues: [
+      "This small volcanic island off Sicily's coast has erupted almost continuously for centuries, lending its name to a distinctive, relatively mild and frequent style of eruption.",
+      "For ten points, name this Aeolian island and volcano.",
+    ],
+    answer: "Stromboli"
+  },
+  {
+    category: "European Geography",
+    clues: [
+      "This southern Italian city sits on a bay overshadowed by Mount Vesuvius and is often credited as the birthplace of pizza.",
+      "For ten points, name this city near the ruins of Pompeii.",
+    ],
+    answer: "Naples"
+  },
+  {
+    category: "European Geography",
+    clues: [
+      "This Dutch-speaking population forms the majority in the northern Belgian region of Flanders, contrasting with the French-speaking Walloons to the south.",
+      "For ten points, name this linguistic and ethnic group.",
+    ],
+    answer: "Flemish (people)"
+  },
+  {
+    category: "US & Canadian Geography",
+    clues: [
+      "This city sits mostly below sea level and suffered catastrophic levee failures after Hurricane Katrina in 2005; its French Quarter hosts an annual carnival and its cuisine features gumbo and jambalaya.",
+      "For ten points, name this Louisiana city on the Mississippi River, famous for Mardi Gras.",
+    ],
+    answer: "New Orleans"
+  },
+  {
+    category: "US & Canadian Geography",
+    clues: [
+      "This island, part of Nunavut, is separated from Greenland by the Davis Strait, and its largest community, Iqaluit, also serves as the territory's capital.",
+      "For ten points, name this largest island in Canada.",
+    ],
+    answer: "Baffin Island"
+  },
+  {
+    category: "US & Canadian Geography",
+    clues: [
+      "This roughly 750-mile fault system marks the boundary between the Pacific and North American plates and caused the devastating 1906 San Francisco earthquake; its transform motion is slowly closing the gap between Los Angeles and San Francisco.",
+      "For ten points, name this famous California fault.",
+    ],
+    answer: "San Andreas Fault"
+  },
+  {
+    category: "US & Canadian Geography",
+    clues: [
+      "This lake is the largest of the Great Lakes by both area and volume, bordering Ontario, Minnesota, Wisconsin, and Michigan, and it is the largest freshwater lake on Earth by surface area.",
+      "For ten points, name this northernmost and largest of the Great Lakes.",
+    ],
+    answer: "Lake Superior"
+  },
+  {
+    category: "US & Canadian Geography",
+    clues: [
+      "This mountain range runs from British Columbia and Alberta down through the western United States to New Mexico, carrying the Continental Divide, which separates rivers bound for the Pacific from those bound for the Atlantic and Gulf of Mexico.",
+      "For ten points, name this longest mountain range in North America.",
+    ],
+    answer: "Rocky Mountains"
+  },
+  {
+    category: "US & Canadian Geography",
+    clues: [
+      "This Canadian province joins an island with a mainland region on the Labrador Peninsula, and was the last province to enter Canadian confederation, in 1949; its capital, St.",
+      "John's, sits on the island half.",
+      "For ten points, name this easternmost Canadian province.",
+    ],
+    answer: "Newfoundland and Labrador"
+  },
+  {
+    category: "US & Canadian Geography",
+    clues: [
+      "This location in California's Mojave Desert recorded a 1913 temperature of 134°F at Furnace Creek, long considered Earth's hottest reliably measured reading, and contains Badwater Basin, North America's lowest point.",
+      "For ten points, name this national park and desert basin.",
+    ],
+    answer: "Death Valley"
+  },
+  {
+    category: "US & Canadian Geography",
+    clues: [
+      "This hook-shaped Massachusetts peninsula faces the island of Martha's Vineyard across Nantucket Sound and is separated from the mainland by a canal; its towns include Provincetown and Hyannis.",
+      "For ten points, name this popular vacation peninsula.",
+    ],
+    answer: "Cape Cod"
+  },
+  {
+    category: "US & Canadian Geography",
+    clues: [
+      "This city sits where the Ashley and Cooper Rivers meet a namesake harbor, the site of Fort Sumter and the Civil War's opening shots; it is the largest city by population in its state.",
+      "For ten points, name this historic South Carolina port city.",
+    ],
+    answer: "Charleston, South Carolina"
+  },
+  {
+    category: "US & Canadian Geography",
+    clues: [
+      "This national park in southern Utah, near Zion, is famous for hoodoos — tall, thin rock spires carved by erosion — clustered in natural amphitheaters, despite not actually being a canyon.",
+      "For ten points, name this park.",
+    ],
+    answer: "Bryce Canyon National Park"
+  },
+  {
+    category: "US & Canadian Geography",
+    clues: [
+      "This U.S. state is home to the Grand Canyon and the Sonoran Desert, and its capital, Phoenix, is one of the country's fastest-growing cities.",
+      "For ten points, name this southwestern state bordering Mexico and Nevada.",
+    ],
+    answer: "Arizona"
+  },
+  {
+    category: "US & Canadian Geography",
+    clues: [
+      "This Los Angeles neighborhood, home to a famous hillside sign, is historically considered the heart of the American film industry.",
+      "For ten points, name this neighborhood synonymous with American cinema.",
+    ],
+    answer: "Hollywood"
+  },
+  {
+    category: "US & Canadian Geography",
+    clues: [
+      "This U.S. state is bordered on the east by the Mississippi River and contains the Ozark Mountains as well as Hot Springs National Park.",
+      "For ten points, name this state whose capital is Little Rock.",
+    ],
+    answer: "Arkansas"
+  },
+  {
+    category: "US & Canadian Geography",
+    clues: [
+      "This archipelago of 22 islands sits in Lake Superior off Wisconsin's coast and is known for sea caves carved into sandstone sea cliffs.",
+      "For ten points, name this island group and national lakeshore.",
+    ],
+    answer: "Apostle Islands"
+  },
+  {
+    category: "US & Canadian Geography",
+    clues: [
+      "This coastal Connecticut village is home to a historic seaport museum with restored 19th-century sailing ships, and lent its name to a 1988 romantic comedy about a pizza parlor.",
+      "For ten points, name this village.",
+    ],
+    answer: "Mystic, Connecticut"
+  },
+  {
+    category: "US & Canadian Geography",
+    clues: [
+      "This Hawaiian island is home to Honolulu and Pearl Harbor; though only the third-largest island in the state, it is by far the most populous.",
+      "For ten points, name this island, home to Hawaii's capital.",
+    ],
+    answer: "Oahu"
+  },
+  {
+    category: "US & Canadian Geography",
+    clues: [
+      "This Washington state peninsula packs temperate rainforest, glaciated peaks, and Pacific coastline into a single national park.",
+      "For ten points, name this peninsula home to Olympic National Park.",
+    ],
+    answer: "Olympic Peninsula"
+  },
+  {
+    category: "Latin American & Caribbean Geography",
+    clues: [
+      "This Central American country borders El Salvador to the southwest and Nicaragua to the southeast, and its Caribbean coast includes the Bay Islands, a popular diving destination.",
+      "For ten points, name this country whose capital is Tegucigalpa.",
+    ],
+    answer: "Honduras"
+  },
+  {
+    category: "Latin American & Caribbean Geography",
+    clues: [
+      "This glacier sits within Los Glaciares National Park in Argentine Patagonia and is one of the few glaciers on Earth that is not currently retreating; tourists watch huge chunks calve from its face into Lake Argentino.",
+      "For ten points, name this glacier in southern Argentina.",
+    ],
+    answer: "Perito Moreno Glacier"
+  },
+  {
+    category: "Latin American & Caribbean Geography",
+    clues: [
+      "This lake straddles the Peru-Bolivia border high in the Andes and is often cited as the world's highest navigable lake; the indigenous Uros people live on floating islands built of totora reeds atop it.",
+      "For ten points, name this largest lake in South America by volume.",
+    ],
+    answer: "Lake Titicaca"
+  },
+  {
+    category: "Latin American & Caribbean Geography",
+    clues: [
+      "This island nation was led by Fidel Castro after a 1959 revolution and has endured a decades-long U.S. trade embargo; its capital sits on a harbor along the island's northern coast.",
+      "For ten points, name this largest island in the Caribbean, whose capital is Havana.",
+    ],
+    answer: "Cuba"
+  },
+  {
+    category: "Latin American & Caribbean Geography",
+    clues: [
+      "This wide, tree-lined boulevard was modeled on grand European avenues and runs through the heart of a major Latin American capital, passing the Angel of Independence monument.",
+      "For ten points, name this avenue in Mexico City.",
+    ],
+    answer: "Paseo de la Reforma"
+  },
+  {
+    category: "Latin American & Caribbean Geography",
+    clues: [
+      "This two-island country in the Lesser Antilles is the smallest sovereign state in the Americas by both area and population.",
+      "For ten points, name this Caribbean nation whose capital is Basseterre.",
+    ],
+    answer: "Saint Kitts and Nevis"
+  },
+  {
+    category: "Physical Geography",
+    clues: [
+      "This type of hot spring periodically ejects a column of water and steam into the air when superheated groundwater near volcanic rock flashes to steam; Old Faithful in Yellowstone is the most famous example.",
+      "For ten points, name this erupting hot spring.",
+    ],
+    answer: "geyser"
+  },
+  {
+    category: "Physical Geography",
+    clues: [
+      "This landform is a steep slope or cliff separating two relatively level areas of land at different elevations, often produced by erosion or faulting; a famous one runs from New York through Ontario near a certain waterfall.",
+      "For ten points, name this type of steep, extended cliff.",
+    ],
+    answer: "escarpment"
+  },
+  {
+    category: "Physical Geography",
+    clues: [
+      "This type of landform is a partially enclosed coastal body of water where river freshwater mixes with ocean saltwater; the Chesapeake Bay is a well-known example.",
+      "For ten points, name this brackish landform typically found at a river's mouth.",
+    ],
+    answer: "estuary"
+  },
+  {
+    category: "Physical Geography",
+    clues: [
+      "These dark-colored beaches form from eroded volcanic material like basalt and obsidian, and are famously found at Iceland's Reynisfjara and Hawaii's Punaluu.",
+      "For ten points, name this type of beach colored by volcanic rock rather than typical light-colored sand.",
+    ],
+    answer: "black sand beaches"
+  },
+];
+
+// ---- Build category list ----
+const catCounts = {};
+allQuestions.forEach(q => { catCounts[q.category] = (catCounts[q.category] || 0) + 1; });
+const categories = Object.keys(catCounts).sort();
+
+const catGrid = document.getElementById('catGrid');
+let selectedCats = new Set();
+
+// "All regions" button
+function makeCatBtn(label, key, count) {
+  const btn = document.createElement('button');
+  btn.className = 'cat-btn';
+  btn.innerHTML = `${label}<span class="count">${count} question${count === 1 ? '' : 's'}</span>`;
+  btn.dataset.key = key;
+  btn.addEventListener('click', () => {
+    if (key === '__ALL__') {
+      selectedCats = new Set(categories);
+    } else {
+      if (selectedCats.has(key)) selectedCats.delete(key); else selectedCats.add(key);
+      selectedCats.delete('__ALL__');
+    }
+    refreshCatButtons();
+  });
+  return btn;
+}
+
+catGrid.appendChild(makeCatBtn('All regions', '__ALL__', allQuestions.length));
+categories.forEach(c => catGrid.appendChild(makeCatBtn(c, c, catCounts[c])));
+
+function refreshCatButtons() {
+  const allSelected = categories.every(c => selectedCats.has(c));
+  document.querySelectorAll('.cat-btn').forEach(btn => {
+    const key = btn.dataset.key;
+    const isSel = key === '__ALL__' ? allSelected : selectedCats.has(key);
+    btn.classList.toggle('selected', isSel);
+  });
+  document.getElementById('startBtn').disabled = selectedCats.size === 0;
+}
+
+// ---- Quiz state ----
+let quizQuestions = [];
+let current = 0;
+let cluesRevealed = 1;
+let results = []; // {correct}
+
+const pickerScreen = document.getElementById('pickerScreen');
+const quizScreen = document.getElementById('quizScreen');
+const reviewScreen = document.getElementById('reviewScreen');
+const cluesShown = document.getElementById('cluesShown');
+const qnumEl = document.getElementById('qnum');
+const catpillEl = document.getElementById('catpill');
+const revealBlock = document.getElementById('revealBlock');
+const answerLine = document.getElementById('answerLine');
+const nextRow = document.getElementById('nextRow');
+const answerBox = document.getElementById('answerBox');
+const hintBtn = document.getElementById('hintBtn');
+const revealBtn = document.getElementById('revealBtn');
+const ridgeSvg = document.getElementById('ridgeSvg');
+
+document.getElementById('startBtn').addEventListener('click', () => {
+  quizQuestions = allQuestions.filter(q => selectedCats.has(q.category));
+  // shuffle
+  for (let i = quizQuestions.length - 1; i > 0; i--) {
+    const j = Math.floor(Math.random() * (i + 1));
+    [quizQuestions[i], quizQuestions[j]] = [quizQuestions[j], quizQuestions[i]];
+  }
+  current = 0;
+  results = [];
+  pickerScreen.classList.add('hidden');
+  quizScreen.classList.remove('hidden');
+  reviewScreen.classList.add('hidden');
+  buildRidge();
+  loadQuestion();
+});
+
+function buildRidge() {
+  // simple ridge-line: a row of peaks, one per question, gold when passed
+  ridgeSvg.innerHTML = '';
+  const n = quizQuestions.length;
+  const w = 600, h = 34;
+  const step = w / n;
+  let path = `M0,${h}`;
+  for (let i = 0; i < n; i++) {
+    const x1 = i * step + step * 0.5;
+    path += ` L${x1},4 L${(i + 1) * step},${h}`;
+  }
+  const bg = document.createElementNS('http://www.w3.org/2000/svg', 'path');
+  bg.setAttribute('d', path);
+  bg.setAttribute('fill', '#e7e7e7');
+  ridgeSvg.appendChild(bg);
+
+  const fg = document.createElementNS('http://www.w3.org/2000/svg', 'path');
+  fg.setAttribute('id', 'ridgeFg');
+  fg.setAttribute('fill', '#c9a227');
+  ridgeSvg.appendChild(fg);
+  updateRidge();
+}
+
+function updateRidge() {
+  const n = quizQuestions.length;
+  const w = 600, h = 34;
+  const step = w / n;
+  const passed = current;
+  if (passed <= 0) {
+    document.getElementById('ridgeFg').setAttribute('d', '');
+    return;
+  }
+  let path = `M0,${h}`;
+  for (let i = 0; i < passed; i++) {
+    const x1 = i * step + step * 0.5;
+    path += ` L${x1},4 L${(i + 1) * step},${h}`;
+  }
+  path += ` L${passed * step},${h} Z`;
+  document.getElementById('ridgeFg').setAttribute('d', path);
+}
+
+function loadQuestion() {
+  const q = quizQuestions[current];
+  cluesRevealed = 1;
+  qnumEl.textContent = `Question ${current + 1} of ${quizQuestions.length}`;
+  catpillEl.textContent = q.category;
+  answerBox.value = '';
+  revealBlock.classList.remove('show');
+  nextRow.style.display = 'none';
+  hintBtn.disabled = q.clues.length <= 1;
+  revealBtn.disabled = false;
+  renderClues();
+  updateRidge();
+}
+
+function renderClues() {
+  const q = quizQuestions[current];
+  cluesShown.innerHTML = '';
+  for (let i = 0; i < cluesRevealed; i++) {
+    const div = document.createElement('div');
+    div.className = 'clue-line';
+    div.textContent = q.clues[i];
+    cluesShown.appendChild(div);
+  }
+  hintBtn.disabled = cluesRevealed >= q.clues.length;
+}
+
+hintBtn.addEventListener('click', () => {
+  const q = quizQuestions[current];
+  if (cluesRevealed < q.clues.length) {
+    cluesRevealed++;
+    renderClues();
+  }
+});
+
+revealBtn.addEventListener('click', () => {
+  const q = quizQuestions[current];
+  cluesRevealed = q.clues.length;
+  renderClues();
+  answerLine.textContent = q.answer;
+  revealBlock.classList.add('show');
+  revealBtn.disabled = true;
+  hintBtn.disabled = true;
+});
+
+document.getElementById('markCorrect').addEventListener('click', () => grade(true));
+document.getElementById('markIncorrect').addEventListener('click', () => grade(false));
+
+function grade(isCorrect) {
+  results.push({ answer: quizQuestions[current].answer, correct: isCorrect });
+  nextRow.style.display = 'flex';
+}
+
+document.getElementById('nextBtn').addEventListener('click', () => {
+  current++;
+  if (current >= quizQuestions.length) {
+    finishQuiz();
+  } else {
+    loadQuestion();
+  }
+});
+
+function finishQuiz() {
+  updateRidge();
+  quizScreen.classList.add('hidden');
+  reviewScreen.classList.remove('hidden');
+  const total = results.length;
+  const numCorrect = results.filter(r => r.correct).length;
+  document.getElementById('scoreLine').textContent = `${numCorrect} / ${total} correct`;
+  const list = document.getElementById('reviewList');
+  list.innerHTML = '';
+  results.forEach(r => {
+    const div = document.createElement('div');
+    div.className = 'review-item ' + (r.correct ? 'right' : 'wrong');
+    div.innerHTML = `<span>${r.correct ? '✔' : '✘'}</span><span class="ans">${r.answer}</span>`;
+    list.appendChild(div);
+  });
+}
+
+document.getElementById('restartBtn').addEventListener('click', () => {
+  pickerScreen.classList.remove('hidden');
+  quizScreen.classList.add('hidden');
+  reviewScreen.classList.add('hidden');
+});
+
+refreshCatButtons();
+</script>
+</body>
+</html>
