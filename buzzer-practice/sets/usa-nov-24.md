@@ -97,7 +97,7 @@ Containing the tribal lands of the Havasupai and the communities of Fredonia and
 
 ### Question 14
 **Category: Rivers**  
-This river rises on the western slopes of the Continental Divide in the Black Range of Sierra County, New Mexico, before flowing across the Gila Cliff Dwellings National Monument and cutting through Safford Valley. Dammed at Coolidge Dam to form the San Carlos Reservoir, it historically supported the agricultural civilization of the Hohokam people before modern irrigation diverts virtually all its lower discharge upstream of Yuma. For 10 points, name this 649-mile-long tributary of the Colorado River that forms much of the historic southern boundary established by the 1853 Gadsden Purchase.  
+This river rises on the western slopes of the Continental Divide in the Black Range of Sierra County, New Mexico, before flowing across the Gila Cliff Dwellings National Monument and cutting through Safford Valley. Dammed at Coolidge Dam to form the San Carlos Reservoir, it historically supported the agricultural civilization of the Hohokam people before modern irrigation diverts virtually all its lower discharge upstream of Yuma. Under the 1848 Treaty of Guadalupe Hidalgo it formed much of the U.S.–Mexico border until the 1853 Gadsden Purchase moved that line south. For 10 points, name this 649-mile-long tributary of the Colorado River.  
 **ANSWER:** **Gila** River [HEE-luh]
 
 ---
@@ -111,14 +111,14 @@ Formed during the Holocene epoch as rising sea levels drowned the lower valleys 
 
 ### Question 16
 **Category: Landforms & Uplifts**  
-This elliptical geologic dome was produced during the Laramide Orogeny when an uplift of Precambrian granites and schists punched through overlying Paleozoic and Mesozoic sedimentary beds, leaving a surrounding ring of hogbacks known as the Red Valley or "Race Track." Flanked by the Belle Fourche and Cheyenne rivers, it contains Harney Peak (Black Elk Peak) and the world's longest cave systems at Jewel Cave and Wind Cave. For 10 points, name this isolated mountain uplift in western South Dakota and northeastern Wyoming that features Mount Rushmore.  
+This elliptical geologic dome was produced during the Laramide Orogeny when an uplift of Precambrian granites and schists punched through overlying Paleozoic and Mesozoic sedimentary beds, leaving a surrounding ring of hogbacks known as the Red Valley or "Race Track." Flanked by the Belle Fourche and Cheyenne rivers, it contains Harney Peak (Black Elk Peak) and two of the world's longest cave systems, Jewel Cave and Wind Cave. For 10 points, name this isolated mountain uplift in western South Dakota and northeastern Wyoming that features Mount Rushmore.  
 **ANSWER:** **Black Hills** (or *Pahá Sápa*)
 
 ---
 
 ### Question 17
 **Category: Forests & Public Lands**  
-This public reserve encloses three distinct rain-forest valleys—the Hoh, Queets, and Quinault—which receive over 140 inches of annual precipitation from Pacific maritime fronts. Surrounding an eponymous national park containing Mount Olympus, it is situated south of the Strait of Juan de Fuca and east of the Pacific Ocean. For 10 points, name this national forest situated on the Olympic Peninsula of northwestern Washington.  
+This public reserve takes in the south shore of Lake Quinault and its temperate rain forest, which receives over 140 inches of annual precipitation from Pacific maritime fronts. Largely surrounding an eponymous national park that contains Mount Olympus and the Hoh Rain Forest, it is situated south of the Strait of Juan de Fuca and east of the Pacific Ocean. For 10 points, name this national forest situated on the Olympic Peninsula of northwestern Washington.  
 **ANSWER:** **Olympic** National Forest
 
 ---
