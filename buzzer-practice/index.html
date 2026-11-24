@@ -1,1 +1,68 @@
+<!DOCTYPE html>
+<html lang="en"><head>
+<meta charset="utf-8"><meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Buzzer practice · Geo Bee Home Base</title>
+<link rel="preconnect" href="https://fonts.googleapis.com"><link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Bricolage+Grotesque:wght@400..800&family=DM+Sans:ital,wght@0,300..700;1,400&display=swap" rel="stylesheet">
+<style>
+*{box-sizing:border-box;margin:0;padding:0}
+body{font-family:'DM Sans',system-ui,sans-serif;background:#fdf8f0;background-image:radial-gradient(#e7dfd0 1px,transparent 1px);background-size:22px 22px;color:#16233d;-webkit-font-smoothing:antialiased;min-height:100vh;padding-bottom:60px}
+a{color:inherit;text-decoration:none}
+.top{position:sticky;top:0;z-index:40;background:#16233d}
+.bar{max-width:900px;margin:0 auto;padding:13px 18px;display:flex;align-items:center;gap:14px;flex-wrap:wrap}
+.brand{flex:1;min-width:150px}
+.brand h1{font-family:'Bricolage Grotesque','DM Sans',sans-serif;font-size:21px;font-weight:800;letter-spacing:-.02em;color:#fdf8f0;line-height:1.05}
+.brand div{font-size:11px;color:#8b9ab5;margin-top:3px}
+.back{background:#f5a524;color:#16233d;border-radius:12px;padding:8px 13px;font-weight:700;font-size:13px;transform:rotate(-2deg);box-shadow:0 2px 0 #c9821a;white-space:nowrap}
+.back:hover{transform:rotate(0)}
+.tabs{max-width:900px;margin:0 auto;padding:0 12px 11px;display:flex;gap:6px;overflow-x:auto}
+.tab{flex:1;min-width:110px;padding:9px 10px;border-radius:11px;border:2px solid rgba(253,248,240,.22);color:#c3ccdc;font-weight:600;font-size:13px;text-align:center;white-space:nowrap}
+.tab:hover{border-color:#f5a524;color:#fdf8f0}
+.tab.on{background:#f5a524;border-color:#f5a524;color:#16233d;font-weight:700}
+main{max-width:900px;margin:0 auto;padding:18px}
+.hero{background:#fffdf8;border:2px solid #16233d;border-radius:20px;padding:20px 22px;margin-bottom:22px;box-shadow:5px 5px 0 #16233d}
+.kicker{font-size:11px;font-weight:700;letter-spacing:.14em;text-transform:uppercase;color:#a8362a}
+.hero h2{font-family:'Bricolage Grotesque','DM Sans',sans-serif;font-size:30px;font-weight:800;letter-spacing:-.025em;line-height:1.05;margin:6px 0 6px}
+.hero p{font-size:15px;color:#55617a;line-height:1.5;max-width:56ch}
+.group{font-size:11px;font-weight:800;letter-spacing:.12em;text-transform:uppercase;margin:22px 2px 9px}
+.list{display:flex;flex-direction:column;gap:8px}
+.card{background:#fffdf8;border:2px solid #16233d;border-radius:15px;padding:14px 16px;display:flex;gap:13px;align-items:center;box-shadow:3px 3px 0 rgba(22,35,61,.1);transition:transform .08s,box-shadow .08s}
+a.card:hover{transform:translate(-1px,-1px);box-shadow:4px 4px 0 rgba(22,35,61,.25)}
+.pip{width:11px;height:30px;border-radius:99px;flex-shrink:0}
+.body{flex:1;min-width:0}
+.name{font-size:15px;font-weight:600}
+.note{font-size:12.5px;color:#636c80;margin-top:3px;line-height:1.45}
+.tag{font-size:10.5px;font-weight:800;letter-spacing:.06em;text-transform:uppercase;padding:4px 8px;border-radius:7px;background:#eeeade;color:#55617a;flex-shrink:0}
+.go{font-size:13px;font-weight:700;color:#0f5f60;flex-shrink:0}
+.tip{background:#fdf0d8;border:2px dashed #f0c46a;border-radius:15px;padding:14px 16px;font-size:12.5px;color:#7a4f06;line-height:1.55;margin-top:24px}
+.tools{display:flex;gap:8px;flex-wrap:wrap;align-items:center;margin-bottom:6px}
+.search{flex:1;min-width:200px;padding:11px 14px;border:2px solid #16233d;border-radius:12px;background:#fffdf8;font:inherit;font-size:14px}
+.chips{display:flex;gap:6px;flex-wrap:wrap;margin:10px 0 4px}
+.chip{border:2px solid #e7dfd0;background:#fffdf8;border-radius:99px;padding:6px 12px;font:inherit;font-size:12.5px;font-weight:600;cursor:pointer;color:#16233d}
+.chip.on{background:#16233d;border-color:#16233d;color:#fdf8f0}
+.grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(250px,1fr));gap:9px}
+.dd{background:#fffdf8;border:2px solid #e7dfd0;border-radius:14px;padding:12px 14px;display:flex;flex-direction:column;gap:9px}
+.dd .t{font-size:14.5px;font-weight:600;display:flex;gap:8px;align-items:center}
+.dd .t span{width:8px;height:8px;border-radius:50%;flex-shrink:0}
+.btns{display:flex;gap:6px;flex-wrap:wrap}
+.btn{font-size:12px;font-weight:700;padding:5px 10px;border-radius:8px;border:2px solid #16233d}
+.btn.doc{background:#ece6f6;border-color:#6b4ea8;color:#4a327d}
+.btn.sl{background:#fdf0d8;border-color:#e0a63c;color:#8a5a06}
+.btn.x{background:#e2f1f1;border-color:#17888a;color:#0f5f60}
+.btn:hover{filter:brightness(.95)}
+.count{font-size:12.5px;color:#636c80;margin:2px 2px 0}
+.empty{display:none;color:#636c80;font-size:14px;padding:20px 4px}
+</style>
+</head><body>
+<div class="top">
+  <div class="bar">
+    <div class="brand"><h1>Geo Bee Home Base</h1><div>Resources</div></div>
+    <a class="back" href="../">← Tracker</a>
+  </div>
+  <nav class="tabs"><a class="tab on" href="../buzzer-practice/">Buzzer practice</a><a class="tab" href="../quiz-tool/">Quiz tool</a><a class="tab" href="../country-deepdive/">Country deep dives</a></nav>
+</div>
+<main>
+<div class="hero"><div class="kicker">Practice &amp; play</div><h2>Buzzer practice</h2><p>Read-along tossups that reveal word by word. Buzz early, score power, then redo what you missed.</p></div><div class="group" style="color:#a8362a">Drills &amp; games</div><div class="list"><a class="card" href="https://claude.ai/artifact/Lep88GhGpruqkC6YiEDJLK" target="_blank" rel="noopener"><span class="pip" style="background:#f5a524"></span><div class="body"><div class="name">Red Set 2026-27 — Buzzer Practice</div><div class="note">Word-by-word reveal buzzer drill on the Red Set 2026-27 questions.</div></div><span class="tag">Buzzer</span><span class="go">Go →</span></a><a class="card" href="https://claude.ai/artifact/Vng6PNrNdp2G1VKgsPUn3S" target="_blank" rel="noopener"><span class="pip" style="background:#f5a524"></span><div class="body"><div class="name">Laos · Lebanon · Malaysia Tossups</div><div class="note">125 pyramidal tossups at beginner, easy and nationals levels, with power scoring and missed-question redo.</div></div><span class="tag">Buzzer</span><span class="go">Go →</span></a><a class="card" href="https://claude.ai/artifact/DYdgsLbcfCUBgZYeu2mbJN" target="_blank" rel="noopener"><span class="pip" style="background:#e35a4a"></span><div class="body"><div class="name">Bee Line</div><div class="note">Bee practice game.</div></div><span class="tag">Game</span><span class="go">Go →</span></a><a class="card" href="https://nkumar30.github.io/geochallenge" target="_blank" rel="noopener"><span class="pip" style="background:#e35a4a"></span><div class="body"><div class="name">GeoChallenge</div><div class="note">Live buzzer game, AI quizzes, scoreboards.</div></div><span class="tag">Game</span><span class="go">Go →</span></a></div><div class="group" style="color:#4a327d">Packets</div><div class="list"><a class="card" href="https://claude.ai/artifact/6xEX8KKX8fnXeZ1ksC3qLp" target="_blank" rel="noopener"><span class="pip" style="background:#6b4ea8"></span><div class="body"><div class="name">Red Set Tossup Packet 2026–27</div><div class="note">The written packet behind the Red Set drill, for reading aloud or printing.</div></div><span class="tag">Doc</span><span class="go">Go →</span></a></div><div class="tip">Links marked Buzzer, Quiz, Doc or Lab open in Claude. Anyone using them needs to be signed in to the account that made them, or you can share each one from Claude so it opens for anyone with the link.</div>
+</main>
 
+</body></html>
