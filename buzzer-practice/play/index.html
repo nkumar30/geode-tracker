@@ -1,0 +1,347 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Buzzer Practice</title>
+<style>
+  :root {
+    --gold: #c9a227; --lapis: #1f3a5f; --lapis-dark: #14263f; --bg: #0f1b2d;
+    --card-bg: #ffffff; --ink: #1a2332; --muted: #6b7686; --power: #c9a227;
+    --correct: #2e7d4f; --incorrect: #b23a3a;
+  }
+  * { box-sizing: border-box; }
+  body { margin: 0; font-family: 'Georgia', 'Times New Roman', serif; background: linear-gradient(180deg, var(--bg), var(--lapis-dark)); color: var(--ink); min-height: 100vh; padding: 24px 16px 60px; }
+  .wrap { max-width: 720px; margin: 0 auto; }
+  .back { display: inline-block; color: #cdd7e6; font-size: 0.85rem; text-decoration: none; margin-bottom: 10px; }
+  .back:hover { color: var(--gold); }
+  header { text-align: center; color: var(--gold); margin-bottom: 20px; }
+  header h1 { margin: 0; font-size: 1.6rem; letter-spacing: 0.5px; }
+  header p { color: #cdd7e6; font-size: 0.9rem; margin: 6px 0 0; }
+  .controls { background: var(--card-bg); border-radius: 12px; padding: 16px 18px; margin-bottom: 18px; box-shadow: 0 4px 18px rgba(0,0,0,0.35); display: flex; flex-wrap: wrap; gap: 12px; align-items: center; justify-content: space-between; }
+  .controls label { font-size: 0.85rem; color: var(--muted); margin-right: 6px; }
+  select, .speed-btn { font-family: inherit; font-size: 0.9rem; padding: 6px 10px; border-radius: 6px; border: 1px solid #d6d6d6; background: #fafafa; color: var(--ink); }
+  .speed-group { display: flex; gap: 4px; }
+  .speed-btn { cursor: pointer; }
+  .speed-btn.active { background: var(--lapis); color: white; border-color: var(--lapis); }
+  .card { background: var(--card-bg); border-radius: 14px; padding: 26px 24px; box-shadow: 0 8px 28px rgba(0,0,0,0.4); }
+  .meta-row { display: flex; justify-content: space-between; align-items: center; margin-bottom: 10px; gap: 10px; }
+  .qnum { color: var(--muted); font-size: 0.85rem; }
+  .catpill { background: var(--lapis); color: white; padding: 3px 10px; border-radius: 20px; font-size: 0.75rem; letter-spacing: 0.3px; }
+  .clue-text { font-size: 1.15rem; line-height: 1.65; min-height: 140px; margin: 14px 0 6px; }
+  .clue-text .power-word { color: var(--power); font-weight: bold; }
+  .progress-bar { height: 6px; background: #e7e7e7; border-radius: 4px; overflow: hidden; margin-bottom: 4px; }
+  .progress-fill { height: 100%; background: var(--lapis); width: 0%; transition: width 0.1s linear; }
+  .progress-fill.in-power { background: var(--power); }
+  .power-label { font-size: 0.75rem; color: var(--muted); text-align: right; margin-bottom: 14px; }
+  .btn-row { display: flex; gap: 10px; flex-wrap: wrap; margin-top: 10px; }
+  button { font-family: inherit; font-size: 0.95rem; padding: 9px 16px; border-radius: 8px; border: none; cursor: pointer; background: var(--lapis); color: white; }
+  button.secondary { background: #e7e7e7; color: var(--ink); }
+  button.gold { background: var(--gold); color: #2a2200; }
+  button:disabled { opacity: 0.5; cursor: default; }
+  .answer-box { width: 100%; padding: 10px 12px; font-size: 1rem; border-radius: 8px; border: 1px solid #ccc; font-family: inherit; margin-top: 14px; }
+  .reveal-block { margin-top: 16px; padding: 14px 16px; background: #f4f1e7; border-left: 4px solid var(--gold); border-radius: 6px; display: none; }
+  .reveal-block.show { display: block; }
+  .reveal-block .answer-line { font-weight: bold; font-size: 1.1rem; }
+  .reveal-block .yours { font-size: 0.85rem; color: var(--muted); margin-top: 4px; }
+  .grade-row { margin-top: 12px; display: flex; gap: 10px; flex-wrap: wrap; }
+  .grade-row button.correct { background: var(--correct); }
+  .grade-row button.incorrect { background: var(--incorrect); }
+  .grade-row button.picked { outline: 3px solid var(--gold); }
+  .stats-panel { background: var(--card-bg); border-radius: 14px; padding: 26px 24px; text-align: center; box-shadow: 0 8px 28px rgba(0,0,0,0.4); }
+  .stats-panel h2 { color: var(--lapis); margin-top: 0; }
+  .stat-grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 14px; margin: 20px 0; }
+  .stat-box { background: #f4f1e7; border-radius: 10px; padding: 14px 10px; }
+  .stat-box .num { font-size: 1.6rem; font-weight: bold; color: var(--lapis); }
+  .stat-box .lbl { font-size: 0.78rem; color: var(--muted); margin-top: 4px; }
+  .missed { text-align: left; margin: 18px 0 6px; font-size: 0.92rem; line-height: 1.5; }
+  .missed li { margin-bottom: 4px; }
+  .source-note { color: #aebbcf; font-size: 0.75rem; text-align: center; margin-top: 22px; }
+  .kbd { color: #aebbcf; font-size: 0.75rem; text-align: center; margin-top: 10px; }
+  .error { background: #fff3f0; border-left: 4px solid var(--incorrect); padding: 14px 16px; border-radius: 6px; line-height: 1.5; }
+  .hidden { display: none; }
+</style>
+</head>
+<body>
+<div class="wrap">
+  <a class="back" href="../">← All buzzer practice</a>
+  <header>
+    <h1 id="title">Geography Bee Buzzer Practice</h1>
+    <p id="subtitle">Loading questions…</p>
+  </header>
+
+  <div class="controls">
+    <div>
+      <label for="orderSelect">Order</label>
+      <select id="orderSelect">
+        <option value="inorder" selected>In order</option>
+        <option value="shuffle">Shuffled</option>
+      </select>
+    </div>
+    <div>
+      <label>Reading speed</label>
+      <div class="speed-group">
+        <button class="speed-btn" data-wpm="130">130 wpm</button>
+        <button class="speed-btn active" data-wpm="170">170 wpm</button>
+        <button class="speed-btn" data-wpm="210">210 wpm</button>
+      </div>
+    </div>
+  </div>
+
+  <div id="quizArea" class="card">
+    <div class="meta-row">
+      <span class="qnum" id="qnum"></span>
+      <span class="catpill" id="catpill"></span>
+    </div>
+    <div class="progress-bar"><div class="progress-fill" id="progressFill"></div></div>
+    <div class="power-label" id="powerLabel">Power mark not yet reached</div>
+    <div class="clue-text" id="clueText"></div>
+
+    <input type="text" id="answerBox" class="answer-box" placeholder="Type your answer, then hit Buzz / Reveal…">
+
+    <div class="btn-row">
+      <button id="startBtn">Start reading</button>
+      <button id="pauseBtn" class="secondary" disabled>Pause</button>
+      <button id="buzzBtn" class="gold" disabled>Buzz / Reveal</button>
+    </div>
+
+    <div class="reveal-block" id="revealBlock">
+      <div>Correct answer:</div>
+      <div class="answer-line" id="answerLine"></div>
+      <div class="yours" id="yours"></div>
+      <div class="grade-row">
+        <button class="correct" id="markCorrect">I got it right</button>
+        <button class="incorrect" id="markIncorrect">I got it wrong</button>
+      </div>
+    </div>
+
+    <div class="btn-row" id="nextRow" style="display:none;">
+      <button id="nextBtn">Next question →</button>
+    </div>
+  </div>
+  <p class="kbd" id="kbd">Space starts reading, then buzzes. Type your answer and press Enter to reveal.</p>
+
+  <div id="statsArea" class="stats-panel hidden">
+    <h2>Session complete</h2>
+    <div class="stat-grid">
+      <div class="stat-box"><div class="num" id="statAccuracy">--</div><div class="lbl">Accuracy</div></div>
+      <div class="stat-box"><div class="num" id="statPower">--</div><div class="lbl">Power buzzes (correct)</div></div>
+      <div class="stat-box"><div class="num" id="statAvgWords">--</div><div class="lbl">Avg. words heard</div></div>
+    </div>
+    <ol class="missed" id="missedList"></ol>
+    <div class="btn-row" style="justify-content:center">
+      <button id="redoBtn" class="gold">Redo missed questions</button>
+      <button id="restartBtn">Restart all</button>
+    </div>
+  </div>
+
+  <p class="source-note" id="sourceNote"></p>
+</div>
+
+<script>
+// Reads a question set written as Markdown from ../sets/<name>.md
+// Format: "### Question N", a "**Category: …**" line, the tossup text, then "**ANSWER:** …".
+// An optional "# Title" line at the top names the set.
+const params = new URLSearchParams(location.search);
+const setName = (params.get('set') || '').replace(/[^a-z0-9_-]/gi, '');
+
+function stripMd(s) {
+  return s.replace(/\*\*(.+?)\*\*/g, '$1').replace(/\*(.+?)\*/g, '$1').replace(/\s+/g, ' ').trim();
+}
+
+function parseSet(md) {
+  const titleMatch = md.match(/^#\s+(?!#)(.+)$/m);
+  const chunks = md.split(/^#{2,4}\s*Question\s+\d+.*$/mi).slice(1);
+  const qs = [];
+  for (const chunk of chunks) {
+    const body = chunk.split(/^\s*---\s*$/m)[0];
+    const catMatch = body.match(/\*\*\s*Category:\s*(.+?)\s*\*\*/i);
+    const ansMatch = body.match(/\*\*\s*ANSWER:?\s*\*\*:?\s*(.+)/i);
+    if (!ansMatch) continue;
+    let text = body;
+    if (catMatch) text = text.replace(catMatch[0], '');
+    text = stripMd(text.slice(0, text.search(/\*\*\s*ANSWER/i)));
+    if (!text) continue;
+    qs.push({ category: catMatch ? stripMd(catMatch[1]) : 'Geography', text, answer: stripMd(ansMatch[1]) });
+  }
+  return { title: titleMatch ? stripMd(titleMatch[1]) : null, questions: qs };
+}
+
+// Power zone ends 60% of the way to the "For 10 points" giveaway.
+function powerCutoff(words) {
+  const joined = words.join(' ');
+  const idx = joined.search(/For (10|ten) points/i);
+  const before = idx < 0 ? words.length : joined.slice(0, idx).split(/\s+/).filter(Boolean).length;
+  return Math.max(1, Math.round(before * 0.6));
+}
+
+// ---- State ----
+let allQuestions = [], questions = [], current = 0, wpm = 170;
+let wordTimer = null, wordIndex = 0, allWords = [], powerCutoffIndex = 0;
+let results = [], buzzed = false, graded = false;
+
+const $ = id => document.getElementById(id);
+const clueTextEl = $('clueText'), progressFill = $('progressFill'), powerLabel = $('powerLabel');
+const startBtn = $('startBtn'), pauseBtn = $('pauseBtn'), buzzBtn = $('buzzBtn');
+const revealBlock = $('revealBlock'), nextRow = $('nextRow'), answerBox = $('answerBox');
+
+document.querySelectorAll('.speed-btn').forEach(btn => btn.addEventListener('click', () => {
+  document.querySelectorAll('.speed-btn').forEach(b => b.classList.remove('active'));
+  btn.classList.add('active');
+  wpm = parseInt(btn.dataset.wpm, 10);
+  if (wordTimer) { clearInterval(wordTimer); wordTimer = setInterval(tick, 60000 / wpm); }
+}));
+
+$('orderSelect').addEventListener('change', () => startSession(allQuestions));
+
+function shuffle(a) { a = a.slice(); for (let i = a.length - 1; i > 0; i--) { const j = Math.floor(Math.random() * (i + 1)); [a[i], a[j]] = [a[j], a[i]]; } return a; }
+
+function startSession(list) {
+  clearInterval(wordTimer); wordTimer = null;
+  questions = $('orderSelect').value === 'shuffle' ? shuffle(list) : list.slice();
+  current = 0; results = [];
+  loadQuestion();
+}
+
+function loadQuestion() {
+  buzzed = false; graded = false;
+  const q = questions[current];
+  allWords = q.text.split(/\s+/);
+  powerCutoffIndex = powerCutoff(allWords);
+  wordIndex = 0;
+  clueTextEl.innerHTML = '';
+  $('qnum').textContent = `Question ${current + 1} of ${questions.length}`;
+  $('catpill').textContent = q.category;
+  progressFill.style.width = '0%';
+  progressFill.classList.remove('in-power');
+  powerLabel.textContent = 'Power mark not yet reached';
+  answerBox.value = '';
+  revealBlock.classList.remove('show');
+  $('markCorrect').classList.remove('picked'); $('markIncorrect').classList.remove('picked');
+  nextRow.style.display = 'none';
+  startBtn.disabled = false; pauseBtn.disabled = true; pauseBtn.textContent = 'Pause';
+  buzzBtn.disabled = true; buzzBtn.textContent = 'Buzz / Reveal';
+  $('quizArea').classList.remove('hidden'); $('kbd').classList.remove('hidden');
+  $('statsArea').classList.add('hidden');
+}
+
+function tick() {
+  if (wordIndex >= allWords.length) { clearInterval(wordTimer); wordTimer = null; buzzBtn.textContent = 'Reveal answer'; return; }
+  const span = document.createElement('span');
+  span.textContent = allWords[wordIndex] + ' ';
+  if (wordIndex < powerCutoffIndex) span.classList.add('power-word');
+  clueTextEl.appendChild(span);
+  wordIndex++;
+  progressFill.style.width = Math.round((wordIndex / allWords.length) * 100) + '%';
+  progressFill.classList.toggle('in-power', wordIndex <= powerCutoffIndex);
+  powerLabel.textContent = wordIndex <= powerCutoffIndex
+    ? `Power zone — buzz now for bonus credit (${wordIndex}/${powerCutoffIndex} words)`
+    : 'Power mark passed';
+}
+
+function start() {
+  if (startBtn.disabled) return;
+  startBtn.disabled = true; pauseBtn.disabled = false; buzzBtn.disabled = false;
+  wordTimer = setInterval(tick, 60000 / wpm);
+}
+startBtn.addEventListener('click', start);
+
+pauseBtn.addEventListener('click', () => {
+  if (wordTimer) { clearInterval(wordTimer); wordTimer = null; pauseBtn.textContent = 'Resume'; }
+  else { wordTimer = setInterval(tick, 60000 / wpm); pauseBtn.textContent = 'Pause'; }
+});
+
+function buzz() {
+  if (buzzed || buzzBtn.disabled) return;
+  buzzed = true;
+  clearInterval(wordTimer); wordTimer = null;
+  const q = questions[current];
+  // show the rest of the question once the answer is revealed
+  clueTextEl.innerHTML = '';
+  allWords.forEach((w, i) => {
+    const s = document.createElement('span');
+    s.textContent = w + ' ';
+    if (i < powerCutoffIndex) s.classList.add('power-word');
+    if (i >= wordIndex) s.style.opacity = '0.45';
+    clueTextEl.appendChild(s);
+  });
+  $('answerLine').textContent = q.answer;
+  $('yours').textContent = answerBox.value.trim() ? 'You said: ' + answerBox.value.trim() : '';
+  revealBlock.classList.add('show');
+  buzzBtn.disabled = true; pauseBtn.disabled = true;
+  results.push({ q, wordsHeard: wordIndex, inPower: wordIndex <= powerCutoffIndex, correct: null });
+}
+buzzBtn.addEventListener('click', buzz);
+
+function grade(ok) {
+  results[results.length - 1].correct = ok;
+  graded = true;
+  $('markCorrect').classList.toggle('picked', ok); $('markIncorrect').classList.toggle('picked', !ok);
+  nextRow.style.display = 'flex';
+}
+$('markCorrect').addEventListener('click', () => grade(true));
+$('markIncorrect').addEventListener('click', () => grade(false));
+
+function next() {
+  current++;
+  if (current >= questions.length) showStats(); else loadQuestion();
+}
+$('nextBtn').addEventListener('click', next);
+
+answerBox.addEventListener('keydown', e => {
+  if (e.key === 'Enter') { e.preventDefault(); if (!startBtn.disabled) start(); buzz(); }
+});
+document.addEventListener('keydown', e => {
+  if (e.target === answerBox || e.target.tagName === 'SELECT') return;
+  if (e.code === 'Space') {
+    e.preventDefault();
+    if (!startBtn.disabled) start(); else if (!buzzed) { buzz(); answerBox.focus(); }
+  } else if (buzzed && (e.key === 'y' || e.key === 'Y')) grade(true);
+  else if (buzzed && (e.key === 'n' || e.key === 'N')) grade(false);
+  else if (graded && e.key === 'Enter') next();
+});
+
+function showStats() {
+  $('quizArea').classList.add('hidden'); $('kbd').classList.add('hidden');
+  $('statsArea').classList.remove('hidden');
+  const total = results.length;
+  const right = results.filter(r => r.correct).length;
+  $('statAccuracy').textContent = total ? Math.round((right / total) * 100) + '%' : '--';
+  $('statPower').textContent = results.filter(r => r.correct && r.inPower).length;
+  $('statAvgWords').textContent = total ? Math.round(results.reduce((a, r) => a + r.wordsHeard, 0) / total) : '--';
+  const missed = results.filter(r => !r.correct);
+  $('missedList').innerHTML = missed.length
+    ? '<strong>Missed:</strong>' + missed.map(r => `<li>${r.q.answer} <span style="color:#6b7686">(${r.q.category})</span></li>`).join('')
+    : '<strong>No misses. Nice!</strong>';
+  $('redoBtn').classList.toggle('hidden', !missed.length);
+  $('redoBtn').onclick = () => startSession(missed.map(r => r.q));
+}
+$('restartBtn').addEventListener('click', () => startSession(allQuestions));
+
+function fail(msg) {
+  $('subtitle').textContent = '';
+  $('quizArea').innerHTML = `<div class="error">${msg}</div>`;
+  $('kbd').classList.add('hidden');
+}
+
+if (!setName) {
+  fail('No question set chosen. Open this page from the <a href="../">buzzer practice list</a>.');
+} else {
+  fetch(`../sets/${setName}.md`, { cache: 'no-cache' })
+    .then(r => { if (!r.ok) throw new Error(r.status); return r.text(); })
+    .then(md => {
+      const set = parseSet(md);
+      if (!set.questions.length) return fail(`Found <code>sets/${setName}.md</code> but couldn't read any questions from it. Each question needs a "### Question N" heading and an "**ANSWER:**" line.`);
+      const title = set.title || setName.replace(/[-_]+/g, ' ');
+      document.title = title + ' · Buzzer Practice';
+      $('title').textContent = title;
+      $('subtitle').textContent = `${set.questions.length} tossups`;
+      $('sourceNote').innerHTML = `Questions from <code>buzzer-practice/sets/${setName}.md</code>. Gold words are the power zone.`;
+      allQuestions = set.questions;
+      startSession(allQuestions);
+    })
+    .catch(() => fail(`Couldn't find the question set <code>sets/${setName}.md</code>.`));
+}
+</script>
+</body>
+</html>
